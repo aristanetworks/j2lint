@@ -33,6 +33,7 @@ class RulesCollection:
 
         for rule in self.rules:
             errors.extend(rule.matchlines(file_dict, text))
+            errors.extend(rule.matchfulltext(file_dict, text))
 
         return errors
 

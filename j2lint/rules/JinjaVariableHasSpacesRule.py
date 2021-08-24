@@ -3,8 +3,8 @@ from j2lint.linter.rule import Rule
 
 
 class JinjaVariableHasSpacesRule(Rule):
-    id = 'SYNTAX1'
-    description = "Jinja variables should have a single space before and after: '{{ var_name }}'"
+    id = 'SYNTAX-1'
+    description = "Jinja variables should have a single space between Jinja2 curly brackets and variable's name: '{{ var_name }}'"
     severity = 'LOW'
 
     regex = re.compile(

@@ -3,7 +3,7 @@ from j2lint.linter.rule import Rule
 
 
 class JinjaFilterHasSpaceRule(Rule):
-    id = 'SYNTAX3'
+    id = 'SYNTAX-2'
     description = "Jinja filter should have a single space before and after: '{{ var_name | filter }}'"
     severity = 'LOW'
 

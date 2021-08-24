@@ -1,7 +1,7 @@
 import re
 
 from j2lint.utils import is_valid_file_type
-from j2lint.linter.linterror import LintError
+from j2lint.linter.validationerror import ValidationError
 from j2lint.utils import LANGUAGE_JINJA
 
 
@@ -37,5 +37,22 @@ class Rule:
             result = self.match(file, line)
             if not result:
                 continue
-            errors.append(LintError(index+1, line, file['path'], self))
+            errors.append(ValidationError(index+1, line, file['path'], self))
+        return errors
+
+    def matchfulltext(self, file, text):
+        errors = []
+
+        if not self.matchtext:
+            return errors
+
+        if not self.is_valid_language(file):
+            return errors
+
+        results = self.matchtext(file, text)
+
+        for line, section, message in results:
+            errors.append(ValidationError(
+                line, section, file['path'], self, message))
+
         return errors
