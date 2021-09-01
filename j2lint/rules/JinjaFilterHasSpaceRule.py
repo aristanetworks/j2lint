@@ -4,7 +4,7 @@ from j2lint.linter.rule import Rule
 
 class JinjaFilterHasSpaceRule(Rule):
     id = 'SYNTAX-2'
-    description = "Jinja filter should have a single space before and after: '{{ var_name | filter }}'"
+    description = "When variables are used in combination with a filter, | shall be enclosed by space: '{{ my_value | to_json }}'"
     severity = 'LOW'
 
     regex = re.compile(r"([^ ]\|)|(\|[^ ])|([^ ] \s+\|)|(\| \s+[^ ])")

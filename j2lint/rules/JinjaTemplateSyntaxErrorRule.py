@@ -4,7 +4,7 @@ from j2lint.linter.rule import Rule
 
 
 class JinjaTemplateSyntaxErrorRule(Rule):
-    id = 'SYNTAX1'
+    id = 'SYNTAX-0'
     description = "Jinja syntax should be correct"
     severity = 'HIGH'
 

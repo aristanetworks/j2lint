@@ -2,9 +2,9 @@ import re
 from j2lint.linter.rule import Rule
 
 
-class JinjaVariableHasSpacesRule(Rule):
+class JinjaVariableHasSpaceRule(Rule):
     id = 'SYNTAX-1'
-    description = "Jinja variables should have a single space between Jinja2 curly brackets and variable's name: '{{ var_name }}'"
+    description = "A single space shall be added between Jinja2 curly brackets and a variable’s name: '{{ ethernet_interface }}'"
     severity = 'LOW'
 
     regex = re.compile(

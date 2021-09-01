@@ -1,7 +1,7 @@
 import re
 
 from j2lint.utils import is_valid_file_type
-from j2lint.linter.validationerror import ValidationError
+from j2lint.linter.error import LinterError
 from j2lint.utils import LANGUAGE_JINJA
 
 
@@ -37,7 +37,7 @@ class Rule:
             result = self.match(file, line)
             if not result:
                 continue
-            errors.append(ValidationError(index+1, line, file['path'], self))
+            errors.append(LinterError(index+1, line, file['path'], self))
         return errors
 
     def matchfulltext(self, file, text):
@@ -52,7 +52,7 @@ class Rule:
         results = self.matchtext(file, text)
 
         for line, section, message in results:
-            errors.append(ValidationError(
+            errors.append(LinterError(
                 line, section, file['path'], self, message))
 
         return errors
