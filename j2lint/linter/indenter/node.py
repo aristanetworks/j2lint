@@ -1,6 +1,6 @@
 from j2lint.linter.indenter.statement import JinjaStatement, JINJA_STATEMENT_TAG_NAMES, JINJA_INTERMEDIATE_TAG_NAMES
 from j2lint.linter.error import JinjaLinterError, JinjaBadIndentationError
-from j2lint.linter.util import flatten, get_tuple
+from j2lint.utils import flatten, get_tuple, delimit_jinja_statement
 
 BEGIN_TAGS = [item[0] for item in JINJA_STATEMENT_TAG_NAMES]
 END_TAGS = [item[-1] for item in JINJA_STATEMENT_TAG_NAMES]
@@ -36,7 +36,7 @@ class Node:
         expected = node.expected_indent + DEFAULT_WHITESPACES
         if actual != expected:
             result.append((node.statement.start_line_no,
-                           node.statement.line,
+                           delimit_jinja_statement(node.statement.line),
                            "Bad Indentation, expected %d, got %d" % (expected, actual)))
         return None
 

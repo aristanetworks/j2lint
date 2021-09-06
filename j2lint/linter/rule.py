@@ -1,8 +1,7 @@
 import re
 
-from j2lint.utils import is_valid_file_type
+from j2lint.utils import is_valid_file_type, LANGUAGE_JINJA
 from j2lint.linter.error import LinterError
-from j2lint.utils import LANGUAGE_JINJA
 
 
 class Rule:

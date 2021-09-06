@@ -6,8 +6,9 @@ from j2lint.utils import load_plugins
 
 
 class RulesCollection:
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.rules = []
+        self.verbose = verbose
 
     def __iter__(self):
         return iter(self.rules)

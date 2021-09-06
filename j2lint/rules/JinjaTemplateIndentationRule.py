@@ -2,7 +2,7 @@ import re
 import jinja2
 from j2lint.linter.rule import Rule
 from j2lint.linter.indenter.node import Node
-from j2lint.linter.util import get_jinja_statements
+from j2lint.utils import get_jinja_statements
 
 
 class JinjaTemplateIndentationRule(Rule):

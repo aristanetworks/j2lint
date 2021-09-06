@@ -1,3 +1,6 @@
+from j2lint.settings import settings
+
+
 class LinterError:
     def __init__(self, linenumber, line, filename, rule, message=None):
         self.linenumber = linenumber
@@ -6,8 +9,11 @@ class LinterError:
         self.rule = rule
         self.message = rule.description if not message else message
 
-    def __repr__(self):
-        formatstr = u"Rule: {0}\nRule Description: {1}\nLinter Error found in: {2}:{3} {4}\nError message: {5}\n"
+    def __repr__(self, verbose=False):
+        if not settings.verbose:
+            formatstr = u"{2}:{3} {5}: {3}"
+        else:
+            formatstr = u"Rule: {0}\nRule Description: {1}\nLinter Error found in: {2}:{3} {4}\nError message: {5}\n"
         return formatstr.format(self.rule.id, self.rule.description,
                                 self.filename, self.linenumber, self.line, self.message)
 
