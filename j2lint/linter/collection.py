@@ -3,6 +3,7 @@ import os
 import sys
 
 from j2lint.utils import load_plugins
+from j2lint.logger import logger
 
 
 class RulesCollection:
@@ -33,6 +34,8 @@ class RulesCollection:
             return matches
 
         for rule in self.rules:
+            logger.debug("Running linting rule {} on file {}".format(
+                rule, file_dict['path']))
             errors.extend(rule.matchlines(file_dict, text))
             errors.extend(rule.matchfulltext(file_dict, text))
 
@@ -47,4 +50,6 @@ class RulesCollection:
         """Creates a collection from all rule modules"""
         result = clazz()
         result.rules = load_plugins(os.path.expanduser(rulesdir))
+        logger.info(
+            "Created collection from rules directory {}".format(rulesdir))
         return result

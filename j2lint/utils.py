@@ -3,6 +3,7 @@ import importlib.util
 import os
 import re
 import collections
+from j2lint.logger import logger
 
 LANGUAGE_JINJA = "jinja"
 
@@ -15,6 +16,7 @@ def load_plugins(directory):
     for pluginfile in glob.glob(os.path.join(directory, '[A-Za-z]*.py')):
         pluginname = os.path.basename(pluginfile.replace('.py', ''))
         try:
+            logger.debug("Loading plugin {}".format(pluginname))
             spec = importlib.util.spec_from_file_location(
                 pluginname, pluginfile)
             module = importlib.util.module_from_spec(spec)
@@ -42,7 +44,7 @@ def get_file_type(file_name):
     return None
 
 
-def get_jinja_files(file_or_dir_names):
+def get_files(file_or_dir_names):
     """Get files from a directory """
     file_paths = []
 
@@ -51,9 +53,13 @@ def get_jinja_files(file_or_dir_names):
             for root, dirs, files in os.walk(file_or_dir):
                 for f in files:
                     file_path = os.path.join(root, f)
-                    file_paths.append(file_path)
+                    if get_file_type(file_path) == LANGUAGE_JINJA:
+                        file_paths.append(file_path)
         else:
-            file_paths.append(file_or_dir)
+            if get_file_type(file_path) == LANGUAGE_JINJA:
+                file_paths.append(file_or_dir)
+    logger.debug("Linting directory {}: files {}".format(
+        file_or_dir_names, file_paths))
     return file_paths
 
 
@@ -79,13 +85,14 @@ def get_tuple(l, item):
 def get_jinja_statements(text):
     statements = []
     count = 0
-    regex_pattern = re.compile("\\{%(.*?)\\%}")
+    regex_pattern = re.compile("\\{%[-|+]?((.|\n)*?)[-]?\\%}", re.MULTILINE)
     newline_pattern = re.compile(r'\n')
     for m in regex_pattern.finditer(text):
         count += 1
         start_line = len(newline_pattern.findall(text, 0, m.start(1)))+1
         end_line = len(newline_pattern.findall(text, 0, m.end(1)))+1
         statements.append((m.group(1), start_line, end_line))
+    logger.debug("Found jinja statements {}".format(statements))
     return statements
 
 

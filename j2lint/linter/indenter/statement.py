@@ -4,7 +4,7 @@ JINJA_STATEMENT_TAG_NAMES = [
     ('if', 'elif', 'else', 'endif'),
 ]
 
-JINJA_INTERMEDIATE_TAG_NAMES = ["set", "include", "do"]
+JINJA_INTERMEDIATE_TAG_NAMES = ["set", "include", "do", "break"]
 
 
 class JinjaStatement:

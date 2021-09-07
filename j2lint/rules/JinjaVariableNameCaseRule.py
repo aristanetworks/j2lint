@@ -4,6 +4,7 @@ from j2lint.linter.rule import Rule
 
 class JinjaVariableNameCaseRule(Rule):
     id = 'VAR-1'
+    short_description = 'jinja-variable-lower-case'
     description = "All variables shall use lower case: '{{ variable }}'"
     severity = 'LOW'
 

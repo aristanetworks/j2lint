@@ -1,6 +1,7 @@
 import os
 
 from j2lint.utils import get_file_type
+from j2lint.logger import logger
 
 
 class Runner:
@@ -21,6 +22,7 @@ class Runner:
         """Run the linting rules collection against all the files"""
         files = []
         for index, file in enumerate(self.files):
+            logger.debug("Running linting rules for {}".format(file))
             file_path = file[0]
             file_type = file[1]
             file_dict = {'path': file_path, 'type': file_type}
@@ -39,4 +41,5 @@ class Runner:
         # Update list of checked files
         self.checked_files.update([file_dict['path'] for file_dict in files])
 
+        logger.info("Linting errors found {}".format(errors))
         return errors

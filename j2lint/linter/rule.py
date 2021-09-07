@@ -2,6 +2,7 @@ import re
 
 from j2lint.utils import is_valid_file_type, LANGUAGE_JINJA
 from j2lint.linter.error import LinterError
+from j2lint.logger import logger
 
 
 class Rule:
@@ -24,9 +25,13 @@ class Rule:
         errors = []
 
         if not self.match:
+            logger.debug("Match line rule does not exist for {}".format(
+                __class__.__name__))
             return errors
 
         if not self.is_valid_language(file):
+            logger.debug(
+                "Skipping file {}. Linter does not support linting this file type".format(file))
             return errors
 
         for (index, line) in enumerate(text.split("\n")):
@@ -43,9 +48,13 @@ class Rule:
         errors = []
 
         if not self.matchtext:
+            logger.debug("Match text rule does not exist for {}".format(
+                __class__.__name__))
             return errors
 
         if not self.is_valid_language(file):
+            logger.debug(
+                "Skipping file {}. Linter does not support linting this file type".format(file))
             return errors
 
         results = self.matchtext(file, text)

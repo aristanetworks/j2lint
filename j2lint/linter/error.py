@@ -1,4 +1,5 @@
 from j2lint.settings import settings
+from j2lint.logger import logger
 
 
 class LinterError:
@@ -11,11 +12,13 @@ class LinterError:
 
     def __repr__(self, verbose=False):
         if not settings.verbose:
-            formatstr = u"{2}:{3} {5}: {3}"
+            formatstr = u"{2}:{3} {5}: ({6})"
         else:
-            formatstr = u"Rule: {0}\nRule Description: {1}\nLinter Error found in: {2}:{3} {4}\nError message: {5}\n"
-        return formatstr.format(self.rule.id, self.rule.description,
-                                self.filename, self.linenumber, self.line, self.message)
+            formatstr = u"Linting rule: {0}\nRule description: {1}\nError line: {2}:{3} {4}\nError message: {5}\n"
+        error = formatstr.format(self.rule.id, self.rule.description,
+                                 self.filename, self.linenumber, self.line, self.message, self.rule.short_description)
+        logger.error(error)
+        return error
 
 
 class JinjaBadIndentationError(Exception):

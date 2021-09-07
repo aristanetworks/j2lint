@@ -2,11 +2,12 @@ import sys
 import errno
 import os
 import argparse
+import logging
 
 from j2lint import NAME, VERSION, DESCRIPTION
 from j2lint.linter.collection import RulesCollection
 from j2lint.linter.runner import Runner
-from j2lint.utils import get_jinja_files
+from j2lint.utils import get_files
 from j2lint.logger import logger
 from j2lint.settings import settings
 
@@ -27,7 +28,9 @@ def init_argument_parser():
     parser.add_argument('-r', '--rules_dir', dest='rules_dir', action='append',
                         default=[RULES_DIR], help='rules directory')
     parser.add_argument('-v', '--verbose', default=False,
-                        action='store_true', help='verbose mode')
+                        action='store_true', help='verbose output for lint issues')
+    parser.add_argument('-d', '--debug', default=False,
+                        action='store_true', help='enable debug logs')
     return parser
 
 
@@ -48,10 +51,16 @@ def run(args=None):
     parser = init_argument_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
+    # Enable debug logs
+    if options.debug:
+        logger.setLevel(logging.DEBUG)
+
+    logger.debug("Lint options selected {}".format(options))
+
     file_or_dir_names = set(options.files)
     checked_files = set()
 
-    # Show a help message
+    # Print help message
     if not file_or_dir_names:
         parser.print_help(file=sys.stderr)
         return 1
@@ -61,15 +70,18 @@ def run(args=None):
     for rulesdir in options.rules_dir:
         collection.extend(RulesCollection.create_from_directory(rulesdir))
 
-    # List rules
+    # List lint rules
     if options.list:
-        print("Jinja2 lint rules\n{}\n".format(collection))
+        rules = "Jinja2 lint rules\n{}\n".format(collection)
+        print(rules)
+        logger.debug(rules)
 
     if options.verbose:
         settings.verbose = True
+        logger.debug("Verbose mode enabled")
 
     lint_issues = []
-    files = get_jinja_files(file_or_dir_names)
+    files = get_files(file_or_dir_names)
 
     # Get linting issues
     for file_name in files:

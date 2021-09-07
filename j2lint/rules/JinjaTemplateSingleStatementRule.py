@@ -5,6 +5,7 @@ from j2lint.linter.rule import Rule
 
 class JinjaTemplateSingleStatementRule(Rule):
     id = 'SYNTAX-3-4'
+    short_description = 'single-statement-per-line'
     description = "Jinja statements should be on separate lines"
     severity = 'HIGH'
 

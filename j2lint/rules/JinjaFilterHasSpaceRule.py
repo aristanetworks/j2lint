@@ -4,6 +4,7 @@ from j2lint.linter.rule import Rule
 
 class JinjaFilterHasSpaceRule(Rule):
     id = 'SYNTAX-2'
+    short_description = 'jinja-filter-single-space'
     description = "When variables are used in combination with a filter, | shall be enclosed by space: '{{ my_value | to_json }}'"
     severity = 'LOW'
 
