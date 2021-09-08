@@ -78,7 +78,6 @@ def run(args=None):
         parser.print_help(file=sys.stderr)
         return 1
 
-    print(options.ignore)
     # Print verbose output for linting
     if options.verbose:
         settings.verbose = True
