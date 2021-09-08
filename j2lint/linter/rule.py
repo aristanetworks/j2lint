@@ -10,6 +10,7 @@ class Rule:
     description = None
     match = None
     matchtext = None
+    ignore = False
 
     def __repr__(self):
         return self.id + ": " + self.description

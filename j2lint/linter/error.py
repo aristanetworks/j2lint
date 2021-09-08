@@ -12,7 +12,7 @@ class LinterError:
 
     def __repr__(self, verbose=False):
         if not settings.verbose:
-            formatstr = u"{2}:{3} {5}: ({6})"
+            formatstr = u"{2}:{3} {5} ({6})"
         else:
             formatstr = u"Linting rule: {0}\nRule description: {1}\nError line: {2}:{3} {4}\nError message: {5}\n"
         error = formatstr.format(self.rule.id, self.rule.description,

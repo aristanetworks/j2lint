@@ -34,6 +34,11 @@ class RulesCollection:
             return matches
 
         for rule in self.rules:
+            if rule.ignore:
+                logger.debug("Ignoring rule {} for file {}".format(
+                    rule.short_description, file_dict['path']))
+                continue
+
             logger.debug("Running linting rule {} on file {}".format(
                 rule, file_dict['path']))
             errors.extend(rule.matchlines(file_dict, text))
@@ -46,10 +51,13 @@ class RulesCollection:
                           for rule in sorted(self.rules, key=lambda x: x.id)])
 
     @classmethod
-    def create_from_directory(clazz, rulesdir):
+    def create_from_directory(clazz, rulesdir, ignore_rules):
         """Creates a collection from all rule modules"""
         result = clazz()
         result.rules = load_plugins(os.path.expanduser(rulesdir))
+        for rule in result.rules:
+            if rule.short_description in ignore_rules:
+                rule.ignore = True
         logger.info(
             "Created collection from rules directory {}".format(rulesdir))
         return result

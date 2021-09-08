@@ -12,7 +12,7 @@ from j2lint.logger import logger
 from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
-IGNORE_RULES = ['indent']
+IGNORE_RULES = ['bad-indent', 'syntax-error']
 
 
 def init_argument_parser():
@@ -22,7 +22,7 @@ def init_argument_parser():
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],
                         help='files or directories to lint')
     parser.add_argument('-i', '--ignore', nargs='*',
-                        choices=IGNORE_RULES, help='rules to ignore')
+                        choices=IGNORE_RULES, default=[], help='rules to ignore')
     parser.add_argument('-l', '--list', default=False,
                         action='store_true', help='list of lint rules')
     parser.add_argument('-r', '--rules_dir', dest='rules_dir', action='append',
@@ -60,40 +60,49 @@ def run(args=None):
     file_or_dir_names = set(options.files)
     checked_files = set()
 
-    # Print help message
-    if not file_or_dir_names:
-        parser.print_help(file=sys.stderr)
-        return 1
-
     # Collect the rules from the configuration
     collection = RulesCollection(options.verbose)
     for rulesdir in options.rules_dir:
-        collection.extend(RulesCollection.create_from_directory(rulesdir))
+        collection.extend(RulesCollection.create_from_directory(
+            rulesdir, options.ignore))
 
     # List lint rules
     if options.list:
         rules = "Jinja2 lint rules\n{}\n".format(collection)
         print(rules)
         logger.debug(rules)
+        return 0
 
+    # Print help message
+    if not file_or_dir_names:
+        parser.print_help(file=sys.stderr)
+        return 1
+
+    print(options.ignore)
+    # Print verbose output for linting
     if options.verbose:
         settings.verbose = True
         logger.debug("Verbose mode enabled")
 
-    lint_issues = []
+    lint_issues = {}
     files = get_files(file_or_dir_names)
 
     # Get linting issues
     for file_name in files:
         runner = Runner(collection, file_name, checked_files)
-        lint_issues.extend(runner.run())
+        if file_name not in lint_issues:
+            lint_issues[file_name] = []
+        lint_issues[file_name].extend(runner.run())
 
     # Sort and print linting issues
     if lint_issues:
         print("Jinja2 linting issues found:")
-        sorted_issues = sort_issues(lint_issues)
-        for issue in sorted_issues:
-            print(issue)
+        for key, issues in lint_issues.items():
+            if len(issues):
+                print("************ File {}".format(key))
+                sorted_issues = sort_issues(issues)
+                for issue in sorted_issues:
+                    print(issue)
         return 2
 
     print("Linting complete. No problems found.")

@@ -56,7 +56,7 @@ def get_files(file_or_dir_names):
                     if get_file_type(file_path) == LANGUAGE_JINJA:
                         file_paths.append(file_path)
         else:
-            if get_file_type(file_path) == LANGUAGE_JINJA:
+            if get_file_type(file_or_dir) == LANGUAGE_JINJA:
                 file_paths.append(file_or_dir)
     logger.debug("Linting directory {}: files {}".format(
         file_or_dir_names, file_paths))
