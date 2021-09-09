@@ -1,3 +1,5 @@
+"""__main__.py - A command-line utility that checks for best practices in Jinja2.
+"""
 #!/usr/bin/python
 import sys
 import traceback

@@ -1,3 +1,5 @@
+"""utils.py - Utility functions for jinja2 linter.
+"""
 import glob
 import importlib.util
 import os
@@ -9,7 +11,14 @@ LANGUAGE_JINJA = "jinja"
 
 
 def load_plugins(directory):
-    """ Loads and executes all the Rule modules from the specified directory """
+    """Loads and executes all the Rule modules from the specified directory
+
+    Args:
+        directory (string): Loads the modules a directory
+
+    Returns:
+        list: List of rule classes
+    """
     result = []
     file_handle = None
 
@@ -30,7 +39,14 @@ def load_plugins(directory):
 
 
 def is_valid_file_type(file_name):
-    """ Checks if the file is a valid Jinja file """
+    """Checks if the file is a valid Jinja file
+
+    Args:
+        file_name (string): file path with extension
+
+    Returns:
+        boolean: True if file type is correct
+    """
     extension = os.path.splitext(file_name)[1].lower()
     if extension in [".jinja", ".jinja2", ".j2"]:
         return True
@@ -38,14 +54,28 @@ def is_valid_file_type(file_name):
 
 
 def get_file_type(file_name):
-    """ Returns file type as Jinja or None """
+    """Returns file type as Jinja or None
+
+    Args:
+        file_name (string): file path with extension
+
+    Returns:
+        string: jinja or None
+    """
     if is_valid_file_type(file_name):
         return LANGUAGE_JINJA
     return None
 
 
 def get_files(file_or_dir_names):
-    """Get files from a directory """
+    """Get files from a directory recursively
+
+    Args:
+        file_or_dir_names (list): list of directories and files
+
+    Returns:
+        list: list of file paths
+    """
     file_paths = []
 
     for file_or_dir in file_or_dir_names:
@@ -64,8 +94,13 @@ def get_files(file_or_dir_names):
 
 
 def flatten(l):
-    """
-    Deeply flattens an iterable.
+    """Flattens an iterable
+
+    Args:
+        l (list): Nested list
+
+    Yields:
+        list: flattened list
     """
     for el in l:
         if (isinstance(el, collections.Iterable) and
@@ -76,6 +111,15 @@ def flatten(l):
 
 
 def get_tuple(l, item):
+    """Checks if an item is present in any of the tuples
+
+    Args:
+        l (list): list of tuples
+        item (object): single object which can be in a tuple
+
+    Returns:
+        [tuple]: tuple if the item exists in any of the tuples
+    """
     for entry in l:
         if item in entry:
             return entry
@@ -83,6 +127,14 @@ def get_tuple(l, item):
 
 
 def get_jinja_statements(text):
+    """Gets jinja statements with {%[-/+] [-]%} delimeters
+
+    Args:
+        text (string): multiline text to search the jinja statements in
+
+    Returns:
+        [list]: list of jinja statements
+    """
     statements = []
     count = 0
     regex_pattern = re.compile("\\{%[-|+]?((.|\n)*?)[-]?\\%}", re.MULTILINE)
@@ -97,4 +149,12 @@ def get_jinja_statements(text):
 
 
 def delimit_jinja_statement(line):
+    """Add end delimeters for the jinja statement
+
+    Args:
+        line (string): text line
+
+    Returns:
+        [string]: jinja statement with jinja start and end delimeters
+    """
     return "{%" + line + "%}"

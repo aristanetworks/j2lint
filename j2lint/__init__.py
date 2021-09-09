@@ -1,6 +1,5 @@
-"""A command-line utility that checks for best practices in Jinja2.
+"""__init__.py - A command-line utility that checks for best practices in Jinja2.
 """
-
 NAME = 'j2lint'
 VERSION = '0.1'
 DESCRIPTION = __doc__

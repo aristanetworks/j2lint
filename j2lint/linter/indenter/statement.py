@@ -1,3 +1,5 @@
+"""statement.py - Class and variables for jinja statements.
+"""
 import re
 JINJA_STATEMENT_TAG_NAMES = [
     ('for', 'else', 'endfor'),
@@ -8,6 +10,8 @@ JINJA_INTERMEDIATE_TAG_NAMES = ["set", "include", "do", "break"]
 
 
 class JinjaStatement:
+    """Class for representing a jinja statement.
+    """
     begin = None
     words = []
 

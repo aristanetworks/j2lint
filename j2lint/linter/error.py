@@ -1,8 +1,13 @@
+"""error.py - Error classes to format the lint errors.
+"""
 from j2lint.settings import settings
 from j2lint.logger import logger
 
 
 class LinterError:
+    """Class for lint errors.
+    """
+
     def __init__(self, linenumber, line, filename, rule, message=None):
         self.linenumber = linenumber
         self.line = line

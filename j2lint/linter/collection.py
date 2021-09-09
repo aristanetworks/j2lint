@@ -1,3 +1,5 @@
+"""collection.py - Class to create a collection of linting rules.
+"""
 from collections import defaultdict
 import os
 import sys
@@ -7,6 +9,9 @@ from j2lint.logger import logger
 
 
 class RulesCollection:
+    """RulesCollection class which checks the linting rules against a file.
+    """
+
     def __init__(self, verbose=False):
         self.rules = []
         self.verbose = verbose
@@ -18,10 +23,22 @@ class RulesCollection:
         return len(self.rules)
 
     def extend(self, more):
+        """Extends list of rules
+
+        Args:
+            more (list): list of rules classes
+        """
         self.rules.extend(more)
 
     def run(self, file_dict):
-        """Run the linting rule checks for the specified file"""
+        """Runs the linting rules for given file
+
+        Args:
+            file_dict (dict): file path and file type
+
+        Returns:
+            list: list of linting errors found
+        """
         text = ""
         errors = []
 
@@ -31,7 +48,7 @@ class RulesCollection:
         except IOError as e:
             print("WARNING: Couldn't open %s - %s" %
                   (file_dict['path'], e.strerror), file=sys.stderr)
-            return matches
+            return errors
 
         for rule in self.rules:
             if rule.ignore:
@@ -41,8 +58,8 @@ class RulesCollection:
 
             logger.debug("Running linting rule {} on file {}".format(
                 rule, file_dict['path']))
-            errors.extend(rule.matchlines(file_dict, text))
-            errors.extend(rule.matchfulltext(file_dict, text))
+            errors.extend(rule.checklines(file_dict, text))
+            errors.extend(rule.checkfulltext(file_dict, text))
 
         return errors
 
@@ -51,13 +68,22 @@ class RulesCollection:
                           for rule in sorted(self.rules, key=lambda x: x.id)])
 
     @classmethod
-    def create_from_directory(clazz, rulesdir, ignore_rules):
-        """Creates a collection from all rule modules"""
+    def create_from_directory(clazz, rules_dir, ignore_rules):
+        """Creates a collection from all rule modules
+
+        Args:
+            clazz (Object): object of a rule class
+            rules_dir (string): rules directory
+            ignore_rules (list): list of rule descriptions to ignore
+
+        Returns:
+            list: a collection of rule objects
+        """
         result = clazz()
-        result.rules = load_plugins(os.path.expanduser(rulesdir))
+        result.rules = load_plugins(os.path.expanduser(rules_dir))
         for rule in result.rules:
             if rule.short_description in ignore_rules:
                 rule.ignore = True
         logger.info(
-            "Created collection from rules directory {}".format(rulesdir))
+            "Created collection from rules directory {}".format(rules_dir))
         return result

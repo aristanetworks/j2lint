@@ -1,3 +1,6 @@
+"""rule.py - Base class for all the lint rules with functions for mathching
+             line and text based rule.
+"""
 import re
 
 from j2lint.utils import is_valid_file_type, LANGUAGE_JINJA
@@ -6,27 +9,46 @@ from j2lint.logger import logger
 
 
 class Rule:
+    """Rule class which acts as a base class for rules with regex match
+       functions.
+    """
     id = None
     description = None
-    match = None
-    matchtext = None
+    check = None
+    checktext = None
     ignore = False
 
     def __repr__(self):
         return self.id + ": " + self.description
 
     def is_valid_language(self, file):
-        """Check if the file has the expected language"""
+        """Check if the file is a valid Jinja file
+
+        Args:
+            file (string): file path
+
+        Returns:
+            boolean: True if file extension is correct
+        """
+
         if is_valid_file_type(file["path"]):
             return True
         return False
 
-    def matchlines(self, file, text):
-        """Check each line in the given file to check if the current rule matches"""
+    def checklines(self, file, text):
+        """Checks each line of file against the error regex
+
+        Args:
+            file (string): file path of the file to be checked
+            text (string): file text of the same file
+
+        Returns:
+            list: list of issues in the given file
+        """
         errors = []
 
-        if not self.match:
-            logger.debug("Match line rule does not exist for {}".format(
+        if not self.check:
+            logger.debug("Check line rule does not exist for {}".format(
                 __class__.__name__))
             return errors
 
@@ -39,17 +61,26 @@ class Rule:
             if line.lstrip().startswith('#'):
                 continue
 
-            result = self.match(file, line)
+            result = self.check(file, line)
             if not result:
                 continue
             errors.append(LinterError(index+1, line, file['path'], self))
         return errors
 
-    def matchfulltext(self, file, text):
+    def checkfulltext(self, file, text):
+        """Checks the entire file text against a lint rule
+
+        Args:
+            file (string): file path of the file to be checked
+            text (string): file text of the same file
+
+        Returns:
+            list: list of issues in the given file
+        """
         errors = []
 
-        if not self.matchtext:
-            logger.debug("Match text rule does not exist for {}".format(
+        if not self.checktext:
+            logger.debug("Check text rule does not exist for {}".format(
                 __class__.__name__))
             return errors
 
@@ -58,7 +89,7 @@ class Rule:
                 "Skipping file {}. Linter does not support linting this file type".format(file))
             return errors
 
-        results = self.matchtext(file, text)
+        results = self.checktext(file, text)
 
         for line, section, message in results:
             errors.append(LinterError(

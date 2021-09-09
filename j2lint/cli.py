@@ -1,3 +1,5 @@
+"""cli.py - Command line argument parser.
+"""
 import sys
 import errno
 import os
@@ -15,8 +17,12 @@ RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
 IGNORE_RULES = ['bad-indent', 'syntax-error']
 
 
-def init_argument_parser():
-    """Returns a new initialized argument parser."""
+def create_parser():
+    """Initializes a new argument parser object
+
+    Returns:
+        Object: Argument parser object
+    """
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],
@@ -35,7 +41,14 @@ def init_argument_parser():
 
 
 def sort_issues(issues):
-    """Returns the sorted list of issues."""
+    """Sorted list of issues
+
+    Args:
+        issues (list): list of issue dictionaries
+
+    Returns:
+        list: list of sorted issue dictionaries
+    """
     issues.sort(
         key=lambda issue: (
             issue.filename,
@@ -47,8 +60,15 @@ def sort_issues(issues):
 
 
 def run(args=None):
-    """Run the linter and return the exit code"""
-    parser = init_argument_parser()
+    """Runs jinja2 linter
+
+    Args:
+        args ([string], optional): Command line arguments. Defaults to None.
+
+    Returns:
+        int: 0 on success
+    """
+    parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
     # Enable debug logs
