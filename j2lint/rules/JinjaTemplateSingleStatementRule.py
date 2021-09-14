@@ -5,7 +5,7 @@
 import re
 import jinja2
 from j2lint.linter.rule import Rule
-
+from j2lint.utils import get_jinja_statements
 
 class JinjaTemplateSingleStatementRule(Rule):
     """Rule class to check if only a single jinja statement is present on each
@@ -15,8 +15,6 @@ class JinjaTemplateSingleStatementRule(Rule):
     short_description = 'single-statement-per-line'
     description = "Jinja statements should be on separate lines"
     severity = 'HIGH'
-
-    regex = re.compile(r"{%")
 
     def check(self, file, line):
         """Checks if the given line matches the error regex
@@ -28,6 +26,6 @@ class JinjaTemplateSingleStatementRule(Rule):
         Returns:
             Object: Returns True if error is found else False
         """
-        if len(self.regex.findall(line)) > 1:
+        if len(get_jinja_statements(line)) > 1:
             return True
         return False
