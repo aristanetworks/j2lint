@@ -114,15 +114,19 @@ def run(args=None):
         lint_issues[file_name].extend(runner.run())
 
     # Sort and print linting issues
+    found_issues = False
     if lint_issues:
-        print("Jinja2 linting issues found:")
         for key, issues in lint_issues.items():
             if len(issues):
+                if not found_issues:
+                    found_issues = True
+                    print("Jinja2 linting issues found")
                 print("************ File {}".format(key))
                 sorted_issues = sort_issues(issues)
                 for issue in sorted_issues:
                     print(issue)
-        return 2
+        if found_issues:
+            return 2
 
     print("Linting complete. No problems found.")
     return 0

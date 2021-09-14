@@ -13,7 +13,8 @@ class JinjaFilterHasSpaceRule(Rule):
     description = "When variables are used in combination with a filter, | shall be enclosed by space: '{{ my_value | to_json }}'"
     severity = 'LOW'
 
-    regex = re.compile(r"([^ ]\|)|(\|[^ ])|([^ ] \s+\|)|(\| \s+[^ ])")
+    regex = re.compile(
+        r"({{(.*?)([^ |^}]\|)(.*?)}})|({{(.*?)(\|[^ |^{])(.*?)}})|({{(.*?)([^ |^}] \s+\|)(.*?)}})|({{(.*?)(\| \s+[^ |^{])(.*?)}})")
 
     def check(self, file, line):
         """Checks if the given line matches the error regex

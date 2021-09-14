@@ -27,7 +27,7 @@ class JinjaTemplateSyntaxErrorRule(Rule):
         result = []
 
         env = jinja2.Environment(
-               extensions=['jinja2.ext.do', 'jinja2.ext.loopcontrols'])
+            extensions=['jinja2.ext.do', 'jinja2.ext.loopcontrols'])
         with open(file['path']) as template:
             try:
                 # Try to read the contents of the file as jinja2
@@ -35,5 +35,5 @@ class JinjaTemplateSyntaxErrorRule(Rule):
                 env.parse(block)
             except jinja2.TemplateSyntaxError as e:
                 result.append((e.lineno, text.split(
-                        "\n")[e.lineno - 1], e.message))
+                    "\n")[e.lineno - 1], e.message))
         return result

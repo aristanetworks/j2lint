@@ -58,7 +58,9 @@ class Node:
             tuple: tuple representing the indentation error
         """
         return (node.statement.start_line_no,
-                delimit_jinja_statement(node.statement.line),
+                delimit_jinja_statement(node.statement.line,
+                                        node.statement.start_delimeter,
+                                        node.statement.end_delimeter),
                 message)
 
     def check_indent_level(self, result, node):
@@ -69,7 +71,10 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        expected = node.expected_indent + DEFAULT_WHITESPACES
+        if node.statement.start_delimeter == '{%-' or node.statement.start_delimeter == "{%+":
+            expected = node.expected_indent
+        else:
+            expected = node.expected_indent + DEFAULT_WHITESPACES
         if actual != expected:
             message = "Bad Indentation, expected %d, got %d" % (
                 expected, actual)

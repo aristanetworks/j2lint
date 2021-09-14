@@ -137,18 +137,20 @@ def get_jinja_statements(text):
     """
     statements = []
     count = 0
-    regex_pattern = re.compile("\\{%[-|+]?((.|\n)*?)[-]?\\%}", re.MULTILINE)
+    regex_pattern = re.compile(
+        "(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
     newline_pattern = re.compile(r'\n')
     for m in regex_pattern.finditer(text):
         count += 1
-        start_line = len(newline_pattern.findall(text, 0, m.start(1)))+1
-        end_line = len(newline_pattern.findall(text, 0, m.end(1)))+1
-        statements.append((m.group(1), start_line, end_line))
+        start_line = len(newline_pattern.findall(text, 0, m.start(2)))+1
+        end_line = len(newline_pattern.findall(text, 0, m.end(2)))+1
+        statements.append(
+            (m.group(2), start_line, end_line, m.group(1), m.group(4)))
     logger.debug("Found jinja statements {}".format(statements))
     return statements
 
 
-def delimit_jinja_statement(line):
+def delimit_jinja_statement(line, start="{%", end="%}"):
     """Add end delimeters for the jinja statement
 
     Args:
@@ -157,4 +159,4 @@ def delimit_jinja_statement(line):
     Returns:
         [string]: jinja statement with jinja start and end delimeters
     """
-    return "{%" + line + "%}"
+    return start + line + end
