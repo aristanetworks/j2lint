@@ -9,7 +9,7 @@ from j2lint.linter.rule import Rule
 class JinjaTemplateSyntaxErrorRule(Rule):
     """Rule class to check that file does not have jinja syntax errors.
     """
-    id = 'SYNTAX-0'
+    id = 'S0'
     short_description = 'syntax-error'
     description = "Jinja syntax should be correct"
     severity = 'HIGH'

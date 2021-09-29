@@ -11,7 +11,7 @@ class JinjaTemplateSingleStatementRule(Rule):
     """Rule class to check if only a single jinja statement is present on each
        line.
     """
-    id = 'SYNTAX-3-4'
+    id = 'S7'
     short_description = 'single-statement-per-line'
     description = "Jinja statements should be on separate lines"
     severity = 'HIGH'
