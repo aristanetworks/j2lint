@@ -4,7 +4,7 @@ from collections import defaultdict
 import os
 import sys
 
-from j2lint.utils import load_plugins
+from j2lint.utils import load_plugins, is_rule_disabled
 from j2lint.logger import logger
 
 
@@ -55,7 +55,10 @@ class RulesCollection:
                 logger.debug("Ignoring rule {} for file {}".format(
                     rule.short_description, file_dict['path']))
                 continue
-
+            if is_rule_disabled(text, rule):
+                logger.debug("Skipping linting rule {} on file {}".format(
+                    rule, file_dict['path']))
+                continue
             logger.debug("Running linting rule {} on file {}".format(
                 rule, file_dict['path']))
             errors.extend(rule.checklines(file_dict, text))
