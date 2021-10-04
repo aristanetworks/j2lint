@@ -125,7 +125,7 @@ class Node:
                         self.check_indent_level(result, node)
                         return line_no
                     raise JinjaLinterError(
-                        "Tag is out of order {}".format(node.tag))
+                        "Tag is out of order '{}'".format(node.tag))
             elif node.tag in MIDDLE_TAGS:
                 begin_tag_tuple = get_tuple(
                     JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag)
@@ -145,11 +145,11 @@ class Node:
                     return line_no
                 else:
                     raise JinjaLinterError(
-                        "Unsupported tag %s found" % (node.tag))
+                        "Unsupported tag '%s' found" % (node.tag))
             elif node.tag in JINJA_INTERMEDIATE_TAG_NAMES:
                 self.children.append(node)
                 line_no = line_no + 1
                 self.check_indent_level(result, node)
                 continue
             else:
-                raise JinjaLinterError("Unsupported tag %s found" % (node.tag))
+                raise JinjaLinterError("Unsupported tag '%s' found" % (node.tag))
