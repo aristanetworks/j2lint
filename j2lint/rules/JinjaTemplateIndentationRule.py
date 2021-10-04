@@ -37,7 +37,11 @@ class JinjaTemplateIndentationRule(Rule):
 
             # Build a tree out of Jinja Statements to get the expected indentation level for each statement
             root = Node()
-            root.check_indentation(errors, lines, 0)
+            try:
+                root.check_indentation(errors, lines, 0)
+            except Exception as e:
+                print("Indentation check failed for file %s: Error: %s" %
+                      (file['path'], str(e)))
             for error in errors:
                 result.append((error[0], error[1], error[2]))
 
