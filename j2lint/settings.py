@@ -7,6 +7,7 @@ class Settings:
     """
     verbose = False
     log_level = "info"
+    output = "text"
 
 
 settings = Settings()

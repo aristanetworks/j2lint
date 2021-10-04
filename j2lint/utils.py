@@ -175,4 +175,6 @@ def is_rule_disabled(text, rule):
         for line in regex.finditer(comment):
             if rule.short_description == line.group(1):
                 return True
+            if rule.id == line.group(1):
+                return True
     return False

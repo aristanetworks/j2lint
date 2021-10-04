@@ -14,7 +14,16 @@ from j2lint.logger import logger
 from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
-IGNORE_RULES = ['bad-indent', 'syntax-error']
+IGNORE_RULES = ['syntax-error',
+                'single-space-decorator',
+                'filter-enclosed-by-spaces',
+                'jinja-statement-single-space',
+                'jinja-statements-indentation',
+                'no-tabs',
+                'single-statement-per-line',
+                'jinja-delimeter',
+                'jinja-variable-lower-case',
+                'jinja-variable-format']
 
 
 def create_parser():
@@ -37,6 +46,8 @@ def create_parser():
                         action='store_true', help='verbose output for lint issues')
     parser.add_argument('-d', '--debug', default=False,
                         action='store_true', help='enable debug logs')
+    parser.add_argument('-j', '--json', default=False,
+                        action='store_true', help='enable JSON output')
     return parser
 
 
@@ -102,6 +113,10 @@ def run(args=None):
     if options.verbose:
         settings.verbose = True
         logger.debug("Verbose mode enabled")
+
+    if options.json:
+        settings.output = "json"
+        logger.debug("JSON output enabled")
 
     lint_issues = {}
     files = get_files(file_or_dir_names)
