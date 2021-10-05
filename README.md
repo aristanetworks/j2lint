@@ -45,49 +45,50 @@ source myenv/bin/activate
 
 ```
 
-2. Install pip and jinja2
+2. Install pip, jinja2 and jinja2-linter
 ```
 sudo apt-get install python3-pip
 pip3 install jinja2
+cd jinja2-linter
+python setup.py install
 ```
 
 ## Running the linter
 
 ```
-cd jinja2-linter
-python -m j2lint <path-to-directory-of-templates>
+j2lint <path-to-directory-of-templates>
 ```
 
 ### Running the linter on a specific file
 ```
-python -m j2lint <path-to-directory-of-templates>/template.j2
+j2lint <path-to-directory-of-templates>/template.j2
 ```
 
 ### Listing linting rules
 ```
-python -m j2lint --list
+j2lint --list
 ```
 
 ### Running the linter with verbose linter error output
 ```
-python -m j2lint <path-to-directory-of-templates> --verbose
+j2lint <path-to-directory-of-templates> --verbose
 ```
 
 ### Running the linter with debug logs enabled. Logs saved in jinja2-linter.log in the current directory
 ```
-python -m j2lint <path-to-directory-of-templates> --debug
+j2lint <path-to-directory-of-templates> --debug
 ```
 
 ### Running the linter with JSON format for linter error output
 ```
-python -m j2lint <path-to-directory-of-templates> --json
+j2lint <path-to-directory-of-templates> --json
 ```
 
 ### Ignoring rules
 1. The --ignore option can have one or more of these values: syntax-error, single-space-decorator, filter-enclosed-by-spaces, jinja-statement-single-space, jinja-statements-indentation, no-tabs, single-statement-per-line, jinja-delimeter, jinja-variable-lower-case, jinja-variable-format.
 2. If multiple rules are to be ignored, use the --ignore option along with rule descriptions separated by space.
 ```
-python -m j2lint <path-to-directory-of-templates> --ignore <rule_description1> <rule_desc>
+j2lint <path-to-directory-of-templates> --ignore <rule_description1> <rule_desc>
 ```
 3. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
 ```
@@ -106,11 +107,11 @@ OR
 2. Add custom rule classes which are similar to classes in j2lint/rules directory.
 3. Run the jinja2 linter using --rules-dir option
 ```
-python -m j2lint <path-to-directory-of-templates> --rules_dir <custom-rules-directory>
+j2lint <path-to-directory-of-templates> --rules_dir <custom-rules-directory>
 ```
 Note: This runs the custom linting rules in addition to the default linting rules.
 
 ### Running jinja2 linter help command
 ```
-python -m j2lint --help
+j2lint --help
 ```

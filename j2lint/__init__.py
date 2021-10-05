@@ -5,5 +5,5 @@ VERSION = '0.1'
 DESCRIPTION = __doc__
 
 __author__ = "Arista Networks"
-__license__ = "Apache"
+__license__ = "MIT"
 __version__ = VERSION
