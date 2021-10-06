@@ -12,9 +12,10 @@ MIDDLE_TAGS = list(flatten([[i[1:-1] for i in JINJA_STATEMENT_TAG_NAMES]]))
 
 INDENT_SHIFT = 4
 DEFAULT_WHITESPACES = 1
+BLOCK_START_INDENT = 0
 
 jinja_node_stack = []
-
+jinja_delimeter_stack = []
 
 class Node:
     """Node class which represents a jinja file as a tree
@@ -71,10 +72,17 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        if node.statement.start_delimeter == '{%-' or node.statement.start_delimeter == "{%+":
-            expected = node.expected_indent
+        if len(jinja_node_stack) and jinja_node_stack[0].statement.start_delimeter in ['{%-', '{%+']:
+            BLOCK_START_INDENT = 1
+        elif node.expected_indent == 0 and node.statement.start_delimeter in ['{%-', '{%+']:
+            BLOCK_START_INDENT = 1
         else:
-            expected = node.expected_indent + DEFAULT_WHITESPACES
+            BLOCK_START_INDENT = 0
+
+        if node.statement.start_delimeter in ['{%-', '{%+']:
+            expected = node.expected_indent + BLOCK_START_INDENT
+        else:
+            expected = node.expected_indent + DEFAULT_WHITESPACES + BLOCK_START_INDENT
         if actual != expected:
             message = "Bad Indentation, expected %d, got %d" % (
                 expected, actual)
@@ -112,10 +120,10 @@ class Node:
                 continue
             elif node.tag in END_TAGS:
                 if ('end' + jinja_node_stack[-1].tag) == node.tag:
-                    if jinja_node_stack[-1] != self:
+                    if len(jinja_node_stack) and jinja_node_stack[-1] != self:
                         del node
                         return line_no
-                    matchnode = jinja_node_stack.pop()
+                    matchnode = jinja_node_stack[-1]
                     matchnode.node_end = line_no
                     node.node_end = line_no
                     node.expected_indent = matchnode.expected_indent
@@ -123,6 +131,7 @@ class Node:
                     if matchnode == self:
                         line_no = line_no + 1
                         self.check_indent_level(result, node)
+                        jinja_node_stack.pop()
                         return line_no
                     raise JinjaLinterError(
                         "Tag is out of order '{}'".format(node.tag))
@@ -142,7 +151,7 @@ class Node:
                     line_no = node.check_indentation(
                         result, lines, line_no + 1, indent_level + INDENT_SHIFT)
                     self.check_indent_level(result, node)
-                    return line_no
+                    continue
                 else:
                     raise JinjaLinterError(
                         "Unsupported tag '%s' found" % (node.tag))
