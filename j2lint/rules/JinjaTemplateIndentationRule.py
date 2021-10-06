@@ -11,7 +11,7 @@ from j2lint.utils import get_jinja_statements
 class JinjaTemplateIndentationRule(Rule):
     """Rule class to check the jinja statement indentation is correct.
     """
-    id = 'S3-2'
+    id = 'S3'
     short_description = 'jinja-statements-indentation'
     description = "All J2 statements must be indented by 4 more spaces within jinja delimiter. To close a control, end tag must have same indentation level."
     severity = 'HIGH'

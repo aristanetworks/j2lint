@@ -14,7 +14,7 @@ from j2lint.logger import logger
 from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
-IGNORE_RULES = ['syntax-error',
+IGNORE_RULES = ['jinja-syntax-error',
                 'single-space-decorator',
                 'filter-enclosed-by-spaces',
                 'jinja-statement-single-space',

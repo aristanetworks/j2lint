@@ -9,7 +9,7 @@ from j2lint.linter.rule import Rule
 class JinjaTemplateNoTabsRule(Rule):
     """Rule class to check the file does not use tabs for indentation.
     """
-    id = 'S3-3'
+    id = 'S5'
     short_description = 'no-tabs'
     description = "Indentation are 4 spaces and NOT tabulation"
     severity = 'LOW'

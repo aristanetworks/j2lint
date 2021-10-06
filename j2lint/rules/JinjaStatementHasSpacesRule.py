@@ -10,7 +10,7 @@ class JinjaStatementHasSpacesRule(Rule):
     """Rule class to check if jinja statement has atleast a single space
        surrounding the delimeter.
     """
-    id = 'S3-1'
+    id = 'S4'
     short_description = 'jinja-statement-single-space'
     description = "Jinja statement should have a single space before and after: '{% statement %}'"
     severity = 'LOW'
