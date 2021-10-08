@@ -5,6 +5,7 @@ import errno
 import os
 import argparse
 import logging
+import tempfile
 
 from j2lint import NAME, VERSION, DESCRIPTION
 from j2lint.linter.collection import RulesCollection
@@ -48,6 +49,8 @@ def create_parser():
                         action='store_true', help='enable debug logs')
     parser.add_argument('-j', '--json', default=False,
                         action='store_true', help='enable JSON output')
+    parser.add_argument('-s', '--stdin', default=False,
+                        action='store_true', help='accept template from STDIN')
     return parser
 
 
@@ -88,8 +91,15 @@ def run(args=None):
 
     logger.debug("Lint options selected {}".format(options))
 
+    stdin_filename = None
     file_or_dir_names = set(options.files)
     checked_files = set()
+
+    if options.stdin and not sys.stdin.isatty():
+        with tempfile.NamedTemporaryFile('w', suffix='.j2', delete=False) as stdin_tmpfile:
+            stdin_tmpfile.write(sys.stdin.read())
+            stdin_filename = stdin_tmpfile.name
+            file_or_dir_names.add(stdin_filename)
 
     # Collect the rules from the configuration
     collection = RulesCollection(options.verbose)
@@ -127,6 +137,10 @@ def run(args=None):
         if file_name not in lint_issues:
             lint_issues[file_name] = []
         lint_issues[file_name].extend(runner.run())
+
+    # Remove temporary file
+    if stdin_filename:
+        os.unlink(stdin_filename)
 
     # Sort and print linting issues
     found_issues = False
