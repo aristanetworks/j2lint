@@ -115,3 +115,8 @@ Note: This runs the custom linting rules in addition to the default linting rule
 ```
 j2lint --help
 ```
+
+### Running jinja2 linter on STDIN template. This option can be used with VS Code.
+```
+j2lint --stdin
+```
