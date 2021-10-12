@@ -6,6 +6,7 @@ import os
 import argparse
 import logging
 import tempfile
+import json
 
 from j2lint import NAME, VERSION, DESCRIPTION
 from j2lint.linter.collection import RulesCollection
@@ -144,16 +145,23 @@ def run(args=None):
 
     # Sort and print linting issues
     found_issues = False
+    json_output = []
     if lint_issues:
         for key, issues in lint_issues.items():
             if len(issues):
                 if not found_issues:
                     found_issues = True
-                    print("Jinja2 linting issues found")
-                print("************ File {}".format(key))
+                    if not options.json:
+                        print("Jinja2 linting issues found")
                 sorted_issues = sort_issues(issues)
-                for issue in sorted_issues:
-                    print(issue)
+                if options.json:
+                    json_output.extend([json.loads(str(issue)) for issue in sorted_issues])
+                else:
+                    print("************ File {}".format(key))
+                    for issue in sorted_issues:
+                        print(issue)
+        if options.json:
+            print(json.dumps(json_output))
         if found_issues:
             return 2
 
