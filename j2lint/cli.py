@@ -160,11 +160,11 @@ def run(args=None):
                     print("************ File {}".format(key))
                     for issue in sorted_issues:
                         print(issue)
-        if options.json:
-            print(json.dumps(json_output))
-        if found_issues:
-            return 2
-
-    if not options.json:
+    if options.json:
+        print(json.dumps(json_output))
+    else:
         print("Linting complete. No problems found.")
+
+    if found_issues:
+        return 2
     return 0
