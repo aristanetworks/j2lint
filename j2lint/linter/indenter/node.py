@@ -1,7 +1,7 @@
 """node.py - Class node for creating a parse tree for jinja statements and
              checking jinja statement indentation.
 """
-from j2lint.linter.indenter.statement import JinjaStatement, JINJA_STATEMENT_TAG_NAMES, JINJA_INTERMEDIATE_TAG_NAMES
+from j2lint.linter.indenter.statement import JinjaStatement, JINJA_STATEMENT_TAG_NAMES
 from j2lint.linter.error import JinjaLinterError, JinjaBadIndentationError
 from j2lint.utils import flatten, get_tuple, delimit_jinja_statement
 from j2lint.logger import logger
@@ -155,10 +155,8 @@ class Node:
                 else:
                     raise JinjaLinterError(
                         "Unsupported tag '%s' found" % (node.tag))
-            elif node.tag in JINJA_INTERMEDIATE_TAG_NAMES:
+            else:
                 self.children.append(node)
                 line_no = line_no + 1
                 self.check_indent_level(result, node)
                 continue
-            else:
-                raise JinjaLinterError("Unsupported tag '%s' found" % (node.tag))
