@@ -165,5 +165,6 @@ def run(args=None):
         if found_issues:
             return 2
 
-    print("Linting complete. No problems found.")
+    if not options.json:
+        print("Linting complete. No problems found.")
     return 0
