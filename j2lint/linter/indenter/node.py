@@ -13,9 +13,11 @@ MIDDLE_TAGS = list(flatten([[i[1:-1] for i in JINJA_STATEMENT_TAG_NAMES]]))
 INDENT_SHIFT = 4
 DEFAULT_WHITESPACES = 1
 BLOCK_START_INDENT = 0
+JINJA_START_DELIMETERS = ['{%-', '{%+']
 
 jinja_node_stack = []
 jinja_delimeter_stack = []
+
 
 class Node:
     """Node class which represents a jinja file as a tree
@@ -72,14 +74,14 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        if len(jinja_node_stack) and jinja_node_stack[0].statement.start_delimeter in ['{%-', '{%+']:
+        if len(jinja_node_stack) and jinja_node_stack[0].statement.start_delimeter in JINJA_START_DELIMETERS:
             BLOCK_START_INDENT = 1
-        elif node.expected_indent == 0 and node.statement.start_delimeter in ['{%-', '{%+']:
+        elif node.expected_indent == 0 and node.statement.start_delimeter in JINJA_START_DELIMETERS:
             BLOCK_START_INDENT = 1
         else:
             BLOCK_START_INDENT = 0
 
-        if node.statement.start_delimeter in ['{%-', '{%+']:
+        if node.statement.start_delimeter in JINJA_START_DELIMETERS:
             expected = node.expected_indent + BLOCK_START_INDENT
         else:
             expected = node.expected_indent + DEFAULT_WHITESPACES + BLOCK_START_INDENT

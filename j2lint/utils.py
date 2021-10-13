@@ -126,7 +126,7 @@ def get_tuple(l, item):
     return None
 
 
-def get_jinja_statements(text):
+def get_jinja_statements(text, indentation=False):
     """Gets jinja statements with {%[-/+] [-]%} delimeters
 
     Args:
@@ -140,14 +140,18 @@ def get_jinja_statements(text):
     regex_pattern = re.compile(
         "(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
     newline_pattern = re.compile(r'\n')
+    lines = text.split('\n')
     for m in regex_pattern.finditer(text):
         count += 1
         start_line = len(newline_pattern.findall(text, 0, m.start(2)))+1
         end_line = len(newline_pattern.findall(text, 0, m.end(2)))+1
+        if indentation and lines[start_line - 1].split()[0] not in ["{%", "{%-", "{%+"]:
+            continue
         statements.append(
             (m.group(2), start_line, end_line, m.group(1), m.group(4)))
     logger.debug("Found jinja statements {}".format(statements))
     return statements
+
 
 def delimit_jinja_statement(line, start="{%", end="%}"):
     """Add end delimeters for the jinja statement
@@ -160,6 +164,7 @@ def delimit_jinja_statement(line, start="{%", end="%}"):
     """
     return start + line + end
 
+
 def get_jinja_comments(text):
     comments = []
     regex_pattern = re.compile(
@@ -167,6 +172,7 @@ def get_jinja_comments(text):
     for line in regex_pattern.finditer(text):
         comments.append(line.group(2))
     return comments
+
 
 def is_rule_disabled(text, rule):
     comments = get_jinja_comments(text)

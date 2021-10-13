@@ -155,14 +155,15 @@ def run(args=None):
                         print("Jinja2 linting issues found")
                 sorted_issues = sort_issues(issues)
                 if options.json:
-                    json_output.extend([json.loads(str(issue)) for issue in sorted_issues])
+                    json_output.extend([json.loads(str(issue))
+                                       for issue in sorted_issues])
                 else:
                     print("************ File {}".format(key))
                     for issue in sorted_issues:
                         print(issue)
     if options.json:
         print(json.dumps(json_output))
-    else:
+    elif not found_issues:
         print("Linting complete. No problems found.")
 
     if found_issues:
