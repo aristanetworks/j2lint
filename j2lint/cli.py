@@ -12,7 +12,7 @@ from j2lint import NAME, VERSION, DESCRIPTION
 from j2lint.linter.collection import RulesCollection
 from j2lint.linter.runner import Runner
 from j2lint.utils import get_files
-from j2lint.logger import logger
+from j2lint.logger import logger, add_handler
 from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
@@ -52,6 +52,8 @@ def create_parser():
                         action='store_true', help='enable JSON output')
     parser.add_argument('-s', '--stdin', default=False,
                         action='store_true', help='accept template from STDIN')
+    parser.add_argument('--log', default=False,
+                        action='store_true', help='enable logging')
     return parser
 
 
@@ -86,9 +88,14 @@ def run(args=None):
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
-    # Enable debug logs
-    if options.debug:
-        logger.setLevel(logging.DEBUG)
+    # Enable logs
+    if not options.log:
+        logging.disable(sys.maxsize)
+    else:
+       add_handler(logger)
+       # Enable debug logs
+       if options.debug:
+           logger.setLevel(logging.DEBUG)
 
     logger.debug("Lint options selected {}".format(options))
 

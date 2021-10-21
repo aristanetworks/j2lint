@@ -74,9 +74,13 @@ j2lint --list
 j2lint <path-to-directory-of-templates> --verbose
 ```
 
-### Running the linter with debug logs enabled. Logs saved in jinja2-linter.log in the current directory
+### Running the linter with logs enabled. Logs saved in jinja2-linter.log in the current directory
 ```
-j2lint <path-to-directory-of-templates> --debug
+j2lint <path-to-directory-of-templates> --log
+```
+To enable debug logs, use both options:
+```
+j2lint <path-to-directory-of-templates> --log --debug
 ```
 
 ### Running the linter with JSON format for linter error output
