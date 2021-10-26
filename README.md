@@ -124,3 +124,7 @@ j2lint --help
 ```
 j2lint --stdin
 ```
+
+## Acknowledgement
+
+This project is based on [salt-lint](https://github.com/warpnet/salt-lint) and [jinjalint] (https://github.com/motet-a/jinjalint)
