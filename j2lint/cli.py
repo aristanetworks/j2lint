@@ -25,7 +25,10 @@ IGNORE_RULES = ['jinja-syntax-error',
                 'single-statement-per-line',
                 'jinja-delimeter',
                 'jinja-variable-lower-case',
-                'jinja-variable-format']
+                'jinja-variable-format',
+                'S0', 'S1', 'S2', 'S3', 'S4',
+                'S5', 'S6', 'S7', 'V1', 'V2'
+                ]
 
 
 def create_parser():

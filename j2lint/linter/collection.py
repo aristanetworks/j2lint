@@ -52,8 +52,8 @@ class RulesCollection:
 
         for rule in self.rules:
             if rule.ignore:
-                logger.debug("Ignoring rule {} for file {}".format(
-                    rule.short_description, file_dict['path']))
+                logger.debug("Ignoring rule {}:{} for file {}".format(
+                    rule.id, rule.short_description, file_dict['path']))
                 continue
             if is_rule_disabled(text, rule):
                 logger.debug("Skipping linting rule {} on file {}".format(
@@ -85,7 +85,7 @@ class RulesCollection:
         result = clazz()
         result.rules = load_plugins(os.path.expanduser(rules_dir))
         for rule in result.rules:
-            if rule.short_description in ignore_rules:
+            if (rule.short_description in ignore_rules) or (rule.id in ignore_rules):
                 rule.ignore = True
         logger.info(
             "Created collection from rules directory {}".format(rules_dir))

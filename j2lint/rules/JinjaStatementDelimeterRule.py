@@ -10,7 +10,7 @@ from j2lint.utils import get_jinja_statements
 class JinjaStatementDelimeterRule(Rule):
     """Rule class to check if jinja delimeters are wrong.
     """
-    id = 'S8'
+    id = 'S6'
     short_description = 'jinja-delimeter'
     description = "Jinja statements should not have {%- or {%+ or -%} as delimeters"
     severity = 'LOW'

@@ -154,7 +154,7 @@ def get_jinja_statements(text, indentation=False):
 
 
 def delimit_jinja_statement(line, start="{%", end="%}"):
-    """Add end delimeters for the jinja statement
+    """Adds end delimeters for a jinja statement
 
     Args:
         line (string): text line
@@ -166,6 +166,14 @@ def delimit_jinja_statement(line, start="{%", end="%}"):
 
 
 def get_jinja_comments(text):
+    """Gets jinja comments
+
+    Args:
+        line (string): text to get jinja comments
+
+    Returns:
+        [list]: returns list of jinja comments
+    """
     comments = []
     regex_pattern = re.compile(
         "(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
@@ -174,7 +182,33 @@ def get_jinja_comments(text):
     return comments
 
 
+def get_jinja_variables(text):
+    """Gets jinja variables
+
+    Args:
+        line (string): text to get jinja variables
+
+    Returns:
+        [list]: returns list of jinja variables
+    """
+    variables = []
+    regex_pattern = regex_pattern = re.compile(
+        "(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
+    for line in regex_pattern.finditer(text):
+        variables.append(line.group(2))
+    return variables
+
+
 def is_rule_disabled(text, rule):
+    """Check if rule is disabled
+
+    Args:
+        text (string): text to check jinja comments
+        rule (string): rule id or description
+
+    Returns:
+        [boolean]: True if rule is disabled
+    """
     comments = get_jinja_comments(text)
     regex = re.compile("j2lint\s*:\s*disable\s*=\s*([\w-]+)")
     for comment in comments:
