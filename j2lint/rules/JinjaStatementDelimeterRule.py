@@ -11,7 +11,7 @@ class JinjaStatementDelimeterRule(Rule):
     """Rule class to check if jinja delimeters are wrong.
     """
     id = 'S6'
-    short_description = 'jinja-delimeter'
+    short_description = 'jinja-statements-delimeter'
     description = "Jinja statements should not have {%- or {%+ or -%} as delimeters"
     severity = 'LOW'
 

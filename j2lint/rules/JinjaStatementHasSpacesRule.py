@@ -11,7 +11,7 @@ class JinjaStatementHasSpacesRule(Rule):
        surrounding the delimeter.
     """
     id = 'S4'
-    short_description = 'jinja-statement-single-space'
+    short_description = 'jinja-statements-single-space'
     description = "Jinja statement should have a single space before and after: '{% statement %}'"
     severity = 'LOW'
 

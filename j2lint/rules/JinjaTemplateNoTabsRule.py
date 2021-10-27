@@ -10,7 +10,7 @@ class JinjaTemplateNoTabsRule(Rule):
     """Rule class to check the file does not use tabs for indentation.
     """
     id = 'S5'
-    short_description = 'no-tabs'
+    short_description = 'jinja-statements-no-tabs'
     description = "Indentation are 4 spaces and NOT tabulation"
     severity = 'LOW'
 
