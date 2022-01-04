@@ -25,6 +25,15 @@ Syntax and code style issues detected by Jinja2 Linter are:
 
 ## Getting Started
 
+### Install with pip
+
+To get started, you can use Python pip to install j2lint:
+
+```bash
+pip install git+https://github.com/aristanetworks/j2lint.git
+```
+
+### Git approach
 To get started, clone the Jinja2 Linter project on your system:
 
 ```
