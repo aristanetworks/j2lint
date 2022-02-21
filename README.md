@@ -38,25 +38,24 @@ pip install git+https://github.com/aristanetworks/j2lint.git
 
 To get started with j2lint code, clone the Jinja2 Linter project on your system:
 
-```
-git clone https://gitlab.aristanetworks.com/ansible-team/jinja2-linter
+```bash
+git clone https://github.com/aristanetworks/j2lint.git
 ```
 
 ### Prerequisites
 
-1. Python version 3.6+
-
+0\. Python version 3.6+
 
 ### Creating the environment
 
-1. Create a virtual environment and activate it
+1\. Create a virtual environment and activate it
 
 ```bash
 python3 -m venv myenv
 source myenv/bin/activate
 ```
 
-1. Install pip, jinja2 and jinja2-linter
+2\. Install pip, jinja2 and jinja2-linter
 
 ```bash
 sudo apt-get install python3-pip
@@ -109,14 +108,14 @@ j2lint <path-to-directory-of-templates> --json
 
 ### Ignoring rules
 
-1. The --ignore option can have one or more of these values: syntax-error, single-space-decorator, filter-enclosed-by-spaces, jinja-statement-single-space, jinja-statements-indentation, no-tabs, single-statement-per-line, jinja-delimeter, jinja-variable-lower-case, jinja-variable-format.
-2. If multiple rules are to be ignored, use the --ignore option along with rule descriptions separated by space.
+1\. The --ignore option can have one or more of these values: syntax-error, single-space-decorator, filter-enclosed-by-spaces, jinja-statement-single-space, jinja-statements-indentation, no-tabs, single-statement-per-line, jinja-delimeter, jinja-variable-lower-case, jinja-variable-format.
+2\. If multiple rules are to be ignored, use the --ignore option along with rule descriptions separated by space.
 
 ```bash
 j2lint <path-to-directory-of-templates> --ignore <rule_description1> <rule_desc>
 ```
 
-3. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
+3\. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
 
 ```jinja2
 {# j2lint: disable=S8}
@@ -125,7 +124,7 @@ j2lint <path-to-directory-of-templates> --ignore <rule_description1> <rule_desc>
 {# j2lint: disable=jinja-delimeter #}
 ```
 
-4. Disabling multiple rules
+4\. Disabling multiple rules
 
 ```jinja2
 {# j2lint: disable=jinja-delimeter j2lint: disable=S1 #}
