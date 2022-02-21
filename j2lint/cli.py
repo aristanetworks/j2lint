@@ -57,6 +57,12 @@ def create_parser():
                         action='store_true', help='accept template from STDIN')
     parser.add_argument('--log', default=False,
                         action='store_true', help='enable logging')
+    parser.add_argument('-ver', '--version', default=False,
+                        action='store_true', help='Version of j2lint')
+    parser.add_argument('-stdout', '--vv', default=False,
+                        action='store_true', help='stdout logging')
+    parser.add_argument('-sout', '--vvv', default=False,
+                        action='store_true', help='stdout logging')
     return parser
 
 
@@ -92,13 +98,32 @@ def run(args=None):
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
     # Enable logs
-    if not options.log:
+
+    if not options.log and not options.vv and not options.vvv:
         logging.disable(sys.maxsize)
-    else:
+    elif options.log:
        add_handler(logger)
        # Enable debug logs
        if options.debug:
            logger.setLevel(logging.DEBUG)
+    elif options.vv:
+        # Enable logs on console
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            handlers=[
+                logging.StreamHandler(sys.stdout)
+            ]
+        )
+    elif options.vvv:
+        # Enable debug logs on console
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            handlers=[
+                logging.StreamHandler(sys.stdout)
+            ]
+        )
 
     logger.debug("Lint options selected {}".format(options))
 
@@ -123,6 +148,11 @@ def run(args=None):
         rules = "Jinja2 lint rules\n{}\n".format(collection)
         print(rules)
         logger.debug(rules)
+        return 0
+
+    # Version of j2lint
+    if options.version:
+        print(f"Jinja2-Linter Version {VERSION}")
         return 0
 
     # Print help message

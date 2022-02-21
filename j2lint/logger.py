@@ -17,3 +17,4 @@ def add_handler(logger):
         JINJA2_LOG_FILE, maxBytes=(1048576*5), backupCount=4)
     fh.setFormatter(log_format)
     logger.addHandler(fh)
+

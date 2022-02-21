@@ -13,9 +13,9 @@ setuptools.setup(
     description=DESCRIPTION.split('\n')[0],
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.aristanetworks.com/ansible-team/jinja2-linter",
+    url="https://github.com/aristanetworks/j2lint.git",
     project_urls={
-        "Bug Tracker": "https://gitlab.aristanetworks.com/ansible-team/jinja2-linter/issues",
+        "Bug Tracker": "https://github.com/aristanetworks/j2lint/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
