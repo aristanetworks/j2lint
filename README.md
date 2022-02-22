@@ -39,7 +39,7 @@ pip install git+https://github.com/aristanetworks/j2lint.git
 To get started with j2lint code, clone the Jinja2 Linter project on your system:
 
 ```
-git clone https://gitlab.aristanetworks.com/ansible-team/jinja2-linter
+git clone https://github.com/aristanetworks/j2lint.git
 ```
 
 ### Prerequisites
