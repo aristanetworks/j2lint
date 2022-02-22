@@ -6,6 +6,7 @@ import jinja2
 from j2lint.linter.rule import Rule
 from j2lint.linter.indenter.node import Node
 from j2lint.utils import get_jinja_statements
+from j2lint.logger import logger
 
 
 class JinjaTemplateIndentationRule(Rule):
@@ -40,8 +41,8 @@ class JinjaTemplateIndentationRule(Rule):
             try:
                 root.check_indentation(errors, lines, 0)
             except Exception as e:
-                print("Indentation check failed for file %s: Error: %s" %
-                      (file['path'], str(e)))
+                logger.debug("Indentation check failed for file %s: Error: %s" %
+                             (file['path'], str(e)))
             for error in errors:
                 result.append((error[0], error[1], error[2]))
 

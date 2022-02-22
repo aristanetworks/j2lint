@@ -135,8 +135,11 @@ class Node:
                         self.check_indent_level(result, node)
                         jinja_node_stack.pop()
                         return line_no
-                    raise JinjaLinterError(
-                        "Tag is out of order '{}'".format(node.tag))
+                message = "Tag is out of order '{}'".format(node.tag)
+                error = self.create_indentation_error(node, message)
+                result.append(error)
+                raise JinjaLinterError(
+                    "Tag is out of order '{}'".format(node.tag))
             elif node.tag in MIDDLE_TAGS:
                 begin_tag_tuple = get_tuple(
                     JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag)
