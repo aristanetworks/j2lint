@@ -7,7 +7,7 @@ import argparse
 import logging
 import tempfile
 import json
-
+import time
 from j2lint import NAME, VERSION, DESCRIPTION
 from j2lint.linter.collection import RulesCollection
 from j2lint.linter.runner import Runner
@@ -62,7 +62,7 @@ def create_parser():
     parser.add_argument('-stdout', '--vv', default=False,
                         action='store_true', help='stdout logging')
     parser.add_argument('-sout', '--vvv', default=False,
-                        action='store_true', help='stdout logging')
+                        action='store_true', help='stdout debug logging')
     return parser
 
 
@@ -101,29 +101,36 @@ def run(args=None):
 
     if not options.log and not options.vv and not options.vvv:
         logging.disable(sys.maxsize)
-    elif options.log:
-       add_handler(logger)
-       # Enable debug logs
-       if options.debug:
-           logger.setLevel(logging.DEBUG)
-    elif options.vv:
-        # Enable logs on console
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[
-                logging.StreamHandler(sys.stdout)
-            ]
-        )
-    elif options.vvv:
-        # Enable debug logs on console
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[
-                logging.StreamHandler(sys.stdout)
-            ]
-        )
+    else:
+
+        if options.vv:
+            # Enable logs on console
+            logging.basicConfig(
+                level=logging.INFO,
+                format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                handlers=[
+                    logging.StreamHandler(sys.stdout)
+                ]
+            )
+        time.sleep(1)
+
+        if options.vvv:
+            # Enable debug logs on console
+            logging.basicConfig(
+                level=logging.DEBUG,
+                format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                handlers=[
+                    logging.StreamHandler(sys.stdout)
+                ]
+            )
+        time.sleep(1)
+
+        if options.log:
+            add_handler(logger)
+            # Enable debug logs
+            if options.debug:
+                logger.setLevel(logging.DEBUG)
+        time.sleep(1)
 
     logger.debug("Lint options selected {}".format(options))
 
