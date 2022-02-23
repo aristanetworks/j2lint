@@ -7,7 +7,6 @@ import argparse
 import logging
 import tempfile
 import json
-import time
 from j2lint import NAME, VERSION, DESCRIPTION
 from j2lint.linter.collection import RulesCollection
 from j2lint.linter.runner import Runner
@@ -102,35 +101,18 @@ def run(args=None):
     if not options.log and not options.vv and not options.vvv:
         logging.disable(sys.maxsize)
     else:
-
-        if options.vv:
-            # Enable logs on console
-            logging.basicConfig(
-                level=logging.INFO,
-                format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                handlers=[
-                    logging.StreamHandler(sys.stdout)
-                ]
-            )
-        time.sleep(1)
-
-        if options.vvv:
-            # Enable debug logs on console
-            logging.basicConfig(
-                level=logging.DEBUG,
-                format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                handlers=[
-                    logging.StreamHandler(sys.stdout)
-                ]
-            )
-        time.sleep(1)
-
-        if options.log:
+        if options.vv and not options.log:
+            add_handler(logger, stream=True, stream_level=logging.INFO)
+        elif options.vvv and not options.log:
+            add_handler(logger, stream=True, stream_level=logging.DEBUG)
+        elif options.log:
             add_handler(logger)
-            # Enable debug logs
             if options.debug:
                 logger.setLevel(logging.DEBUG)
-        time.sleep(1)
+            elif options.vv:
+                add_handler(logger, stream=True, stream_level=logging.INFO)
+            elif options.vvv:
+                add_handler(logger, stream=True, stream_level=logging.DEBUG)
 
     logger.debug("Lint options selected {}".format(options))
 
