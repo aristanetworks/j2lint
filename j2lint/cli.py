@@ -101,13 +101,13 @@ def run(args=None):
         logging.disable(sys.maxsize)
 
     else:
-        stream_level = logging.INFO
+        log_level = logging.INFO
         if options.debug:
-            stream_level = logging.DEBUG
+            log_level = logging.DEBUG
         if options.log:
-            add_handler(logger, stream=False, stream_level=stream_level)
+            add_handler(logger, False, log_level)
         if options.vv:
-            add_handler(logger, stream=True, stream_level=stream_level)
+            add_handler(logger, True, log_level)
 
     logger.debug("Lint options selected {}".format(options))
 
