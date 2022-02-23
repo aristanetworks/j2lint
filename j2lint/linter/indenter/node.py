@@ -158,6 +158,9 @@ class Node:
                     self.check_indent_level(result, node)
                     continue
                 else:
+                    message = "Unsupported tag '%s' found" % (node.tag)
+                    error = self.create_indentation_error(node, message)
+                    result.append(error)
                     raise JinjaLinterError(
                         "Unsupported tag '%s' found" % (node.tag))
             else:
