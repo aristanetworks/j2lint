@@ -60,8 +60,7 @@ def create_parser():
                         action='store_true', help='Version of j2lint')
     parser.add_argument('-stdout', '--vv', default=False,
                         action='store_true', help='stdout logging')
-    parser.add_argument('-sout', '--vvv', default=False,
-                        action='store_true', help='stdout debug logging')
+
     return parser
 
 
@@ -100,19 +99,15 @@ def run(args=None):
 
     if not options.log and not options.vv and not options.vvv:
         logging.disable(sys.maxsize)
+
     else:
-        if options.vv and not options.log:
-            add_handler(logger, stream=True, stream_level=logging.INFO)
-        elif options.vvv and not options.log:
-            add_handler(logger, stream=True, stream_level=logging.DEBUG)
-        elif options.log:
-            add_handler(logger)
-            if options.debug:
-                logger.setLevel(logging.DEBUG)
-            elif options.vv:
-                add_handler(logger, stream=True, stream_level=logging.INFO)
-            elif options.vvv:
-                add_handler(logger, stream=True, stream_level=logging.DEBUG)
+        stream_level = logging.INFO
+        if options.debug:
+            stream_level = logging.DEBUG
+        if options.log:
+            add_handler(logger, stream=False, stream_level=stream_level)
+        if options.vv:
+            add_handler(logger, stream=True, stream_level=stream_level)
 
     logger.debug("Lint options selected {}".format(options))
 
