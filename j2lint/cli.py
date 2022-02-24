@@ -97,7 +97,7 @@ def run(args=None):
 
     # Enable logs
 
-    if not options.log and not options.vv and not options.vvv:
+    if not options.log and not options.vv:
         logging.disable(sys.maxsize)
 
     else:
