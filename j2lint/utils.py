@@ -4,7 +4,11 @@ import glob
 import importlib.util
 import os
 import re
-import collections
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
+
 from j2lint.logger import logger
 
 LANGUAGE_JINJA = "jinja"
@@ -103,7 +107,7 @@ def flatten(l):
         list: flattened list
     """
     for el in l:
-        if (isinstance(el, collections.Iterable) and
+        if (isinstance(el, Iterable) and
                 not isinstance(el, (str, bytes))):
             yield from flatten(el)
         else:
