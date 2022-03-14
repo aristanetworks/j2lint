@@ -1,7 +1,6 @@
 """cli.py - Command line argument parser.
 """
 import sys
-import warnings
 import errno
 import os
 import argparse
