@@ -1,6 +1,7 @@
 """cli.py - Command line argument parser.
 """
 import sys
+import warnings
 import errno
 import os
 import argparse
@@ -15,7 +16,7 @@ from j2lint.logger import logger, add_handler
 from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
-IGNORE_RULES = ['jinja-syntax-error',
+IGNORE_RULES = WARN_RULES = ['jinja-syntax-error',
                 'single-space-decorator',
                 'operator-enclosed-by-spaces',
                 'jinja-statements-single-space',
@@ -42,6 +43,8 @@ def create_parser():
                         help='files or directories to lint')
     parser.add_argument('-i', '--ignore', nargs='*',
                         choices=IGNORE_RULES, default=[], help='rules to ignore')
+    parser.add_argument('-w', '--warn', nargs='*',
+                        choices=WARN_RULES, default=[], help='rules to warn')
     parser.add_argument('-l', '--list', default=False,
                         action='store_true', help='list of lint rules')
     parser.add_argument('-r', '--rules_dir', dest='rules_dir', action='append',
@@ -125,7 +128,7 @@ def run(args=None):
     collection = RulesCollection(options.verbose)
     for rulesdir in options.rules_dir:
         collection.extend(RulesCollection.create_from_directory(
-            rulesdir, options.ignore))
+            rulesdir, options.ignore, options.warn))
 
     # List lint rules
     if options.list:
@@ -153,43 +156,68 @@ def run(args=None):
         settings.output = "json"
         logger.debug("JSON output enabled")
 
-    lint_issues = {}
+    lint_errors = {}
+    lint_warnings = {}
     files = get_files(file_or_dir_names)
 
     # Get linting issues
     for file_name in files:
         runner = Runner(collection, file_name, checked_files)
-        if file_name not in lint_issues:
-            lint_issues[file_name] = []
-        lint_issues[file_name].extend(runner.run())
+        if file_name not in lint_errors:
+            lint_errors[file_name] = []
+        if file_name not in lint_warnings:
+            lint_warnings[file_name] = []
+        j2_errors, j2_warnings = runner.run()
+        lint_errors[file_name].extend(j2_errors)
+        lint_warnings[file_name].extend(j2_warnings)
 
     # Remove temporary file
     if stdin_filename:
         os.unlink(stdin_filename)
 
     # Sort and print linting issues
-    found_issues = False
-    json_output = []
-    if lint_issues:
-        for key, issues in lint_issues.items():
-            if len(issues):
-                if not found_issues:
-                    found_issues = True
+    found_errors = False
+    found_warnings = False
+    total_errors = 0
+    total_warnings = 0
+    json_output = {}
+    if lint_errors:
+        for key, errors in lint_errors.items():
+            if len(errors):
+                total_errors = len(errors)
+                if not found_errors:
+                    found_errors = True
                     if not options.json:
-                        print("Jinja2 linting issues found")
-                sorted_issues = sort_issues(issues)
+                        print("Jinja2 lint ERRORS :")
+                sorted_errors = sort_issues(errors)
                 if options.json:
-                    json_output.extend([json.loads(str(issue))
-                                       for issue in sorted_issues])
+                    json_output['ERRORS'] = ([json.loads(str(error)) for error in sorted_errors])
                 else:
                     print("************ File {}".format(key))
-                    for issue in sorted_issues:
-                        print(issue)
+                    for j2_error in sorted_errors:
+                        print("{}\n".format(j2_error))
+    if lint_warnings:
+        for key, warning in lint_warnings.items():
+            if len(warning):
+                total_warnings = len(warning)
+                if not found_warnings:
+                    found_warnings = True
+                    if not options.json:
+                        print("\nJinja2 lint WARNINGS : ")
+                sorted_warnings = sort_issues(warning)
+                if options.json:
+                    json_output['WARNINGS'] = [json.loads(str(warning)) for warning in sorted_warnings]
+                else:
+                    print("************ File {}".format(key))
+                    for j2_warning in sorted_warnings:
+                        print("{}\n".format(j2_warning))
     if options.json:
         print(json.dumps(json_output))
-    elif not found_issues:
+    elif not found_errors and not found_warnings:
         print("Linting complete. No problems found.")
+    else:
+        print("Jinja2 linting finished with {} issue(s) and {} warning(s)".format(total_errors, total_warnings))
 
-    if found_issues:
+    if found_errors:
         return 2
     return 0

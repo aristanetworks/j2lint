@@ -17,6 +17,7 @@ class Rule:
     check = None
     checktext = None
     ignore = False
+    warn = []
 
     def __repr__(self):
         return self.id + ": " + self.description
