@@ -7,7 +7,6 @@ import argparse
 import logging
 import tempfile
 import json
-
 from j2lint import NAME, VERSION, DESCRIPTION
 from j2lint.linter.collection import RulesCollection
 from j2lint.linter.runner import Runner
@@ -57,6 +56,11 @@ def create_parser():
                         action='store_true', help='accept template from STDIN')
     parser.add_argument('--log', default=False,
                         action='store_true', help='enable logging')
+    parser.add_argument('-ver', '--version', default=False,
+                        action='store_true', help='Version of j2lint')
+    parser.add_argument('-stdout', '--vv', default=False,
+                        action='store_true', help='stdout logging')
+
     return parser
 
 
@@ -92,13 +96,18 @@ def run(args=None):
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
     # Enable logs
-    if not options.log:
+
+    if not options.log and not options.vv:
         logging.disable(sys.maxsize)
+
     else:
-       add_handler(logger)
-       # Enable debug logs
-       if options.debug:
-           logger.setLevel(logging.DEBUG)
+        log_level = logging.INFO
+        if options.debug:
+            log_level = logging.DEBUG
+        if options.log:
+            add_handler(logger, False, log_level)
+        if options.vv:
+            add_handler(logger, True, log_level)
 
     logger.debug("Lint options selected {}".format(options))
 
@@ -123,6 +132,11 @@ def run(args=None):
         rules = "Jinja2 lint rules\n{}\n".format(collection)
         print(rules)
         logger.debug(rules)
+        return 0
+
+    # Version of j2lint
+    if options.version:
+        print(f"Jinja2-Linter Version {VERSION}")
         return 0
 
     # Print help message
