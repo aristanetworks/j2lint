@@ -183,7 +183,7 @@ def run(args=None):
     if lint_errors:
         for key, errors in lint_errors.items():
             if len(errors):
-                total_errors = len(errors)
+                total_errors = total_errors + len(errors)
                 if not found_errors:
                     found_errors = True
                     if not options.json:
@@ -198,7 +198,7 @@ def run(args=None):
     if lint_warnings:
         for key, warning in lint_warnings.items():
             if len(warning):
-                total_warnings = len(warning)
+                total_warnings = total_warnings + len(warning)
                 if not found_warnings:
                     found_warnings = True
                     if not options.json:
