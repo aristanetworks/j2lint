@@ -180,32 +180,32 @@ def run(args=None):
     json_output = {}
     if lint_errors:
         for key, errors in lint_errors.items():
-            if len(errors):
-                if not total_errors:
-                    if not options.json:
-                        print("\nJINJA2 LINT ERRORS")
-                total_errors = total_errors + len(errors)
-                sorted_errors = sort_issues(errors)
-                if options.json:
-                    json_output['ERRORS'] = ([json.loads(str(error)) for error in sorted_errors])
-                else:
-                    print("************ File {}".format(key))
-                    for j2_error in sorted_errors:
-                        print("{}".format(j2_error))
+            if not errors:
+                continue
+            if not total_errors and not options.json:
+                print("\nJINJA2 LINT ERRORS")
+            total_errors = total_errors + len(errors)
+            sorted_errors = sort_issues(errors)
+            if options.json:
+                json_output['ERRORS'] = ([json.loads(str(error)) for error in sorted_errors])
+            else:
+                print("************ File {}".format(key))
+                for j2_error in sorted_errors:
+                    print("{}".format(j2_error))
     if lint_warnings:
         for key, warning in lint_warnings.items():
-            if len(warning):
-                if not total_warnings:
-                    if not options.json:
-                        print("\nJINJA2 LINT WARNINGS")
-                total_warnings = total_warnings + len(warning)
-                sorted_warnings = sort_issues(warning)
-                if options.json:
-                    json_output['WARNINGS'] = [json.loads(str(warning)) for warning in sorted_warnings]
-                else:
-                    print("************ File {}".format(key))
-                    for j2_warning in sorted_warnings:
-                        print("{}".format(j2_warning))
+            if not warning:
+                continue
+            if not total_warnings and not options.json:
+                print("\nJINJA2 LINT WARNINGS")
+            total_warnings = total_warnings + len(warning)
+            sorted_warnings = sort_issues(warning)
+            if options.json:
+                json_output['WARNINGS'] = [json.loads(str(warning)) for warning in sorted_warnings]
+            else:
+                print("************ File {}".format(key))
+                for j2_warning in sorted_warnings:
+                    print("{}".format(j2_warning))
     if options.json:
         print(json.dumps(json_output))
     elif not total_errors and not total_warnings:
