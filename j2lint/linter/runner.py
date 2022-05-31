@@ -1,6 +1,5 @@
 """runner.py - Class to run the rules collection for all the files.
 """
-import os
 
 from j2lint.utils import get_file_type
 from j2lint.logger import logger
@@ -14,7 +13,7 @@ class Runner:
           for each file in cli.py
     """
 
-    def __init__(self, collection, file_name, config, checked_files=None):
+    def __init__(self, collection, file_name, checked_files=None):
         self.collection = collection
         self.files = set()
         self.files.add((file_name, get_file_type(file_name)))
@@ -43,7 +42,7 @@ class Runner:
         """
         files = []
         for index, file in enumerate(self.files):
-            logger.debug("Running linting rules for {}".format(file))
+            logger.debug("Running linting rules for %s", file)
             file_path = file[0]
             file_type = file[1]
             file_dict = {'path': file_path, 'type': file_type}

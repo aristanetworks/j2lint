@@ -4,6 +4,7 @@
 import re
 from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_variables
+from j2lint.logger import logger
 
 
 class JinjaVariableNameCaseRule(Rule):
@@ -16,11 +17,10 @@ class JinjaVariableNameCaseRule(Rule):
 
     regex = re.compile(r"([a-zA-Z0-9-_\"']*[A-Z][a-zA-Z0-9-_\"']*)")
 
-    def check(self, file, line):
+    def check(self, line):
         """Checks if the given line matches the error regex
 
         Args:
-            file (string): file path
             line (string): a single line from the file
 
         Returns:
@@ -33,4 +33,8 @@ class JinjaVariableNameCaseRule(Rule):
                 "'" not in match) and ('"' not in match)]
             if matches:
                 return True
+
+        logger.debug("Check line rule does not exist for %s",
+                     __class__.__name__)
+
         return False

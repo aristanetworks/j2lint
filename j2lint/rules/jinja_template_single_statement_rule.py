@@ -2,10 +2,9 @@
                                          jinja statement is present on each
                                          line.
 """
-import re
-import jinja2
 from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_statements
+from j2lint.logger import logger
 
 
 class JinjaTemplateSingleStatementRule(Rule):
@@ -17,11 +16,11 @@ class JinjaTemplateSingleStatementRule(Rule):
     description = "Jinja statements should be on separate lines"
     severity = 'MEDIUM'
 
-    def check(self, file, line):
+    @classmethod
+    def check(cls, line):
         """Checks if the given line matches the error regex
 
         Args:
-            file (string): file path
             line (string): a single line from the file
 
         Returns:
@@ -29,4 +28,8 @@ class JinjaTemplateSingleStatementRule(Rule):
         """
         if len(get_jinja_statements(line)) > 1:
             return True
+
+        logger.debug("Check line rule does not exist for %s",
+                     __class__.__name__)
+
         return False

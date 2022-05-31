@@ -3,6 +3,7 @@
 """
 import re
 from j2lint.linter.rule import Rule
+from j2lint.logger import logger
 
 
 class JinjaOperatorHasSpaceRule(Rule):
@@ -10,7 +11,8 @@ class JinjaOperatorHasSpaceRule(Rule):
     """
     id = 'S2'
     short_description = 'operator-enclosed-by-spaces'
-    description = "When variables are used in combination with an operator, the operator shall be enclosed by space: '{{ my_value | to_json }}'"
+    description = "When variables are used in combination with an operator, " \
+                  "the operator shall be enclosed by space: '{{ my_value | to_json }}'"
     severity = 'LOW'
 
     operators = ['|', '+', '==']
@@ -18,16 +20,15 @@ class JinjaOperatorHasSpaceRule(Rule):
     for operator in operators:
         operator = "\\" + operator
         regex = r"({[{|%](.*?)([^ |^}]" + operator + ")(.*?)[}|%]})|({[{|%](.*?)(" + operator + \
-            "[^ |^{])(.*?)[}|%]})|({[{|%](.*?)([^ |^}] \s+" + operator + \
+            r"[^ |^{])(.*?)[}|%]})|({[{|%](.*?)([^ |^}] \s+" + operator + \
             ")(.*?)[}|%]})|({[{|%](.*?)(" + \
-            operator + " \s+[^ |^{])(.*?)[}|%]})"
+            operator + r" \s+[^ |^{])(.*?)[}|%]})"
         regexes.append(re.compile(regex))
 
-    def check(self, file, line):
+    def check(self, line):
         """Checks if the given line matches the error regex
 
         Args:
-            file (string): file path
             line (string): a single line from the file
 
         Returns:
@@ -52,10 +53,12 @@ class JinjaOperatorHasSpaceRule(Rule):
                 issues.append(operator)
         if issues:
             if len(issues) > 1:
-                self.description = "The operators %s need to be enclosed by a single space on each side" % (
-                    ", ".join(issues))
+                self.description = f"The operators {(', '.join(issues))} need to be enclosed " \
+                                   "by a single space on each side"
             else:
-                self.description = "The operator %s needs to be enclosed by a single space on each side" % (
-                    ", ".join(issues))
+                self.description = f"The operator {(', '.join(issues))} needs to be enclosed" \
+                                   " by a single space on each side"
             return True
+        logger.debug("Check line rule does not exist for %s",
+            __class__.__name__)
         return False

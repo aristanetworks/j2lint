@@ -4,9 +4,10 @@
 """
 import re
 from j2lint.linter.rule import Rule
+from j2lint.logger import logger
 
 
-class JinjaStatementHasSpacesRule(Rule):
+class JinjaStatementHasSpaceRule(Rule):
     """Rule class to check if jinja statement has atleast a single space
        surrounding the delimiter.
     """
@@ -17,14 +18,16 @@ class JinjaStatementHasSpacesRule(Rule):
 
     regex = re.compile(r"{%[^ \-\+]|{%[\-\+][^ ]|[^ \-\+]%}|[^ ][\-\+]%}")
 
-    def check(self, file, line):
+    def check(self, line):
         """Checks if the given line matches the error regex
 
         Args:
-            file (string): file path
             line (string): a single line from the file
 
         Returns:
             Object: Returns error object if found else None
         """
+        logger.debug("Check line rule does not exist for %s",
+                     __class__.__name__)
+
         return self.regex.search(line)

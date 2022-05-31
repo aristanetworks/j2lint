@@ -5,10 +5,7 @@ import importlib.util
 import os
 import re
 
-try:
-    from collections.abc import Iterable
-except ImportError:
-    from collections import Iterable
+from collections.abc import Iterable
 
 from j2lint.logger import logger
 
@@ -26,17 +23,18 @@ def load_plugins(directory):
     """
     result = []
     file_handle = None
-
-    for pluginfile in glob.glob(os.path.join(directory, '[A-Za-z]*.py')):
+    for pluginfile in glob.glob(os.path.join(directory, '[A-Za-z_]*.py')):
         pluginname = os.path.basename(pluginfile.replace('.py', ''))
         try:
-            logger.debug("Loading plugin {}".format(pluginname))
+            logger.debug("Loading plugin %s", pluginname)
             spec = importlib.util.spec_from_file_location(
                 pluginname, pluginfile)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            obj = getattr(module, pluginname)()
-            result.append(obj)
+            if pluginname != "__init__":
+                class_name = ''.join(str(name).capitalize()for name in pluginname.split('_'))
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                obj = getattr(module, class_name)
+                result.append(obj)
         finally:
             if file_handle:
                 file_handle.close()
@@ -92,49 +90,49 @@ def get_files(file_or_dir_names):
 
     for file_or_dir in file_or_dir_names:
         if os.path.isdir(file_or_dir):
-            for root, dirs, files in os.walk(file_or_dir):
-                for f in files:
-                    file_path = os.path.join(root, f)
+            for root, _, files in os.walk(file_or_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
                     if get_file_type(file_path) == LANGUAGE_JINJA:
                         file_paths.append(file_path)
         else:
             if get_file_type(file_or_dir) == LANGUAGE_JINJA:
                 file_paths.append(file_or_dir)
-    logger.debug("Linting directory {}: files {}".format(
-        file_or_dir_names, file_paths))
+    logger.debug("Linting directory %s: files %s",
+        file_or_dir_names, file_paths)
     return file_paths
 
 
-def flatten(l):
+def flatten(nested_list):
     """Flattens an iterable
 
     Args:
-        l (list): Nested list
+        nested_list (list): Nested list
 
     Yields:
         list: flattened list
     """
     if not isinstance(l, (list, tuple)):
         raise TypeError(f"flatten is expecting a list or tuple and received {l}")
-    for el in l:
-        if (isinstance(el, Iterable) and
-                not isinstance(el, (str, bytes))):
-            yield from flatten(el)
+    for element in nested_list:
+        if (isinstance(element, Iterable) and
+                not isinstance(element, (str, bytes))):
+            yield from flatten(element)
         else:
-            yield el
+            yield element
 
 
-def get_tuple(l, item):
+def get_tuple(list_of_tuples, item):
     """Checks if an item is present in any of the tuples
 
     Args:
-        l (list): list of tuples
+        list_of_tuples (list): list of tuples
         item (object): single object which can be in a tuple
 
     Returns:
         [tuple]: tuple if the item exists in any of the tuples
     """
-    for entry in l:
+    for entry in list_of_tuples:
         if item in entry:
             return entry
     return None
@@ -182,15 +180,15 @@ def get_jinja_statements(text, indentation=False):
         "(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
     newline_pattern = re.compile(r'\n')
     lines = text.split('\n')
-    for m in regex_pattern.finditer(text):
+    for match in regex_pattern.finditer(text):
         count += 1
-        start_line = len(newline_pattern.findall(text, 0, m.start(2)))+1
-        end_line = len(newline_pattern.findall(text, 0, m.end(2)))+1
+        start_line = len(newline_pattern.findall(text, 0, match.start(2)))+1
+        end_line = len(newline_pattern.findall(text, 0, match.end(2)))+1
         if indentation and lines[start_line - 1].split()[0] not in ["{%", "{%-", "{%+"]:
             continue
         statements.append(
-            (m.group(2), start_line, end_line, m.group(1), m.group(4)))
-    logger.debug("Found jinja statements {}".format(statements))
+            (match.group(2), start_line, end_line, match.group(1), match.group(4)))
+    logger.debug("Found jinja statements %s", statements)
     return statements
 
 
@@ -251,7 +249,7 @@ def is_rule_disabled(text, rule):
         [boolean]: True if rule is disabled
     """
     comments = get_jinja_comments(text)
-    regex = re.compile("j2lint\s*:\s*disable\s*=\s*([\w-]+)")
+    regex = re.compile(r"j2lint\s*:\s*disable\s*=\s*([\w-]+)")
     for comment in comments:
         for line in regex.finditer(comment):
             if rule.short_description == line.group(1):

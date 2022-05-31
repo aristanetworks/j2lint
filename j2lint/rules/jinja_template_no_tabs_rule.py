@@ -2,8 +2,8 @@
                                 for indentation.
 """
 import re
-import jinja2
 from j2lint.linter.rule import Rule
+from j2lint.logger import logger
 
 
 class JinjaTemplateNoTabsRule(Rule):
@@ -16,14 +16,17 @@ class JinjaTemplateNoTabsRule(Rule):
 
     regex = re.compile(r"\t+")
 
-    def check(self, file, line):
+    def check(self, line):
         """Checks if the given line matches the error regex
 
         Args:
-            file (string): file path
             line (string): a single line from the file
 
         Returns:
             Object: Returns error object if found else None
         """
+
+        logger.debug("Check line rule does not exist for %s",
+                     __class__.__name__)
+
         return self.regex.search(line)

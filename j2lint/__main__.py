@@ -11,4 +11,4 @@ if __name__ == "__main__":
         sys.exit(run())
     except Exception as e:
         print(traceback.format_exc())
-        raise SystemExit()
+        raise SystemExit from BaseException

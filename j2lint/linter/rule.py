@@ -1,9 +1,8 @@
 """rule.py - Base class for all the lint rules with functions for mathching
              line and text based rule.
 """
-import re
 
-from j2lint.utils import is_valid_file_type, LANGUAGE_JINJA
+from j2lint.utils import is_valid_file_type
 from j2lint.linter.error import LinterError
 from j2lint.logger import logger
 
@@ -15,15 +14,22 @@ class Rule:
 
     id = None
     description = None
-    check = None
-    checktext = None
     ignore = False
     warn = []
 
     def __repr__(self):
         return self.id + ": " + self.description
 
-    def is_valid_language(self, file):
+    @classmethod
+    def checktext(cls, file, text):
+        """ class method for checktext """
+
+    @classmethod
+    def check(cls, line):
+        """ class method for checklines """
+
+    @classmethod
+    def is_valid_language(cls, file):
         """Check if the file is a valid Jinja file
 
         Args:
@@ -51,14 +57,9 @@ class Rule:
         """
         errors = []
 
-        if not self.check:
-            logger.debug("Check line rule does not exist for {}".format(
-                __class__.__name__))
-            return errors
-
         if not self.is_valid_language(file):
             logger.debug(
-                "Skipping file {}. Linter does not support linting this file type".format(file))
+                "Skipping file %s. Linter does not support linting this file type", file)
             return errors
 
         for (index, line) in enumerate(text.split("\n")):
@@ -69,11 +70,12 @@ class Rule:
             if line.lstrip().startswith('#'):
                 continue
 
-            result = self.check(file, line)
+            result = self.check(line)
             if not result:
                 continue
             errors.append(LinterError(index+1, line, file['path'], self))
         return errors
+
 
     def checkfulltext(self, file, text):
         """Checks the entire file text against a lint rule
@@ -87,20 +89,16 @@ class Rule:
         """
         errors = []
 
-        if not self.checktext:
-            logger.debug("Check text rule does not exist for {}".format(
-                __class__.__name__))
-            return errors
-
         if not self.is_valid_language(file):
             logger.debug(
-                "Skipping file {}. Linter does not support linting this file type".format(file))
+                "Skipping file %s. Linter does not support linting this file type", file)
             return errors
 
         results = self.checktext(file, text)
 
-        for line, section, message in results:
-            errors.append(LinterError(
-                line, section, file['path'], self, message))
+        if results is not None:
+            for line, section, message in results:
+                errors.append(LinterError(
+                    line, section, file['path'], self, message))
 
         return errors
