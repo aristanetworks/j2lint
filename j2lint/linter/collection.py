@@ -41,7 +41,7 @@ class RulesCollection:
         """
         text = ""
         errors = []
-        lint_warnings = []
+        warnings = []
 
         try:
             with open(file_dict['path'], mode='r') as f:
@@ -63,13 +63,13 @@ class RulesCollection:
             logger.debug("Running linting rule {} on file {}".format(
                 rule, file_dict['path']))
             if rule in rule.warn:
-                lint_warnings.extend(rule.checklines(file_dict, text))
-                lint_warnings.extend(rule.checkfulltext(file_dict, text))
+                warnings.extend(rule.checklines(file_dict, text))
+                warnings.extend(rule.checkfulltext(file_dict, text))
             else:
                 errors.extend(rule.checklines(file_dict, text))
                 errors.extend(rule.checkfulltext(file_dict, text))
 
-        return errors, lint_warnings
+        return errors, warnings
 
     def __repr__(self):
         return "\n".join([repr(rule)

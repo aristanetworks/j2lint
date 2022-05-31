@@ -175,19 +175,16 @@ def run(args=None):
         os.unlink(stdin_filename)
 
     # Sort and print linting issues
-    found_errors = False
-    found_warnings = False
     total_errors = 0
     total_warnings = 0
     json_output = {}
     if lint_errors:
         for key, errors in lint_errors.items():
             if len(errors):
-                total_errors = total_errors + len(errors)
-                if not found_errors:
-                    found_errors = True
+                if not total_errors:
                     if not options.json:
                         print("\nJINJA2 LINT ERRORS")
+                total_errors = total_errors + len(errors)
                 sorted_errors = sort_issues(errors)
                 if options.json:
                     json_output['ERRORS'] = ([json.loads(str(error)) for error in sorted_errors])
@@ -198,11 +195,10 @@ def run(args=None):
     if lint_warnings:
         for key, warning in lint_warnings.items():
             if len(warning):
-                total_warnings = total_warnings + len(warning)
-                if not found_warnings:
-                    found_warnings = True
+                if not total_warnings:
                     if not options.json:
                         print("\nJINJA2 LINT WARNINGS")
+                total_warnings = total_warnings + len(warning)
                 sorted_warnings = sort_issues(warning)
                 if options.json:
                     json_output['WARNINGS'] = [json.loads(str(warning)) for warning in sorted_warnings]
@@ -212,11 +208,11 @@ def run(args=None):
                         print("{}".format(j2_warning))
     if options.json:
         print(json.dumps(json_output))
-    elif not found_errors and not found_warnings:
+    elif not total_errors and not total_warnings:
         print("Linting complete. No problems found.")
     else:
         print("Jinja2 linting finished with {} issue(s) and {} warning(s)".format(total_errors, total_warnings))
 
-    if found_errors:
+    if total_errors:
         return 2
     return 0
