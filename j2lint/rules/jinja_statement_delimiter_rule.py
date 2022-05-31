@@ -1,4 +1,5 @@
-"""jinja_statement_delimiter_rule.py - Rule class to check if jinja delimeters
+"""jinja_statement_delimiter_rule.py - Rule class to check if jinja delimiters
+                                    are wrong.
 """
 
 from j2lint.linter.rule import Rule
@@ -21,7 +22,7 @@ class JinjaStatementDelimiterRule(Rule):
 
     @classmethod
     def check(cls, line):
-        """Checks if the given line matches the wrong delimeters
+        """Checks if the given line matches the wrong delimiters
 
         Args:
             line (string): a single line from the file
