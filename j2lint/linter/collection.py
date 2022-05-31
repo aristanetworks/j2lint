@@ -41,6 +41,7 @@ class RulesCollection:
         """
         text = ""
         errors = []
+        warnings = []
 
         try:
             with open(file_dict['path'], mode='r') as f:
@@ -61,17 +62,21 @@ class RulesCollection:
                 continue
             logger.debug("Running linting rule {} on file {}".format(
                 rule, file_dict['path']))
-            errors.extend(rule.checklines(file_dict, text))
-            errors.extend(rule.checkfulltext(file_dict, text))
+            if rule in rule.warn:
+                warnings.extend(rule.checklines(file_dict, text))
+                warnings.extend(rule.checkfulltext(file_dict, text))
+            else:
+                errors.extend(rule.checklines(file_dict, text))
+                errors.extend(rule.checkfulltext(file_dict, text))
 
-        return errors
+        return errors, warnings
 
     def __repr__(self):
         return "\n".join([repr(rule)
                           for rule in sorted(self.rules, key=lambda x: x.id)])
 
     @classmethod
-    def create_from_directory(clazz, rules_dir, ignore_rules):
+    def create_from_directory(clazz, rules_dir, ignore_rules, warn_rules):
         """Creates a collection from all rule modules
 
         Args:
@@ -87,6 +92,8 @@ class RulesCollection:
         for rule in result.rules:
             if (rule.short_description in ignore_rules) or (rule.id in ignore_rules):
                 rule.ignore = True
+            if (rule.short_description in warn_rules) or (rule.id in warn_rules):
+                rule.warn.append(rule)
         logger.info(
             "Created collection from rules directory {}".format(rules_dir))
         return result

@@ -52,11 +52,12 @@ class Runner:
             files.append(file_dict)
 
         errors = []
+        warnings = []
         for file in files:
-            errors.extend(self.collection.run(file))
+            errors, warnings = self.collection.run(file)
 
         # Update list of checked files
         self.checked_files.update([file_dict['path'] for file_dict in files])
 
         logger.info("Linting errors found {}".format(errors))
-        return errors
+        return errors, warnings
