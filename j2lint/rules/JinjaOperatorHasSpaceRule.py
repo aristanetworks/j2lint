@@ -34,8 +34,18 @@ class JinjaOperatorHasSpaceRule(Rule):
             Object: Returns error object if found else None
         """
         issues = []
+
+        if "\'" in line:
+            regx = re.findall("\'([^\']*)\'", line)
+            for match in regx:
+                line = line.replace(("\'" + match + "\'"), "''")
+
+        if "\"" in line:
+            regx = re.findall("\"([^\"]*)\"", line)
+            for match in regx:
+                line = line.replace(("\"" + match + "\""), '""')
+
         for (regex, operator) in zip(self.regexes, self.operators):
-            matches = re.findall(regex, line)
             if regex.search(line):
                 issues.append(operator)
         if issues:

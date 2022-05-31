@@ -61,16 +61,6 @@ class Rule:
             if line.lstrip().startswith('#'):
                 continue
 
-            if "\'" in line:
-                regx = re.findall("\'([^\']*)\'", line)
-                for match in regx:
-                    line = line.replace(("\'"+match+"\'"), "''")
-
-            if "\"" in line:
-                regx = re.findall("\"([^\"]*)\"", line)
-                for match in regx:
-                    line = line.replace(("\""+match+"\""), '""')
-
             result = self.check(file, line)
             if not result:
                 continue
