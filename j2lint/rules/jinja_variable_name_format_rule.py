@@ -1,4 +1,4 @@
-""" JinjaVariableNameFormatRule.py - Rule class to check that variable names
+""" jinja_variable_name_format_rule.py - Rule class to check that variable names
                                      only use underscores.
 """
 import re

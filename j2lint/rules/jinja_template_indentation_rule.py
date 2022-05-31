@@ -1,4 +1,4 @@
-"""JinjaTemplateIndentationRule.py - Rule class to check the jinja statement
+"""jinja_template_indentation_rule.py - Rule class to check the jinja statement
                                      indentation is correct.
 """
 from j2lint.linter.rule import Rule

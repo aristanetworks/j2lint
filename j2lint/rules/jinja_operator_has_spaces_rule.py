@@ -1,4 +1,4 @@
-"""JinjaOperatorHasSpaceRule.py - Rule class to check if operator has
+"""jinja_operator_has_spaces_rule.py - Rule class to check if operator has
                                   surrounding spaces.
 """
 import re
@@ -6,7 +6,7 @@ from j2lint.linter.rule import Rule
 from j2lint.logger import logger
 
 
-class JinjaOperatorHasSpaceRule(Rule):
+class JinjaOperatorHasSpacesRule(Rule):
     """Rule class to check if jinja filter has surrounding spaces.
     """
     id = 'S2'

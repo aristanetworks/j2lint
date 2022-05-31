@@ -1,4 +1,4 @@
-"""JinjaVariableNameCaseRule.py - Rule class to check the variables use
+"""jinja_variable_name_case_rule.py - Rule class to check the variables use
                                   lower case.
 """
 import re

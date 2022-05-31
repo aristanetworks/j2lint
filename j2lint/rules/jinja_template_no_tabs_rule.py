@@ -1,4 +1,4 @@
-"""JinjaTemplateNoTabsRule.py - Rule class to check the file does not use tabs
+"""jinja_template_no_tabs_rule.py - Rule class to check the file does not use tabs
                                 for indentation.
 """
 import re

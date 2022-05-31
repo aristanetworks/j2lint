@@ -1,4 +1,4 @@
-"""JinjaTemplateSingleStatementRule.py - Rule class to check if only a single
+"""jinja_template_single_statement_rule.py - Rule class to check if only a single
                                          jinja statement is present on each
                                          line.
 """

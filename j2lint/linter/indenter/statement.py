@@ -1,6 +1,6 @@
 """statement.py - Class and variables for jinja statements.
 """
-# pylint: disable=R0903
+# pylint: disable=too-few-public-methods
 import re
 JINJA_STATEMENT_TAG_NAMES = [
     ('for', 'else', 'endfor'),

@@ -11,7 +11,7 @@ logger = logging.getLogger('')
 def add_handler(log, stream_handler, log_level):
     """ defined logging handlers """
     log_format = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        "(asctime)s - (name)s - (levelname)s - (message)s", style="{")
     log.setLevel(log_level)
     if not stream_handler:
         file_handler = handlers.RotatingFileHandler(

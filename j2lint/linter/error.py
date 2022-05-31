@@ -4,8 +4,7 @@ import json
 from j2lint.settings import settings
 from j2lint.logger import logger
 
-# pylint: disable=R0903
-# pylint: disable=R0913
+# pylint: disable=too-few-public-methods,too-many-arguments
 
 
 class LinterError:
@@ -39,10 +38,6 @@ class LinterError:
                                      self.message, self.rule.short_description)
         logger.error(error)
         return error
-
-
-class JinjaBadIndentationError(Exception):
-    """ Jinja Bad Indentation Error """
 
 
 class JinjaLinterError(Exception):

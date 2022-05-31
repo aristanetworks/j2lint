@@ -1,4 +1,4 @@
-"""JinjaTemplateSyntaxErrorRule.py - Rule class to check that file does not
+"""jinja_template_syntax_error_rule.py - Rule class to check that file does not
                                      have jinja syntax errors.
 """
 import jinja2

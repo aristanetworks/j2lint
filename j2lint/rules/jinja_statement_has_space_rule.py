@@ -1,4 +1,4 @@
-"""JinjaStatementHasSpacesRule.py - Rule class to check if jinja statement has
+"""jinja_statement_has_space_rule.py - Rule class to check if jinja statement has
                                     atleast a single space surrounding the
                                     delimiter.
 """

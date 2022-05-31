@@ -1,4 +1,4 @@
-"""JinjaVariableHasSpaceRule.py - Rule class to check if jinja variables have
+"""jinja_variable_has_space_rule.py - Rule class to check if jinja variables have
                                   single space between curly brackets and
                                   variable name.
 """

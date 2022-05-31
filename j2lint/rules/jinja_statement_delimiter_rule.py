@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:j2lint/rules/JinjaStatementDelimiterRule.py
-"""JinjaStatementDelimiterRule.py - Rule class to check if jinja delimiters
-========
-"""JinjaStatementDelimiterRule.py - Rule class to check if jinja delimeters
->>>>>>>> f62f946 (Converted python code to pylint compliant):j2lint/rules/jinja_statement_delimiter_rule.py
-                                    are wrong.
+"""jinja_statement_delimiter_rule.py - Rule class to check if jinja delimeters
 """
 
 from j2lint.linter.rule import Rule
@@ -12,11 +7,7 @@ from j2lint.logger import logger
 
 
 class JinjaStatementDelimiterRule(Rule):
-<<<<<<<< HEAD:j2lint/rules/JinjaStatementDelimiterRule.py
     """Rule class to check if jinja delimiters are wrong.
-========
-    """Rule class to check if jinja delimeters are wrong.
->>>>>>>> f62f946 (Converted python code to pylint compliant):j2lint/rules/jinja_statement_delimiter_rule.py
     """
     id = 'S6'
     # FIXME - for now supporting both syntax for the short_description to be backward
@@ -28,14 +19,9 @@ class JinjaStatementDelimiterRule(Rule):
     description = "Jinja statements should not have {%- or {%+ or -%} as delimiters"
     severity = 'LOW'
 
-<<<<<<<< HEAD:j2lint/rules/JinjaStatementDelimiterRule.py
-    def check(self, file, line):
-        """Checks if the given line matches the wrong delimiters
-========
     @classmethod
     def check(cls, line):
         """Checks if the given line matches the wrong delimeters
->>>>>>>> f62f946 (Converted python code to pylint compliant):j2lint/rules/jinja_statement_delimiter_rule.py
 
         Args:
             line (string): a single line from the file
