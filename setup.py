@@ -30,6 +30,9 @@ setuptools.setup(
     install_requires=[
         'jinja2',
     ],
+    tests_require=[
+        'pytest',
+    ],
     python_requires=">=3.6",
     keywords=['jinja', 'jinja2', 'lint', 'linter'],
     zip_safe=False,
