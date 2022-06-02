@@ -1,5 +1,5 @@
 - id: j2lint
-  name: Check for Linting error on jinja2 templates
+  name: Check for Linting error on Jinja2 templates
   entry: j2lint
   language: python
   types: [jinja]
