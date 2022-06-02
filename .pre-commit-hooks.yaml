@@ -1,0 +1,6 @@
+- id: j2lint2
+  name: Check for Linting error on jinja2 templates
+  entry: j2lint
+  language: python
+  types: [jinja]
+  require_serial: true
