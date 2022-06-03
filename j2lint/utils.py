@@ -110,7 +110,7 @@ def flatten(l):
     Yields:
         list: flattened list
     """
-    if not isinstance(l, list):
+    if not isinstance(l, (list, tuple)):
         raise TypeError(f"flatten is expecting a list and received {l}")
     for el in l:
         if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
