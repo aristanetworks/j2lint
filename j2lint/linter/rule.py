@@ -30,6 +30,8 @@ class Rule:
 
         Returns:
             boolean: True if file extension is correct
+
+        TODO: refactor to use the j2lint.utils.is_valid_language
         """
 
         if is_valid_file_type(file["path"]):
