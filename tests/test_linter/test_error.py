@@ -20,8 +20,8 @@ RULE_JSON_OUTPUT = (
 
 
 @pytest.fixture
-def linter_error(rule, message=None):
-    return LinterError(42, "fake line", "fake filename", rule, message=message)
+def linter_error(mock_rule, message=None):
+    return LinterError(42, "fake line", "fake filename", mock_rule, message=message)
 
 
 @pytest.mark.parametrize(

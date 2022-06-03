@@ -4,12 +4,13 @@ content of conftest.py
 from unittest.mock import create_autospec
 import pytest
 from j2lint.linter.rule import Rule
+from j2lint.linter.collection import RulesCollection
 
 CONTENT = "content"
 
 
 @pytest.fixture
-def rule():
+def mock_rule():
     """
     Return a MagicMock with the spec of a Rule object
     """
@@ -19,6 +20,17 @@ def rule():
     r_obj.description = "Pytest Fixture Rule"
     r_obj.severity = "LOW"
     return r_obj
+
+
+@pytest.fixture
+def mock_collection(mock_rule):
+    """
+    Return a MagicMock with the spec of a Collection object
+    """
+    collection = create_autospec(RulesCollection)
+    # one rule for now
+    collection.rules = [mock_rule]
+    return collection
 
 
 @pytest.fixture()
