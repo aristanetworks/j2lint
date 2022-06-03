@@ -22,14 +22,14 @@ class Rule:
 
     @classmethod
     def checktext(cls, file, text):
-        """ class method for checktext """
+        """ default checktext method for each rule """
 
     @classmethod
     def check(cls, line):
-        """ class method for checklines """
+        """ default check method for each rule """
 
-    @classmethod
-    def is_valid_language(cls, file):
+    @staticmethod
+    def is_valid_language(file):
         """Check if the file is a valid Jinja file
 
         Args:

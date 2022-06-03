@@ -81,11 +81,11 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        if jinja_node_stack and jinja_node_stack[0].statement.start_delimeter \
-                in JINJA_START_DELIMETERS:
+        if (jinja_node_stack and jinja_node_stack[0].statement.start_delimeter
+                in JINJA_START_DELIMETERS):
             self.block_start_indent = 1
-        elif node.expected_indent == 0 and node.statement.start_delimeter \
-                in JINJA_START_DELIMETERS:
+        elif (node.expected_indent == 0 and node.statement.start_delimeter
+                in JINJA_START_DELIMETERS):
             self.block_start_indent = 1
         else:
             self.block_start_indent = 0

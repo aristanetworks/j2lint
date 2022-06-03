@@ -29,11 +29,11 @@ class LinterError:
                                 })
         else:
             if not settings.verbose:
-                formatstr = "{2}:{3} {5} ({6})"
+                format_str = "{2}:{3} {5} ({6})"
             else:
-                formatstr = "Linting rule: {0}\nRule description: " \
-                            "{1}\nError line: {2}:{3} {4}\nError message: {5}\n"
-            error = formatstr.format(self.rule.id, self.rule.description,
+                format_str = ("Linting rule: {0}\nRule description: "
+                            "{1}\nError line: {2}:{3} {4}\nError message: {5}\n")
+            error = format_str.format(self.rule.id, self.rule.description,
                                      self.filename, self.line_number, self.line,
                                      self.message, self.rule.short_description)
         logger.error(error)

@@ -12,8 +12,8 @@ class JinjaVariableNameFormatRule(Rule):
     """
     id = 'V2'
     short_description = 'jinja-variable-format'
-    description = "If variable is multi-words, underscore _ shall be used " \
-                  "as a separator: '{{ my_variable_name }}'"
+    description = ("If variable is multi-words, underscore _ shall be used "
+                  "as a separator: '{{ my_variable_name }}'")
     severity = 'LOW'
 
     regex = re.compile(r"[a-zA-Z0-9-_\"']+[-][a-zA-Z0-9-_\"']+")
@@ -38,7 +38,7 @@ class JinjaVariableNameFormatRule(Rule):
                 print(matches)
                 return True
 
-        logger.debug("Check line rule does not exist for %s",
+        logger.debug("Check text rule does not exist for %s",
                      __class__.__name__)
 
         return False

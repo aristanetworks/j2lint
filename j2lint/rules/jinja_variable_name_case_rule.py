@@ -34,7 +34,7 @@ class JinjaVariableNameCaseRule(Rule):
             if matches:
                 return True
 
-        logger.debug("Check line rule does not exist for %s",
+        logger.debug("Check text rule does not exist for %s",
                      __class__.__name__)
 
         return False

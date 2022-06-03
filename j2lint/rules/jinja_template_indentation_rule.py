@@ -13,8 +13,8 @@ class JinjaTemplateIndentationRule(Rule):
 
     id = 'S3'
     short_description = 'jinja-statements-indentation'
-    description = "All J2 statements must be indented by 4 more spaces within jinja delimiter. " \
-                  "To close a control, end tag must have same indentation level."
+    description = ("All J2 statements must be indented by 4 more spaces within jinja delimiter. "
+                  "To close a control, end tag must have same indentation level.")
     severity = 'HIGH'
 
     @classmethod
@@ -48,7 +48,7 @@ class JinjaTemplateIndentationRule(Rule):
             for error in errors:
                 result.append((error[0], error[1], error[2]))
 
-        logger.debug("Check text rule does not exist for %s",
+        logger.debug("Check line rule does not exist for %s",
             __class__.__name__)
 
         return result

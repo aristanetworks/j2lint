@@ -38,7 +38,7 @@ class JinjaTemplateSyntaxErrorRule(Rule):
                 result.append((error.lineno, text.split(
                     "\n")[error.lineno - 1], error.message))
 
-        logger.debug("Check text rule does not exist for %s",
+        logger.debug("Check line rule does not exist for %s",
             __class__.__name__)
 
         return result

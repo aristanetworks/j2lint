@@ -11,18 +11,18 @@ class JinjaOperatorHasSpacesRule(Rule):
     """
     id = 'S2'
     short_description = 'operator-enclosed-by-spaces'
-    description = "When variables are used in combination with an operator, " \
-                  "the operator shall be enclosed by space: '{{ my_value | to_json }}'"
+    description = ("When variables are used in combination with an operator, "
+                  "the operator shall be enclosed by space: '{{ my_value | to_json }}'")
     severity = 'LOW'
 
     operators = ['|', '+', '==']
     regexes = []
     for operator in operators:
         operator = "\\" + operator
-        regex = r"({[{|%](.*?)([^ |^}]" + operator + ")(.*?)[}|%]})|({[{|%](.*?)(" + operator + \
-            r"[^ |^{])(.*?)[}|%]})|({[{|%](.*?)([^ |^}] \s+" + operator + \
-            ")(.*?)[}|%]})|({[{|%](.*?)(" + \
-            operator + r" \s+[^ |^{])(.*?)[}|%]})"
+        regex = (r"({[{|%](.*?)([^ |^}]" + operator + ")(.*?)[}|%]})|({[{|%](.*?)(" + operator +
+            r"[^ |^{])(.*?)[}|%]})|({[{|%](.*?)([^ |^}] \s+" + operator +
+            ")(.*?)[}|%]})|({[{|%](.*?)(" +
+            operator + r" \s+[^ |^{])(.*?)[}|%]})")
         regexes.append(re.compile(regex))
 
     def check(self, line):
@@ -53,12 +53,14 @@ class JinjaOperatorHasSpacesRule(Rule):
                 issues.append(operator)
         if issues:
             if len(issues) > 1:
-                self.description = f"The operators {(', '.join(issues))} need to be enclosed " \
-                                   "by a single space on each side"
+                self.description = (f"The operators {(', '.join(issues))} need to be enclosed "
+                                   "by a single space on each side")
             else:
-                self.description = f"The operator {(', '.join(issues))} needs to be enclosed" \
-                                   " by a single space on each side"
+                self.description = (f"The operator {(', '.join(issues))} needs to be enclosed"
+                                   " by a single space on each side")
             return True
-        logger.debug("Check line rule does not exist for %s",
+
+        logger.debug("Check text rule does not exist for %s",
             __class__.__name__)
+
         return False

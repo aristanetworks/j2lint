@@ -26,7 +26,7 @@ class JinjaTemplateNoTabsRule(Rule):
             Object: Returns error object if found else None
         """
 
-        logger.debug("Check line rule does not exist for %s",
+        logger.debug("Check text rule does not exist for %s",
                      __class__.__name__)
 
         return self.regex.search(line)
