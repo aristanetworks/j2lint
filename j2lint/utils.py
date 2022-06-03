@@ -84,8 +84,10 @@ def get_files(file_or_dir_names):
     """
     file_paths = []
 
-    if not isinstance(file_or_dir_names, list):
-        raise TypeError(f"get_files expects a list and got {file_or_dir_names}")
+    if not isinstance(file_or_dir_names, (list, set)):
+        raise TypeError(
+            f"get_files expects a list or a set and got {file_or_dir_names}"
+        )
 
     for file_or_dir in file_or_dir_names:
         if os.path.isdir(file_or_dir):
@@ -111,7 +113,7 @@ def flatten(l):
         list: flattened list
     """
     if not isinstance(l, (list, tuple)):
-        raise TypeError(f"flatten is expecting a list and received {l}")
+        raise TypeError(f"flatten is expecting a list or tuple and received {l}")
     for el in l:
         if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
             yield from flatten(el)
