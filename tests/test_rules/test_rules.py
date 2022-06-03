@@ -12,52 +12,52 @@ def collection():
 
 PARAMS = [
     (
-        "tests/data/JinjaTemplateSyntaxErrorRule.j2",
+        "tests/test_rules/data/JinjaTemplateSyntaxErrorRule.j2",
         [("S0", 1)],
         [],
     ),
     (
-        "tests/data/JinjaVariableHasSpaceRule.j2",
+        "tests/test_rules/data/JinjaVariableHasSpaceRule.j2",
         [("S1", 1), ("S1", 2), ("S1", 3)],
         [],
     ),
     (
-        "tests/data/JinjaOperatorHasSpaceRule.j2",
+        "tests/test_rules/data/JinjaOperatorHasSpaceRule.j2",
         [("S2", 1), ("S2", 2), ("S2", 3)],
         [],
     ),
     (
-        "tests/data/JinjaTemplateIndentationRule.j2",
+        "tests/test_rules/data/JinjaTemplateIndentationRule.j2",
         [("S3", 2), ("S3", 6), ("S3", 5)],
         [],
     ),
     (
-        "tests/data/JinjaStatementHasSpacesRule.j2",
+        "tests/test_rules/data/JinjaStatementHasSpacesRule.j2",
         [("S4", 1), ("S4", 2), ("S4", 3)],
         [],
     ),
     (
-        "tests/data/JinjaTemplateNoTabsRule.j2",
+        "tests/test_rules/data/JinjaTemplateNoTabsRule.j2",
         [("S5", 1)],
         [],
     ),
     (
-        "tests/data/JinjaStatementDelimeterRule.j2",
+        "tests/test_rules/data/JinjaStatementDelimeterRule.j2",
         [("S6", 1), ("S6", 3), ("S6", 5)],
         [],
     ),
     (
-        "tests/data/JinjaTemplateSingleStatementRule.j2",
+        "tests/test_rules/data/JinjaTemplateSingleStatementRule.j2",
         [("S7", 1)],
         [],
     ),
     (
-        "tests/data/JinjaVariableNameCaseRule.j2",
+        "tests/test_rules/data/JinjaVariableNameCaseRule.j2",
         [("V1", 1), ("V1", 2), ("V1", 3)],
         [],
     ),
     (
-        "tests/data/JinjaVariableNameFormatRule.j2",
+        "tests/test_rules/data/JinjaVariableNameFormatRule.j2",
         [("V2", 1)],
         [],
     ),
