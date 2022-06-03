@@ -1,9 +1,24 @@
 """
 content of conftest.py
 """
+from unittest.mock import create_autospec
 import pytest
+from j2lint.linter.rule import Rule
 
 CONTENT = "content"
+
+
+@pytest.fixture
+def rule():
+    """
+    Return a MagicMock with the spec of a Rule object
+    """
+    r_obj = create_autospec(Rule)
+    r_obj.id = "T1"
+    r_obj.short_description = "pytest-fixture"
+    r_obj.description = "Pytest Fixture Rule"
+    r_obj.severity = "LOW"
+    return r_obj
 
 
 @pytest.fixture()
