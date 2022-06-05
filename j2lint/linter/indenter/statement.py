@@ -4,6 +4,7 @@ import re
 JINJA_STATEMENT_TAG_NAMES = [
     ('for', 'else', 'endfor'),
     ('if', 'elif', 'else', 'endif'),
+    ('macro', 'endmacro'),
 ]
 
 class JinjaStatement:
