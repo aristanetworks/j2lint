@@ -3,7 +3,6 @@
 """
 import re
 from j2lint.linter.rule import Rule
-from j2lint.logger import logger
 
 
 class JinjaOperatorHasSpacesRule(Rule):
@@ -59,8 +58,5 @@ class JinjaOperatorHasSpacesRule(Rule):
                 self.description = (f"The operator {(', '.join(issues))} needs to be enclosed"
                                    " by a single space on each side")
             return True
-
-        logger.debug("Check text rule does not exist for %s",
-            __class__.__name__)
 
         return False

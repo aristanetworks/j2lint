@@ -4,7 +4,6 @@
 """
 from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_statements
-from j2lint.logger import logger
 
 
 class JinjaTemplateSingleStatementRule(Rule):
@@ -28,8 +27,5 @@ class JinjaTemplateSingleStatementRule(Rule):
         """
         if len(get_jinja_statements(line)) > 1:
             return True
-
-        logger.debug("Check text rule does not exist for %s",
-                     __class__.__name__)
 
         return False

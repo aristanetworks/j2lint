@@ -4,7 +4,6 @@
 import re
 from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_variables
-from j2lint.logger import logger
 
 
 class JinjaVariableNameFormatRule(Rule):
@@ -37,8 +36,5 @@ class JinjaVariableNameFormatRule(Rule):
                 # FIXME - this print should be removed.
                 print(matches)
                 return True
-
-        logger.debug("Check text rule does not exist for %s",
-                     __class__.__name__)
 
         return False

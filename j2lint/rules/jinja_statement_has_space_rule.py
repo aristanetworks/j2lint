@@ -4,7 +4,6 @@
 """
 import re
 from j2lint.linter.rule import Rule
-from j2lint.logger import logger
 
 
 class JinjaStatementHasSpaceRule(Rule):
@@ -27,7 +26,5 @@ class JinjaStatementHasSpaceRule(Rule):
         Returns:
             Object: Returns error object if found else None
         """
-        logger.debug("Check text rule does not exist for %s",
-                     __class__.__name__)
 
         return self.regex.search(line)

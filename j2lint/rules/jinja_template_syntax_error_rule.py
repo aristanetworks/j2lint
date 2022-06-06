@@ -3,7 +3,6 @@
 """
 import jinja2
 from j2lint.linter.rule import Rule
-from j2lint.logger import logger
 
 
 class JinjaTemplateSyntaxErrorRule(Rule):
@@ -37,8 +36,5 @@ class JinjaTemplateSyntaxErrorRule(Rule):
             except jinja2.TemplateSyntaxError as error:
                 result.append((error.lineno, text.split(
                     "\n")[error.lineno - 1], error.message))
-
-        logger.debug("Check line rule does not exist for %s",
-            __class__.__name__)
 
         return result

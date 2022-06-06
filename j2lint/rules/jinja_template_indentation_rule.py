@@ -48,7 +48,5 @@ class JinjaTemplateIndentationRule(Rule):
             for error in errors:
                 result.append((error[0], error[1], error[2]))
 
-        logger.debug("Check line rule does not exist for %s",
-            __class__.__name__)
 
         return result
