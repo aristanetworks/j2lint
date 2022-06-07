@@ -1,3 +1,4 @@
+""" setup module """
 import setuptools
 from j2lint import __author__, __license__, NAME, VERSION, DESCRIPTION
 
@@ -9,7 +10,7 @@ setuptools.setup(
     version=VERSION,
     author="Manuwela Kanade",
     author_email="manuwela.kanade@gslab.com",
-    description=DESCRIPTION.split("\n")[0],
+    description=DESCRIPTION.split("\n", maxsplit=1)[0],
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/aristanetworks/j2lint.git",
