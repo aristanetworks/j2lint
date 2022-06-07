@@ -20,13 +20,15 @@ class Rule:
     def __repr__(self):
         return self.id + ": " + self.description
 
-    @classmethod
-    def checktext(cls, file, text):
-        """ default checktext method for each rule """
+    def checktext(self, file, text):
+        """ This method is expected to be overriden by child classes """
+        # pylint: disable=no-self-use, unused-argument
+        return []
 
-    @classmethod
-    def check(cls, line):
-        """ default check method for each rule """
+    def check(self, line):
+        """ This method is expected to be overriden by child classes """
+        # pylint: disable=no-self-use, unused-argument
+        return []
 
     @staticmethod
     def is_valid_language(file):
@@ -96,9 +98,8 @@ class Rule:
 
         results = self.checktext(file, text)
 
-        if results is not None:
-            for line, section, message in results:
-                errors.append(LinterError(
-                    line, section, file['path'], self, message))
+        for line, section, message in results:
+            errors.append(LinterError(
+                line, section, file['path'], self, message))
 
         return errors

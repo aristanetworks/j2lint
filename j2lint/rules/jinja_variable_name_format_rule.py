@@ -32,9 +32,6 @@ class JinjaVariableNameFormatRule(Rule):
             matches = [match for match in matches if (
                 "'" not in match) and ('"' not in match)]
             if matches:
-                # pylint: disable = fixme
-                # FIXME - this print should be removed.
-                print(matches)
                 return True
 
         return False
