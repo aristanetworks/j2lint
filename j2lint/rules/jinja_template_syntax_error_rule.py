@@ -13,8 +13,7 @@ class JinjaTemplateSyntaxErrorRule(Rule):
     description = "Jinja syntax should be correct"
     severity = 'HIGH'
 
-    @classmethod
-    def checktext(cls, file, text):
+    def checktext(self, file, text):
         """Checks if the given text has jinja syntax error
 
         Args:

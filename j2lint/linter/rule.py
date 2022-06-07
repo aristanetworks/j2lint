@@ -22,12 +22,12 @@ class Rule:
 
     def checktext(self, file, text):
         """ This method is expected to be overriden by child classes """
-        # pylint: disable=no-self-use, unused-argument
+        # pylint: disable=unused-argument
         return []
 
     def check(self, line):
         """ This method is expected to be overriden by child classes """
-        # pylint: disable=no-self-use, unused-argument
+        # pylint: disable=unused-argument
         return []
 
     @staticmethod

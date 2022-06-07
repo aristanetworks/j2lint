@@ -15,8 +15,7 @@ class JinjaTemplateSingleStatementRule(Rule):
     description = "Jinja statements should be on separate lines"
     severity = 'MEDIUM'
 
-    @classmethod
-    def check(cls, line):
+    def check(self, line):
         """Checks if the given line matches the error regex
 
         Args:

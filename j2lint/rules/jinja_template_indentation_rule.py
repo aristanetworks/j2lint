@@ -17,8 +17,7 @@ class JinjaTemplateIndentationRule(Rule):
                   "To close a control, end tag must have same indentation level.")
     severity = 'HIGH'
 
-    @classmethod
-    def checktext(cls, file, text):
+    def checktext(self, file, text):
         """Checks if the given text has the error
 
         Args:

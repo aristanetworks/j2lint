@@ -19,8 +19,7 @@ class JinjaStatementDelimiterRule(Rule):
     description = "Jinja statements should not have {%- or {%+ or -%} as delimiters"
     severity = 'LOW'
 
-    @classmethod
-    def check(cls, line):
+    def check(self, line):
         """Checks if the given line matches the wrong delimiters
 
         Args:
