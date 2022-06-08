@@ -1,8 +1,7 @@
 ---
 name: Code Testing
 on:
-  pull-request:
-    types: [opened, reopened]
+  pull-request
 
 jobs:
   pylint:
