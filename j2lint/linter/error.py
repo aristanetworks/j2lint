@@ -4,7 +4,7 @@ import json
 from j2lint.settings import settings
 from j2lint.logger import logger
 
-# pylint: disable=too-few-public-methods,too-many-arguments
+# pylint: disable=too-few-public-methods
 
 
 class LinterError:
@@ -12,6 +12,7 @@ class LinterError:
     """
 
     def __init__(self, line_number, line, filename, rule, message=None):
+        # pylint: disable=too-many-arguments
         self.line_number = line_number
         self.line = line
         self.filename = filename

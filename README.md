@@ -146,7 +146,7 @@ j2lint <path-to-directory-of-templates> --json
 2. Add custom rule classes which are similar to classes in j2lint/rules directory:
     The file name of rules should be in snake_case and the class name should be the PascalCase version of file name. For example: 
     * File name - jinja_operator_has_spaces_rule.py
-     * Class name - JinjaOperatorHasSpacesRule
+    * Class name - JinjaOperatorHasSpacesRule
 3. Run the jinja2 linter using --rules-dir option
 
     ```bash

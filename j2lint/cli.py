@@ -87,7 +87,7 @@ def sort_issues(issues):
 
 
 def get_linting_issues(file_or_dir_names, options, collection, checked_files):
-    """ checking errors and warnings in files """
+    """ checking errors and warnings in files and printing the result"""
     lint_errors = {}
     lint_warnings = {}
     files = get_files(file_or_dir_names)

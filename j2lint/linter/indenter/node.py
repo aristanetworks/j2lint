@@ -175,4 +175,3 @@ class Node:
             self.children.append(node)
             line_no = line_no + 1
             self.check_indent_level(result, node)
-            continue
