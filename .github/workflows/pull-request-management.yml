@@ -1,7 +1,7 @@
 ---
 name: Code Testing
 on:
-  pull-request
+  pull_request
 
 jobs:
   pylint:
