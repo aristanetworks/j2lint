@@ -54,8 +54,8 @@ class Node:
         node.parent = self
         return node
 
-    @classmethod
-    def create_indentation_error(cls, node, message):
+    @staticmethod
+    def create_indentation_error(node, message):
         """Creates indentation error tuple
 
         Args:
