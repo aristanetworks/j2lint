@@ -155,6 +155,18 @@ j2lint --help
 j2lint --stdin
 ```
 
+### Using j2lint as a pre-commit-hook
+
+1. Add j2lint pre-commit hook inside your repository in .pre-commit-config.yaml.
+```bash
+   - repo: https://github.com/aristanetworks/j2lint.git
+     rev: <release_tag/sha>
+     hooks:
+       - id: j2lint 
+```
+
+2. Run pre-commit -> ```pre-commit run --all-files ```
+
 ## Acknowledgement
 
 This project is based on [salt-lint](https://github.com/warpnet/salt-lint) and [jinjalint](https://github.com/motet-a/jinjalint)
