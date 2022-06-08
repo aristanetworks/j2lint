@@ -31,6 +31,7 @@ class Node:
     expected_indent = 0
     block_start_indent = 0
 
+
     def create_node(self, line, line_no, indent_level=0):
         """Initializes a Node class object
 
