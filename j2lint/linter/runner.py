@@ -8,9 +8,13 @@ from j2lint.logger import logger
 
 class Runner:
     """Class to run the rules collection for all the files
+
+    TODO: refactor - with this code it seems that files will always
+          be a set of 1 file - indeed, a different Runner is created
+          for each file in cli.py
     """
 
-    def __init__(self, collection, file_name, config, checked_files=None):
+    def __init__(self, collection, file_name, checked_files=None):
         self.collection = collection
         self.files = set()
         self.files.add((file_name, get_file_type(file_name)))
@@ -35,14 +39,14 @@ class Runner:
         """Runs the lint rules collection on all the files
 
         Returns:
-            list: list of LintError objects
+            list: list of LinterError objects
         """
         files = []
         for index, file in enumerate(self.files):
             logger.debug("Running linting rules for {}".format(file))
             file_path = file[0]
             file_type = file[1]
-            file_dict = {'path': file_path, 'type': file_type}
+            file_dict = {"path": file_path, "type": file_type}
             # Skip already checked files
             if self.is_already_checked(file_path):
                 continue
@@ -53,11 +57,14 @@ class Runner:
 
         errors = []
         warnings = []
+        # FIXME - if there are multiple files,
+        # errros and warnings are overwritten..
         for file in files:
             errors, warnings = self.collection.run(file)
 
         # Update list of checked files
-        self.checked_files.update([file_dict['path'] for file_dict in files])
+        self.checked_files.update([file_dict["path"] for file_dict in files])
 
+        # TODO - log also warnings
         logger.info("Linting errors found {}".format(errors))
         return errors, warnings
