@@ -93,7 +93,7 @@ def sort_issues(issues):
 
 
 def get_linting_issues(file_or_dir_names, options, collection, checked_files):
-    """ checking errors and warnings in files and printing the result"""
+    """ checking errors and warnings """
     lint_errors = {}
     lint_warnings = {}
     json_output = {}
