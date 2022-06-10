@@ -131,7 +131,7 @@ def get_tuple(l, item):
 
 
 def get_jinja_statements(text, indentation=False):
-    """Gets jinja statements with {%[-/+] [-]%} delimeters
+    """Gets jinja statements with {%[-/+] [-]%} delimiters
 
     Args:
         text (string): multiline text to search the jinja statements in
@@ -158,13 +158,13 @@ def get_jinja_statements(text, indentation=False):
 
 
 def delimit_jinja_statement(line, start="{%", end="%}"):
-    """Adds end delimeters for a jinja statement
+    """Adds end delimiters for a jinja statement
 
     Args:
         line (string): text line
 
     Returns:
-        [string]: jinja statement with jinja start and end delimeters
+        [string]: jinja statement with jinja start and end delimiters
     """
     return start + line + end
 

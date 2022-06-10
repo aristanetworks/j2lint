@@ -33,7 +33,7 @@ class JinjaTemplateIndentationRule(Rule):
 
         with open(file['path']) as template:
             text = template.read()
-            # Collect only Jinja Statements within delimeters {% and %} and ignore the other statements
+            # Collect only Jinja Statements within delimiters {% and %} and ignore the other statements
             lines = get_jinja_statements(text, indentation=True)
 
             # Build a tree out of Jinja Statements to get the expected indentation level for each statement

@@ -1,4 +1,4 @@
-"""JinjaStatementDelimeterRule.py - Rule class to check if jinja delimeters
+"""JinjaStatementDelimiterRule.py - Rule class to check if jinja delimiters
                                     are wrong.
 """
 import re
@@ -7,16 +7,16 @@ from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_statements
 
 
-class JinjaStatementDelimeterRule(Rule):
-    """Rule class to check if jinja delimeters are wrong.
+class JinjaStatementDelimiterRule(Rule):
+    """Rule class to check if jinja delimiters are wrong.
     """
     id = 'S6'
-    short_description = 'jinja-statements-delimeter'
-    description = "Jinja statements should not have {%- or {%+ or -%} as delimeters"
+    short_description = 'jinja-statements-delimiter'
+    description = "Jinja statements should not have {%- or {%+ or -%} as delimiters"
     severity = 'LOW'
 
     def check(self, file, line):
-        """Checks if the given line matches the wrong delimeters
+        """Checks if the given line matches the wrong delimiters
 
         Args:
             file (string): file path

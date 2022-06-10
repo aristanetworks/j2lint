@@ -1,6 +1,6 @@
 """JinjaStatementHasSpacesRule.py - Rule class to check if jinja statement has
                                     atleast a single space surrounding the
-                                    delimeter.
+                                    delimiter.
 """
 import re
 from j2lint.linter.rule import Rule
@@ -8,7 +8,7 @@ from j2lint.linter.rule import Rule
 
 class JinjaStatementHasSpacesRule(Rule):
     """Rule class to check if jinja statement has atleast a single space
-       surrounding the delimeter.
+       surrounding the delimiter.
     """
     id = 'S4'
     short_description = 'jinja-statements-single-space'
