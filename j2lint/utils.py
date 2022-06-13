@@ -23,18 +23,30 @@ def load_plugins(directory):
     """
     result = []
     file_handle = None
-    for pluginfile in glob.glob(os.path.join(directory, '[A-Za-z_]*.py')):
-        pluginname = os.path.basename(pluginfile.replace('.py', ''))
+    for plugin_file in glob.glob(os.path.join(directory, "[A-Za-z_]*.py")):
+        plugin_name = os.path.basename(plugin_file.replace(".py", ""))
         try:
-            logger.debug("Loading plugin %s", pluginname)
-            spec = importlib.util.spec_from_file_location(
-                pluginname, pluginfile)
-            if pluginname != "__init__":
-                class_name = ''.join(str(name).capitalize()for name in pluginname.split('_'))
+            logger.debug("Loading plugin %s", plugin_name)
+            spec = importlib.util.spec_from_file_location(plugin_name, plugin_file)
+            if plugin_name != "__init__":
+                class_name = "".join(
+                    str(name).capitalize() for name in plugin_name.split("_")
+                )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
                 obj = getattr(module, class_name)
                 result.append(obj)
+        except AttributeError:
+            # pylint: disable=fixme
+            # FIXME - support legacy rule syntax before pylint compliance
+            #         will be removed once j2lint is published.
+            #         and only the log will be kept
+            #         maybe look into the built-in __subclasses__ method
+            try:
+                obj = getattr(module, plugin_name)
+                result.append(obj)
+            except AttributeError:
+                logger.warning("Failed to load plugin %s", plugin_name)
         finally:
             if file_handle:
                 file_handle.close()
@@ -98,8 +110,7 @@ def get_files(file_or_dir_names):
         else:
             if get_file_type(file_or_dir) == LANGUAGE_JINJA:
                 file_paths.append(file_or_dir)
-    logger.debug("Linting directory %s: files %s",
-        file_or_dir_names, file_paths)
+    logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
     return file_paths
 
 
@@ -115,8 +126,7 @@ def flatten(nested_list):
     if not isinstance(l, (list, tuple)):
         raise TypeError(f"flatten is expecting a list or tuple and received {l}")
     for element in nested_list:
-        if (isinstance(element, Iterable) and
-                not isinstance(element, (str, bytes))):
+        if isinstance(element, Iterable) and not isinstance(element, (str, bytes)):
             yield from flatten(element)
         else:
             yield element
@@ -176,18 +186,18 @@ def get_jinja_statements(text, indentation=False):
     """
     statements = []
     count = 0
-    regex_pattern = re.compile(
-        "(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
-    newline_pattern = re.compile(r'\n')
-    lines = text.split('\n')
+    regex_pattern = re.compile("(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
+    newline_pattern = re.compile(r"\n")
+    lines = text.split("\n")
     for match in regex_pattern.finditer(text):
         count += 1
-        start_line = len(newline_pattern.findall(text, 0, match.start(2)))+1
-        end_line = len(newline_pattern.findall(text, 0, match.end(2)))+1
+        start_line = len(newline_pattern.findall(text, 0, match.start(2))) + 1
+        end_line = len(newline_pattern.findall(text, 0, match.end(2))) + 1
         if indentation and lines[start_line - 1].split()[0] not in ["{%", "{%-", "{%+"]:
             continue
         statements.append(
-            (match.group(2), start_line, end_line, match.group(1), match.group(4)))
+            (match.group(2), start_line, end_line, match.group(1), match.group(4))
+        )
     logger.debug("Found jinja statements %s", statements)
     return statements
 
@@ -214,8 +224,7 @@ def get_jinja_comments(text):
         [list]: returns list of jinja comments
     """
     comments = []
-    regex_pattern = re.compile(
-        "(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
+    regex_pattern = re.compile("(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
     for line in regex_pattern.finditer(text):
         comments.append(line.group(2))
     return comments
@@ -231,8 +240,7 @@ def get_jinja_variables(text):
         [list]: returns list of jinja variables
     """
     variables = []
-    regex_pattern = regex_pattern = re.compile(
-        "(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
+    regex_pattern = regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
     for line in regex_pattern.finditer(text):
         variables.append(line.group(2))
     return variables
@@ -256,8 +264,9 @@ def is_rule_disabled(text, rule):
                 return True
             # pylint: disable=fixme
             # FIXME - remove next release
-            if (hasattr(rule, "deprecated_short_description") and
-               rule.deprecated_short_description == line.group(1)):
+            if hasattr(
+                rule, "deprecated_short_description"
+            ) and rule.deprecated_short_description == line.group(1):
                 return True
             if rule.id == line.group(1):
                 return True
