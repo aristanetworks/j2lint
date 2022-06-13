@@ -14,6 +14,7 @@ repos:
     rev: v1.6.0
     hooks:
       - id: autopep8
+
   - repo: https://github.com/pycqa/pylint
     rev: 'pylint-2.6.0'
     hooks:
@@ -27,3 +28,4 @@ repos:
         additional_dependencies:
           - jinja2
         exclude: ^tests/
+          - -d duplicate-code
