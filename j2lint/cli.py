@@ -169,6 +169,7 @@ def run(args=None):
     #         will return exit code 2 so that could be confusing.
     #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
 
+    # FIXME - remove this during refactoring
     # pylint: disable=too-many-branches
 
     parser = create_parser()
