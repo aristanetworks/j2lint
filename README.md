@@ -13,21 +13,20 @@ Build a Jinja2 linter that will provide the following capabilities:
 
 ## Syntax and code style issues
 
-* **S0 (jinja-syntax-error)**: Jinja2 syntax should be correct
-* **S1 (single-space-decorator)**: A single space shall be added between Jinja2 curly brackets and a variable's name
-* **S2 (operator-enclosed-by-spaces)**: When variables are used in combination with an operator, the operator shall be enclosed by space
-* **S3 (jinja-statements-indentation)**: Nested jinja code block shall follow next rules:
-   - All J2 statements must be enclosed by 1 space
-   - All J2 statements must be indented by 4 more spaces within jinja delimiter
-   - To close a control, end tag must have same indentation level
-* **S4 (jinja-statements-single-space)**: Jinja statement should have a single space before and after
-* **S5 (jinja-statements-no-tabs)**: Indentation are 4 spaces and NOT tabulation
-* **S6 (jinja-statements-delimiter)**: Jinja statements should not have {%- or {%+ or -%} as delimiters
-* **S7 (single-statement-per-line)**: Jinja statements should be on separate lines
-* **V1 (jinja-variable-lower-case)**: All variables shall use lower case
-* **V2 (jinja-variable-format)**: If variable is multi-words, underscore _ shall be used as a separator
+| Code | Short Description | Description |
+|------|-------------------|-------------|
+| S0   | `jinja-syntax-error`            | Jinja2 syntax should be correct |
+| S1   | `single-space-decorator`        | A single space shall be added between Jinja2 curly brackets and a variable's name |
+| S2   | `operator-enclosed-by-spaces`   | When variables are used in combination with an operator, the operator shall be enclosed by space |
+| S3   | `jinja-statements-indentation`  | Nested jinja code block shall follow next rules:<br>- All J2 statements must be enclosed by 1 space<br>- All J2 statements must be indented by 4 more spaces within jinja delimiter<br>- To close a control, end tag must have same indentation level |
+| S4   | `jinja-statements-single-space` | Jinja statement should have a single space before and after |
+| S5   | `jinja-statements-no-tabs`      | Indentation are 4 spaces and NOT tabulation |
+| S6*  | `jinja-statements-delimiter`    | Jinja statements should not have {%- or {%+ or -%} as delimiters |
+| S7   | `single-statement-per-line`     | Jinja statements should be on separate lines |
+| V1   | `jinja-variable-lower-case`     | All variables shall use lower case |
+| V2   | `jinja-variable-format`         | If variable is multi-words, underscore _ shall be used as a separator |
 
-_Deprecation Warning_: There was a typo from day 1 in the j2lint repo on
+_*Deprecation Warning_: There was a typo from day 1 in the j2lint repo on
 delim**i**ter. It was written delim**e**ter. The current code version has fixed the
 typo but to ensure backward compatibility the old syntax is still supported. 
 It will be deprecated when j2lint is officially released.
