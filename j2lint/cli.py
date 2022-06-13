@@ -67,12 +67,6 @@ def create_parser():
     return parser
 
 
-def print_j2lint_version(options):
-    """ Version of j2lint """
-    if options.version:
-        print(f"Jinja2-Linter Version {VERSION}")
-
-
 def sort_issues(issues):
     """Sorted list of issues
 
@@ -174,6 +168,9 @@ def run(args=None):
     # FIXME - `j2lint -stdin tests/data/test.j2`
     #         will return exit code 2 so that could be confusing.
     #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
+
+    # pylint: disable=too-many-branches
+
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
@@ -217,7 +214,9 @@ def run(args=None):
         return 0
 
     # Version of j2lint
-    print_j2lint_version(options)
+    if options.version:
+        print(f"Jinja2-Linter Version {VERSION}")
+        return 0
 
     # Print help message
     if not file_or_dir_names:

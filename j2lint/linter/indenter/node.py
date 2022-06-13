@@ -22,15 +22,16 @@ class Node:
     """Node class which represents a jinja file as a tree
     """
 
-    statement = None
-    tag = None
-    parent = None
-    node_start = 0
-    node_end = 0
-    children = []
-    expected_indent = 0
-    block_start_indent = 0
-
+    # pylint: disable=too-many-instance-attributes
+    def __init__(self):
+        self.statement = None
+        self.tag = None
+        self.parent = None
+        self.node_start = 0
+        self.node_end = 0
+        self.children = []
+        self.block_start_indent = 0
+        self.expected_indent = 0
 
     def create_node(self, line, line_no, indent_level=0):
         """Initializes a Node class object
