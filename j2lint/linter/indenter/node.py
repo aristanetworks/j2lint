@@ -12,7 +12,7 @@ MIDDLE_TAGS = list(flatten([[i[1:-1] for i in JINJA_STATEMENT_TAG_NAMES]]))
 
 INDENT_SHIFT = 4
 DEFAULT_WHITESPACES = 1
-JINJA_START_DELIMETERS = ['{%-', '{%+']
+JINJA_START_DELIMITERS = ['{%-', '{%+']
 
 jinja_node_stack = []
 jinja_delimiter_stack = []
@@ -83,16 +83,16 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        if (jinja_node_stack and jinja_node_stack[0].statement.start_delimeter
-                in JINJA_START_DELIMETERS):
+        if (jinja_node_stack and jinja_node_stack[0].statement.start_delimiter
+                in JINJA_START_DELIMITERS):
             self.block_start_indent = 1
-        elif (node.expected_indent == 0 and node.statement.start_delimeter
-                in JINJA_START_DELIMETERS):
+        elif (node.expected_indent == 0 and node.statement.start_delimiter
+                in JINJA_START_DELIMITERS):
             self.block_start_indent = 1
         else:
             self.block_start_indent = 0
 
-        if node.statement.start_delimeter in JINJA_START_DELIMETERS:
+        if node.statement.start_delimiter in JINJA_START_DELIMITERS:
             expected = node.expected_indent + self.block_start_indent
         else:
             expected = node.expected_indent + DEFAULT_WHITESPACES + self.block_start_indent

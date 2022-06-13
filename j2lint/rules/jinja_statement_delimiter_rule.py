@@ -7,17 +7,18 @@ from j2lint.utils import get_jinja_statements
 
 
 class JinjaStatementDelimiterRule(Rule):
-    """Rule class to check if jinja delimiters are wrong.
-    """
-    id = 'S6'
+    """Rule class to check if jinja delimiters are wrong."""
+
+    id = "S6"
+    # pylint: disable=fixme
     # FIXME - for now supporting both syntax for the short_description to be backward
     #         compatible.
     #         The doc and READMEs are fixed to show only the new syntax.
     #         This will be removed
-    short_description = 'jinja-statements-delimiter'
-    deprecated_short_description = 'jinja-statements-delimeter'
+    short_description = "jinja-statements-delimiter"
+    deprecated_short_description = "jinja-statements-delimeter"
     description = "Jinja statements should not have {%- or {%+ or -%} as delimiters"
-    severity = 'LOW'
+    severity = "LOW"
 
     def check(self, line):
         """Checks if the given line matches the wrong delimiters

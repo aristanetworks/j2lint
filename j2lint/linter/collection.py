@@ -94,6 +94,7 @@ class RulesCollection:
         """
         result = cls()
         result.rules = load_plugins(os.path.expanduser(rules_dir))
+        # pylint: disable=fixme
         # FIXME: once the first version of j2lint is tagged and publish,
         #        remove the deprecated_short_description
         for rule in result.rules:
