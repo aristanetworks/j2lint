@@ -25,6 +25,11 @@ Syntax and code style issues detected by Jinja2 Linter are:
 * **V1 (jinja-variable-lower-case)**: All variables shall use lower case
 * **V2 (jinja-variable-format)**: If variable is multi-words, underscore _ shall be used as a separator
 
+_Deprecation Warning_: There was a typo from day 1 in the j2lint repo on
+delim**i**ter. It was written delim**e**ter. The current code version has fixed the
+typo but to ensure backward compatibility the old syntax is still supported. 
+It will be deprecated when j2lint is officially released.
+
 ## Getting Started
 
 ### Install with pip
