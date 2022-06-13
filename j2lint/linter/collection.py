@@ -89,10 +89,26 @@ class RulesCollection:
         """
         result = clazz()
         result.rules = load_plugins(os.path.expanduser(rules_dir))
+        # FIXME: once the first version of j2lint is tagged and publish,
+        #        remove the deprecated_short_description
         for rule in result.rules:
-            if (rule.short_description in ignore_rules) or (rule.id in ignore_rules):
+            if (
+                rule.short_description in ignore_rules
+                or rule.id in ignore_rules
+                or (
+                    hasattr(rule, "deprecated_short_description")
+                    and rule.deprecated_short_description in ignore_rules
+                )
+            ):
                 rule.ignore = True
-            if (rule.short_description in warn_rules) or (rule.id in warn_rules):
+            if (
+                rule.short_description in warn_rules
+                or rule.id in warn_rules
+                or (
+                    hasattr(rule, "deprecated_short_description")
+                    and rule.deprecated_short_description in warn_rules
+                )
+            ):
                 rule.warn.append(rule)
         logger.info(
             "Created collection from rules directory {}".format(rules_dir))
