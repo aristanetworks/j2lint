@@ -23,6 +23,7 @@ class Node:
     """
 
     # pylint: disable=too-many-instance-attributes
+    # Eight arguments is reasonable in this case
     def __init__(self):
         self.statement = None
         self.tag = None
