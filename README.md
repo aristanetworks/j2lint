@@ -20,7 +20,7 @@ Syntax and code style issues detected by Jinja2 Linter are:
    - To close a control, end tag must have same indentation level
    - Indentation are 4 spaces and NOT tabulation
 5. S7 Jinja statements should be on separate lines
-6. S8 Jinja statements should not have {%- or {%+ or -%} as delimeters
+6. S8 Jinja statements should not have {%- or {%+ or -%} as delimiters
 7. VAR-1 All variables shall use lower case
 8. VAR-2 If variable is multi-words, underscore _ shall be used as a separator
 
@@ -109,7 +109,7 @@ j2lint <path-to-directory-of-templates> --json
 
 ### Ignoring rules
 
-1. The --ignore option can have one or more of these values: syntax-error, single-space-decorator, filter-enclosed-by-spaces, jinja-statement-single-space, jinja-statements-indentation, no-tabs, single-statement-per-line, jinja-delimeter, jinja-variable-lower-case, jinja-variable-format.
+1. The --ignore option can have one or more of these values: syntax-error, single-space-decorator, filter-enclosed-by-spaces, jinja-statement-single-space, jinja-statements-indentation, no-tabs, single-statement-per-line, jinja-delimiter, jinja-variable-lower-case, jinja-variable-format.
 2. If multiple rules are to be ignored, use the --ignore option along with rule descriptions separated by space.
 
 ```bash
@@ -122,13 +122,13 @@ j2lint <path-to-directory-of-templates> --ignore <rule_description1> <rule_desc>
 {# j2lint: disable=S8}
 
 # OR
-{# j2lint: disable=jinja-delimeter #}
+{# j2lint: disable=jinja-delimiter #}
 ```
 
 4. Disabling multiple rules
 
 ```jinja2
-{# j2lint: disable=jinja-delimeter j2lint: disable=S1 #}
+{# j2lint: disable=jinja-delimiter j2lint: disable=S1 #}
 ```
 
 ### Adding custom rules
@@ -162,7 +162,7 @@ j2lint --stdin
    - repo: https://github.com/aristanetworks/j2lint.git
      rev: <release_tag/sha>
      hooks:
-       - id: j2lint 
+       - id: j2lint
 ```
 
 2. Run pre-commit -> ```pre-commit run --all-files ```

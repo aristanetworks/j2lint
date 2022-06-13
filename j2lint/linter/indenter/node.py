@@ -13,10 +13,10 @@ MIDDLE_TAGS = list(flatten([[i[1:-1] for i in JINJA_STATEMENT_TAG_NAMES]]))
 INDENT_SHIFT = 4
 DEFAULT_WHITESPACES = 1
 BLOCK_START_INDENT = 0
-JINJA_START_DELIMETERS = ['{%-', '{%+']
+JINJA_START_DELIMITERS = ['{%-', '{%+']
 
 jinja_node_stack = []
-jinja_delimeter_stack = []
+jinja_delimiter_stack = []
 
 
 class Node:
@@ -62,8 +62,8 @@ class Node:
         """
         return (node.statement.start_line_no,
                 delimit_jinja_statement(node.statement.line,
-                                        node.statement.start_delimeter,
-                                        node.statement.end_delimeter),
+                                        node.statement.start_delimiter,
+                                        node.statement.end_delimiter),
                 message)
 
     def check_indent_level(self, result, node):
@@ -74,14 +74,14 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        if len(jinja_node_stack) and jinja_node_stack[0].statement.start_delimeter in JINJA_START_DELIMETERS:
+        if len(jinja_node_stack) and jinja_node_stack[0].statement.start_delimiter in JINJA_START_DELIMITERS:
             BLOCK_START_INDENT = 1
-        elif node.expected_indent == 0 and node.statement.start_delimeter in JINJA_START_DELIMETERS:
+        elif node.expected_indent == 0 and node.statement.start_delimiter in JINJA_START_DELIMITERS:
             BLOCK_START_INDENT = 1
         else:
             BLOCK_START_INDENT = 0
 
-        if node.statement.start_delimeter in JINJA_START_DELIMETERS:
+        if node.statement.start_delimiter in JINJA_START_DELIMITERS:
             expected = node.expected_indent + BLOCK_START_INDENT
         else:
             expected = node.expected_indent + DEFAULT_WHITESPACES + BLOCK_START_INDENT

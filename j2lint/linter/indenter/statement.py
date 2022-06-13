@@ -21,5 +21,5 @@ class JinjaStatement:
         self.words = line[0].split()
         self.start_line_no = line[1]
         self.end_line_no = line[2]
-        self.start_delimeter = line[3]
-        self.end_delimeter = line[4]
+        self.start_delimiter = line[3]
+        self.end_delimiter = line[4]
