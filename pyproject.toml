@@ -1,5 +1,5 @@
 [tool.tox]
-legacy_tox_init = """
+legacy_tox_ini = """
 [tox]
 envlist = py36,py37,py38,py39,py310
 
