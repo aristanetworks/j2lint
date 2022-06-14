@@ -29,4 +29,3 @@ jobs:
         run: pip install tox tox-gh-actions
       - name: "Run tox for ${{ matrix.python }}"
         run: tox
-
