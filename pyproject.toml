@@ -16,7 +16,7 @@ python =
 deps =
   pytest
   pytest-cov
-commands = pytest 
+commands = pytest
 
 [testenv:clean]
 deps = coverage[toml]

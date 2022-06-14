@@ -19,7 +19,7 @@ def mock_rule():
     r_obj.short_description = "pytest-fixture"
     r_obj.description = "Pytest Fixture Rule"
     r_obj.severity = "LOW"
-    return r_obj
+    yield r_obj
 
 
 @pytest.fixture
@@ -30,7 +30,36 @@ def mock_collection(mock_rule):
     collection = create_autospec(RulesCollection)
     # one rule for now
     collection.rules = [mock_rule]
-    return collection
+    yield collection
+
+
+@pytest.fixture
+def test_rule():
+    """
+    return a Rule object to use in tests
+    """
+    r_obj = Rule()
+    r_obj.id = "T0"
+    r_obj.description = "test Rule object"
+    yield r_obj
+
+
+@pytest.fixture
+def test_other_rule():
+    """
+    return a Rule object to use in tests
+    """
+    r_obj = Rule()
+    r_obj.id = "T1"
+    r_obj.description = "other test Rule object"
+    yield r_obj
+
+
+@pytest.fixture
+def test_collection(test_rule):
+    collection = RulesCollection()
+    collection.extend([test_rule])
+    yield collection
 
 
 @pytest.fixture()

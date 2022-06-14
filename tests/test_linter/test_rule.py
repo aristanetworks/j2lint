@@ -6,26 +6,15 @@ import pytest
 from j2lint.linter.rule import Rule
 
 
-@pytest.fixture
-def rule():
-    """
-    return a Rule object to use in tests
-    """
-    r_obj = Rule()
-    r_obj.id = "S2"
-    r_obj.description = "test Rule object"
-    return r_obj
-
-
 class TestRule:
-    def test__repr__(self, rule):
+    def test__repr__(self, test_rule):
         """
         Test the Rule __repr__ format
         """
-        assert str(rule) == "S2: test Rule object"
+        assert str(test_rule) == "T0: test Rule object"
 
     @pytest.mark.skip("This method will be removed")
-    def test_is_valid_language(self, rule, file):
+    def test_is_valid_language(self, test_rule, file):
         """ """
 
     @pytest.mark.skip("This method is overwritten  by child classes")
