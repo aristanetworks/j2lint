@@ -2,13 +2,13 @@
 
 AVD Ecosystem - Jinja2 Linter
 
-## Goal
+## Project Goals
 
 Build a Jinja2 linter that will provide the following capabilities:
 
 - Validate syntax according to [AVD style guide](https://avd.sh/en/latest/docs/contribution/style-guide.html)
-- Develop extension that works with VSCode and potentianly others IDEs i.e PyCharm
-  - if supporting multiple IDEs adds to much complexity, support for VSCode will take priority
+- Develop extension that works with VSCode and potentially other IDEs i.e PyCharm
+  - if supporting multiple IDEs adds too much complexity, support for VSCode will take priority
 - Capability to run as a GitHub Action and used to enforce style in our CI pipeline
 
 ## Syntax and code style issues
@@ -28,7 +28,7 @@ Build a Jinja2 linter that will provide the following capabilities:
 
 _*Deprecation Warning_: There was a typo from day 1 in the j2lint repo on
 delim**i**ter. It was written delim**e**ter. The current code version has fixed the
-typo but to ensure backward compatibility the old syntax is still supported. 
+typo but to ensure backward compatibility the old syntax is still supported.
 It will be deprecated when j2lint is officially released.
 
 ## Getting Started
@@ -129,7 +129,7 @@ j2lint <path-to-directory-of-templates> --json
 
     ```jinja2
     {# j2lint: disable=S6}
-  
+
     # OR
     {# j2lint: disable=jinja-delimiter #}
     ```
@@ -142,7 +142,7 @@ j2lint <path-to-directory-of-templates> --json
 ### Adding custom rules
 
 1. Create a new rules directory under j2lint folder.
-2. Add custom rule classes which are similar to classes in j2lint/rules directory.
+2. Add custom rule classes that are similar to classes in j2lint/rules directory.
 3. Run the jinja2 linter using --rules-dir option
 
     ```bash
@@ -175,6 +175,6 @@ j2lint --stdin
 
 2. Run pre-commit -> ```pre-commit run --all-files ```
 
-## Acknowledgement
+## Acknowledgments
 
 This project is based on [salt-lint](https://github.com/warpnet/salt-lint) and [jinjalint](https://github.com/motet-a/jinjalint)
