@@ -7,3 +7,4 @@ dist
 **/.python-version
 .tox/**
 tests/tmp/**
+.coverage
