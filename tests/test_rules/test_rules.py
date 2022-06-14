@@ -42,7 +42,7 @@ PARAMS = [
         [],
     ),
     (
-        "tests/test_rules/data/JinjaStatementDelimeterRule.j2",
+        "tests/test_rules/data/JinjaStatementDelimiterRule.j2",
         [("S6", 1), ("S6", 3), ("S6", 5)],
         [],
     ),
