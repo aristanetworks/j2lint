@@ -3,4 +3,4 @@
   entry: j2lint
   language: python
   types: [jinja]
-  require_serial: true 
+  require_serial: true
