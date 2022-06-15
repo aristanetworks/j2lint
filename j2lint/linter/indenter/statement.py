@@ -7,6 +7,7 @@ JINJA_STATEMENT_TAG_NAMES = [
     ('macro', 'endmacro'),
 ]
 
+
 class JinjaStatement:
     """Class for representing a jinja statement.
     """
