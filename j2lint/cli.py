@@ -16,18 +16,18 @@ from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
 IGNORE_RULES = WARN_RULES = ['jinja-syntax-error',
-                'single-space-decorator',
-                'operator-enclosed-by-spaces',
-                'jinja-statements-single-space',
-                'jinja-statements-indentation',
-                'jinja-statements-no-tabs',
-                'single-statement-per-line',
-                'jinja-statements-delimiter',
-                'jinja-variable-lower-case',
-                'jinja-variable-format',
-                'S0', 'S1', 'S2', 'S3', 'S4',
-                'S5', 'S6', 'S7', 'V1', 'V2'
-                ]
+                             'single-space-decorator',
+                             'operator-enclosed-by-spaces',
+                             'jinja-statements-single-space',
+                             'jinja-statements-indentation',
+                             'jinja-statements-no-tabs',
+                             'single-statement-per-line',
+                             'jinja-statements-delimiter',
+                             'jinja-variable-lower-case',
+                             'jinja-variable-format',
+                             'S0', 'S1', 'S2', 'S3', 'S4',
+                             'S5', 'S6', 'S7', 'V1', 'V2'
+                             ]
 
 
 def create_parser():

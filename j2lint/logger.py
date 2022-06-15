@@ -8,6 +8,7 @@ JINJA2_LOG_FILE = "jinja2-linter.log"
 
 logger = logging.getLogger('')
 
+
 def add_handler(logger, stream_handler, log_level):
     log_format = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
