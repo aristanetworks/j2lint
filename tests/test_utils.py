@@ -93,13 +93,15 @@ def test_get_files_dir(template_tmp_dir):
     """
     cwd = os.getcwd()
     basetemp = "tests/tmp"  # as passed to pytest in pytest.ini
-    expected = [
-        f"{cwd}/{basetemp}/rules/rules.j2",
-        f"{cwd}/{basetemp}/rules/rules_subdir/rules.j2",
-        f"{cwd}/{basetemp}/rules/.rules_hidden_subdir/rules.j2",
-    ]
+    expected = sorted(
+        [
+            f"{cwd}/{basetemp}/rules/rules.j2",
+            f"{cwd}/{basetemp}/rules/rules_subdir/rules.j2",
+            f"{cwd}/{basetemp}/rules/.rules_hidden_subdir/rules.j2",
+        ]
+    )
     with does_not_raise():
-        assert get_files(template_tmp_dir) == expected
+        assert sorted(get_files(template_tmp_dir)) == expected
 
 
 @pytest.mark.parametrize(
@@ -119,7 +121,7 @@ def test_flatten(input_list, expected, raising_context):
         assert list(flatten(input_list)) == expected
 
 
-@pytest.mark.skip
+@pytest.mark.skip("Assess if we cannot replace this method")
 def test_get_tuple():
     """
     Test the utils.get_tuple function
