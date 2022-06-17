@@ -41,6 +41,7 @@ def test_rule():
     r_obj = Rule()
     r_obj.id = "T0"
     r_obj.description = "test Rule object"
+    r_obj.short_description = "test-rule"
     yield r_obj
 
 
@@ -52,6 +53,7 @@ def test_other_rule():
     r_obj = Rule()
     r_obj.id = "T1"
     r_obj.description = "other test Rule object"
+    r_obj.short_description = "other-test-rule"
     yield r_obj
 
 

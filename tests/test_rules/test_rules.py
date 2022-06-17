@@ -25,7 +25,7 @@ PARAMS = [
     ),
     (
         "tests/test_rules/data/JinjaOperatorHasSpaceRule.j2",
-        [("S2", 1), ("S2", 2), ("S2", 3)],
+        [("S2", 1), ("S2", 2), ("S2", 3), ("S2", 6), ("S2", 8), ("S2", 10)],
         [],
         [],
     ),
