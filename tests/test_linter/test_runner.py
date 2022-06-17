@@ -38,6 +38,7 @@ class TestRunner:
             ([]),
             (["test.j2"]),
             (["test.j2", "test2.j2"]),
+            (["test.txt"]),
         ],
     )
     def test_run(self, runner, runner_files):

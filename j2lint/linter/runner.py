@@ -47,6 +47,10 @@ class Runner:
             file_path = file[0]
             file_type = file[1]
             file_dict = {"path": file_path, "type": file_type}
+            # pylint: disable = fixme
+            # FIXME - as of now it seems that both next tests
+            #         will never occurs as self.files is always
+            #         a single file.
             # Skip already checked files
             if self.is_already_checked(file_path):
                 continue
