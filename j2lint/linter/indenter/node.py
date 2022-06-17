@@ -13,15 +13,15 @@ MIDDLE_TAGS = list(flatten([[i[1:-1] for i in JINJA_STATEMENT_TAG_NAMES]]))
 INDENT_SHIFT = 4
 DEFAULT_WHITESPACES = 1
 BLOCK_START_INDENT = 0
-JINJA_START_DELIMITERS = ['{%-', '{%+']
+JINJA_START_DELIMITERS = ["{%-", "{%+"]
 
 jinja_node_stack = []
 jinja_delimiter_stack = []
 
 
 class Node:
-    """Node class which represents a jinja file as a tree
-    """
+    """Node class which represents a jinja file as a tree"""
+
     statement = None
     tag = None
     node_start = 0
@@ -40,6 +40,8 @@ class Node:
         Returns:
             Node: new Node class object
         """
+        # pylint: disable = fixme
+        # FIXME - this should just be an __init__
         node = Node()
         statement = JinjaStatement(line)
         node.statement = statement
@@ -60,11 +62,17 @@ class Node:
         Returns:
             tuple: tuple representing the indentation error
         """
-        return (node.statement.start_line_no,
-                delimit_jinja_statement(node.statement.line,
-                                        node.statement.start_delimiter,
-                                        node.statement.end_delimiter),
-                message)
+        # pylint: disable = fixme
+        # FIXME - why are we passing both self and node???
+        return (
+            node.statement.start_line_no,
+            delimit_jinja_statement(
+                node.statement.line,
+                node.statement.start_delimiter,
+                node.statement.end_delimiter,
+            ),
+            message,
+        )
 
     def check_indent_level(self, result, node):
         """check if the actual and expected indent level for a line match
@@ -74,9 +82,15 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        if len(jinja_node_stack) and jinja_node_stack[0].statement.start_delimiter in JINJA_START_DELIMITERS:
+        if (
+            len(jinja_node_stack)
+            and jinja_node_stack[0].statement.start_delimiter in JINJA_START_DELIMITERS
+        ):
             BLOCK_START_INDENT = 1
-        elif node.expected_indent == 0 and node.statement.start_delimiter in JINJA_START_DELIMITERS:
+        elif (
+            node.expected_indent == 0
+            and node.statement.start_delimiter in JINJA_START_DELIMITERS
+        ):
             BLOCK_START_INDENT = 1
         else:
             BLOCK_START_INDENT = 0
@@ -86,8 +100,7 @@ class Node:
         else:
             expected = node.expected_indent + DEFAULT_WHITESPACES + BLOCK_START_INDENT
         if actual != expected:
-            message = "Bad Indentation, expected %d, got %d" % (
-                expected, actual)
+            message = "Bad Indentation, expected %d, got %d" % (expected, actual)
             error = self.create_indentation_error(node, message)
             result.append(error)
             logger.debug(error)
@@ -117,11 +130,12 @@ class Node:
                 jinja_node_stack.append(node)
                 self.children.append(node)
                 line_no = node.check_indentation(
-                    result, lines, line_no + 1, indent_level + INDENT_SHIFT)
+                    result, lines, line_no + 1, indent_level + INDENT_SHIFT
+                )
                 self.check_indent_level(result, node)
                 continue
             elif node.tag in END_TAGS:
-                if ('end' + jinja_node_stack[-1].tag) == node.tag:
+                if ("end" + jinja_node_stack[-1].tag) == node.tag:
                     if len(jinja_node_stack) and jinja_node_stack[-1] != self:
                         del node
                         return line_no
@@ -138,11 +152,11 @@ class Node:
                 message = "Tag is out of order '{}'".format(node.tag)
                 error = self.create_indentation_error(node, message)
                 result.append(error)
-                raise JinjaLinterError(
-                    "Tag is out of order '{}'".format(node.tag))
+                raise JinjaLinterError("Tag is out of order '{}'".format(node.tag))
             elif node.tag in MIDDLE_TAGS:
                 begin_tag_tuple = get_tuple(
-                    JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag)
+                    JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag
+                )
                 if node.tag in begin_tag_tuple:
                     if jinja_node_stack[-1] != self:
                         del node
@@ -154,15 +168,15 @@ class Node:
                     matchnode.parent.children.append(node)
                     node.parent = matchnode.parent
                     line_no = node.check_indentation(
-                        result, lines, line_no + 1, indent_level + INDENT_SHIFT)
+                        result, lines, line_no + 1, indent_level + INDENT_SHIFT
+                    )
                     self.check_indent_level(result, node)
                     continue
                 else:
                     message = "Unsupported tag '%s' found" % (node.tag)
                     error = self.create_indentation_error(node, message)
                     result.append(error)
-                    raise JinjaLinterError(
-                        "Unsupported tag '%s' found" % (node.tag))
+                    raise JinjaLinterError("Unsupported tag '%s' found" % (node.tag))
             else:
                 self.children.append(node)
                 line_no = line_no + 1

@@ -140,8 +140,35 @@ def get_tuple(l, item):
 def get_jinja_statements(text, indentation=False):
     """Gets jinja statements with {%[-/+] [-]%} delimiters
 
+    The regex `regex_pattern` will return multiple groups when it matches
+    Note that this is a multiline regex
+
     Args:
         text (string): multiline text to search the jinja statements in
+        indentation (bool): Set to True if parsing for indentation, it will allow
+                            to retrieve multiple lines
+    Example:
+
+    For this given template:
+
+        {# tcam-profile #}
+        {% if switch.platform_settings.tcam_profile is arista.avd.defined %}
+        tcam_profile:
+          system: {{ switch.platform_settings.tcam_profile }}
+        {% endif %}
+
+    With indentation=True
+
+        Found jinja statements [(' if switch.platform_settings.tcam_profile is arista.avd.defined ', 2, 2, '{%', '%}'), (' endif ', 5, 5, '{%', '%}')]
+
+    With indentation=False
+
+        Found jinja statements []
+        Found jinja statements [(' if switch.platform_settings.tcam_profile is arista.avd.defined ', 1, 1, '{%', '%}')]
+        Found jinja statements []
+        Found jinja statements []
+        Found jinja statements [(' endif ', 1, 1, '{%', '%}')]
+        Found jinja statements []
 
     Returns:
         [list]: list of jinja statements
@@ -223,8 +250,9 @@ def is_rule_disabled(text, rule):
             if rule.short_description == line.group(1):
                 return True
             # FIXME - remove next release
-            if (hasattr(rule, "deprecated_short_description") and
-               rule.deprecated_short_description == line.group(1)):
+            if hasattr(
+                rule, "deprecated_short_description"
+            ) and rule.deprecated_short_description == line.group(1):
                 return True
             if rule.id == line.group(1):
                 return True
