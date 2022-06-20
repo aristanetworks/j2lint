@@ -3,11 +3,26 @@ content of conftest.py
 """
 from unittest.mock import create_autospec
 import pytest
+from j2lint.settings import settings
+from j2lint.cli import create_parser
 from j2lint.linter.rule import Rule
 from j2lint.linter.error import LinterError
 from j2lint.linter.collection import RulesCollection
 
 CONTENT = "content"
+
+# TODO - proper way to compare LinterError following:
+# https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
+
+
+@pytest.fixture(autouse=True)
+def default_settings():
+    """
+    Make sure all tests start with default settings
+    """
+    settings.verbose = False
+    settings.log_level = "info"
+    settings.output = "text"
 
 
 @pytest.fixture
@@ -111,6 +126,11 @@ def make_issues(make_rules):
         return issues
 
     return __make_n_issues
+
+
+@pytest.fixture
+def j2lint_usage_string():
+    return create_parser().format_help()
 
 
 @pytest.fixture()

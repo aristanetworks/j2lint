@@ -1,14 +1,68 @@
 """
 Tests for j2lint.cli.py
 """
-from unittest.mock import create_autospec
+import logging
+import os
+import re
+from unittest.mock import create_autospec, patch
 from argparse import Namespace
 
 import pytest
 
 from j2lint.settings import settings
-from j2lint.cli import sort_issues, sort_and_print_issues
+from j2lint.cli import sort_issues, sort_and_print_issues, create_parser, run, RULES_DIR
 from j2lint.linter.error import LinterError
+
+from .utils import does_not_raise, j2lint_default_rules_string
+
+
+@pytest.fixture
+def default_namespace():
+    return Namespace(
+        files=[],
+        ignore=[],
+        warn=[],
+        list=False,
+        rules_dir=[RULES_DIR],
+        verbose=False,
+        debug=False,
+        json=False,
+        stdin=False,
+        log=False,
+        version=False,
+        vv=False,
+    )
+
+
+@pytest.mark.parametrize(
+    "argv, namespace_modifications",
+    [
+        (pytest.param([], {}, id="default")),
+        pytest.param(
+            ["--log", "-stdout", "-j", "-d", "-v", "--stdin", "--version"],
+            {
+                "debug": True,
+                "vv": True,  # This is stdout
+                "stdin": True,
+                "version": True,
+                "log": True,
+                "json": True,
+                "verbose": True,
+            },
+            id="set all debug flags",
+        ),
+    ],
+)
+def test_create_parser(default_namespace, argv, namespace_modifications):
+    """
+    Test j2lint.cli.create_parser
+    """
+    expected_namespace = default_namespace
+    for key, value in namespace_modifications.items():
+        setattr(expected_namespace, key, value)
+    parser = create_parser()
+    options = parser.parse_args(argv)
+    assert options == expected_namespace
 
 
 @pytest.mark.parametrize(
@@ -140,12 +194,256 @@ def test_sort_and_print_issues(
         options, issues, issue_type, json_output
     )
 
-    try:
-        assert total_count == expected_output[0]
-        assert json_output == expected_output[1]
+    assert total_count == expected_output[0]
+    assert json_output == expected_output[1]
 
+    captured = capsys.readouterr()
+    assert captured.out == expected_stdout
+
+
+@pytest.mark.parametrize(
+    "argv, expected_stdout, expected_stderr, expected_exit_code, expected_raise, number_errors, number_warnings, expected_logs",
+    [
+        pytest.param([], "", "HELP", 1, does_not_raise(), 0, 0, [], id="no input"),
+        pytest.param(
+            ["-h"], "HELP", "", 0, pytest.raises(SystemExit), 0, 0, [], id="help"
+        ),
+        pytest.param(
+            ["-ver"],
+            "Jinja2-Linter Version 0.1\n",
+            "",
+            0,
+            does_not_raise(),
+            0,
+            0,
+            [],
+            id="version",
+        ),
+        pytest.param(
+            ["--log", "tests/data/test.j2"],
+            "Linting complete. No problems found.\n",
+            "",
+            0,
+            does_not_raise(),
+            0,
+            0,
+            [],
+            id="log level INFO",
+        ),
+        pytest.param(
+            ["-v", "tests/data/test.j2"],
+            """
+JINJA2 LINT ERRORS
+************ File tests/data/test.j2
+Linting rule: T0
+Rule description: test rule 0
+Error line: dummy.j2:1 dummy
+Error message: test rule 0
+
+
+JINJA2 LINT WARNINGS
+************ File tests/data/test.j2
+Linting rule: T0
+Rule description: test rule 0
+Error line: dummy.j2:1 dummy
+Error message: test rule 0
+
+Jinja2 linting finished with 1 issue(s) and 1 warning(s)
+""",
+            "",
+            2,
+            does_not_raise(),
+            1,
+            1,
+            [
+                (
+                    "root",
+                    40,
+                    "Linting rule: T0\nRule description: test rule 0\nError line: dummy.j2:1 dummy\nError message: test rule 0\n",
+                ),
+                (
+                    "root",
+                    40,
+                    "Linting rule: T0\nRule description: test rule 0\nError line: dummy.j2:1 dummy\nError message: test rule 0\n",
+                ),
+            ],
+            id="verbose, one error, one warning",
+        ),
+        pytest.param(
+            ["-j", "tests/data/test.j2"],
+            '{"ERRORS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "linenumber": 1, "line": "dummy", "severity": "LOW"}], "WARNINGS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "linenumber": 1, "line": "dummy", "severity": "LOW"}]}\n',
+            "",
+            2,
+            does_not_raise(),
+            1,
+            1,
+            [
+                (
+                    "root",
+                    40,
+                    '{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", '
+                    '"linenumber": 1, "line": "dummy", "severity": "LOW"}',
+                ),
+                (
+                    "root",
+                    40,
+                    '{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", '
+                    '"linenumber": 1, "line": "dummy", "severity": "LOW"}',
+                ),
+            ],
+            id="json, one error, one warning",
+        ),
+        pytest.param(
+            ["-l"],
+            "DEFAULT_RULES",
+            "",
+            0,
+            does_not_raise(),
+            0,
+            0,
+            [],
+            id="list rules",
+        ),
+        pytest.param(
+            ["--vv", "--debug", "tests/data/test.j2"],
+            "Linting complete. No problems found.\n",
+            "",
+            0,
+            does_not_raise(),
+            0,
+            0,
+            [
+                (
+                    "root",
+                    10,
+                    "Lint options selected Namespace(files=['tests/data/test.j2'], ignore=[], "
+                    "warn=[], list=False, "
+                    f"rules_dir=['{RULES_DIR}'], "
+                    "verbose=False, debug=True, json=False, stdin=False, log=False, "
+                    "version=False, vv=True)",
+                ),
+                ("root", 10, "Loading plugin JinjaVariableNameCaseRule"),
+                ("root", 10, "Loading plugin JinjaStatementHasSpacesRule"),
+                ("root", 10, "Loading plugin JinjaTemplateSyntaxErrorRule"),
+                ("root", 10, "Loading plugin JinjaTemplateSingleStatementRule"),
+                ("root", 10, "Loading plugin JinjaStatementDelimiterRule"),
+                ("root", 10, "Loading plugin JinjaTemplateIndentationRule"),
+                ("root", 10, "Loading plugin JinjaVariableHasSpaceRule"),
+                ("root", 10, "Loading plugin JinjaVariableNameFormatRule"),
+                ("root", 10, "Loading plugin JinjaTemplateNoTabsRule"),
+                ("root", 10, "Loading plugin JinjaOperatorHasSpaceRule"),
+                (
+                    "root",
+                    20,
+                    "Created collection from rules directory " f"{RULES_DIR}",
+                ),
+                (
+                    "root",
+                    10,
+                    "Linting directory {'tests/data/test.j2'}: files ['tests/data/test.j2']",
+                ),
+            ],
+            #        [],
+            id="log level DEBUG",
+        ),
+        pytest.param(
+            ["-stdout", "tests/data/test.j2"],
+            "Linting complete. No problems found.\n",
+            "",
+            0,
+            does_not_raise(),
+            0,
+            0,
+            [
+                (
+                    "root",
+                    20,
+                    "Created collection from rules directory " f"{RULES_DIR}",
+                )
+            ],
+            id="stdout / vv",
+        ),
+    ],
+)
+def test_run(
+    capsys,
+    caplog,
+    j2lint_usage_string,
+    make_issues,
+    argv,
+    expected_stdout,
+    expected_stderr,
+    expected_exit_code,
+    expected_raise,
+    number_errors,
+    number_warnings,
+    expected_logs,
+):
+    """
+    Test the j2lint.cli.run method
+
+    For  now hardcoding the result of the Runner.run to ([], [])
+
+    This test is a bit too complex and should probably be splitted out to test various
+    functionalities
+    """
+    if "-stdout" in argv or "--vv" in argv:
+        caplog.set_level(logging.INFO)
+    if "-d" in argv or "--debug" in argv:
+        caplog.set_level(logging.DEBUG)
+    # TODO this method needs to be split a bit as it has
+    # too many responsability
+    if expected_stdout == "HELP":
+        expected_stdout = j2lint_usage_string
+    if expected_stdout == "DEFAULT_RULES":
+        expected_stdout = j2lint_default_rules_string()
+    if expected_stderr == "HELP":
+        expected_stderr = j2lint_usage_string
+    with expected_raise:
+        with patch("j2lint.cli.Runner.run") as mocked_runner_run, patch(
+            "logging.disable"
+        ) as mocked_logging_disable:
+            errors = make_issues(number_errors, "ERRORS")
+            warnings = make_issues(number_warnings, "WARNINGS")
+            mocked_runner_run.return_value = (errors["ERRORS"], warnings["WARNINGS"])
+            run_return_value = run(argv)
+            captured = capsys.readouterr()
+            if "-stdout" not in argv and "--vv" not in argv:
+                assert captured.out == expected_stdout
+                # Hmm - WHY - need to find why failing with stdout
+                assert captured.err == expected_stderr
+            else:
+                assert expected_stdout in captured.out
+            assert run_return_value == expected_exit_code
+            assert caplog.record_tuples == expected_logs
+
+
+def test_run_stdin(capsys):
+    """
+    Test j2lint.cli.run when using stdin
+    Note that the code is checking that this is not run from a tty
+
+    A solution to run is something like:
+    ```
+    cat myfile.j2 | j2lint --stdin
+    ```
+
+    In this test, the isatty answer is mocked.
+    """
+    with patch("logging.disable") as mocked_logging_disable, patch(
+        "sys.stdin"
+    ) as patched_stdin, patch("os.unlink", side_effect=os.unlink) as mocked_os_unlink:
+        patched_stdin.isatty.return_value = False
+        patched_stdin.read.return_value = "{%set test=42 %}"
+        run_return_value = run(["--log", "--stdin"])
+        patched_stdin.isatty.assert_called_once()
         captured = capsys.readouterr()
-        assert captured.out == expected_stdout
-    finally:
-        # Reverting back to default
-        settings.output = "text"
+        matches = re.match(
+            r"\nJINJA2 LINT ERRORS\n\*\*\*\*\*\*\*\*\*\*\*\* File \/.*\n(\/.*.j2):1 Jinja statement should have a single space before and after: '{% statement %}' \(jinja-statements-single-space\)\nJinja2 linting finished with 1 issue\(s\) and 0 warning\(s\)\n",
+            captured.out,
+            re.MULTILINE,
+        )
+        assert matches is not None
+        mocked_os_unlink.assert_called_with(matches.groups()[0])
+        assert os.path.exists(matches.groups()[0]) == False
+        assert run_return_value == 2

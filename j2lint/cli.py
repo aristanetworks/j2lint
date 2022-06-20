@@ -36,6 +36,8 @@ def create_parser():
     Returns:
         Object: Argument parser object
     """
+    # TODO some flag names are questionable..
+    # TODO is stdin feature actually needed ???
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],
@@ -114,6 +116,10 @@ def run(args=None):
     Returns:
         int: 0 on success
     """
+    # pylint: disable = fixme
+    # FIXME - `j2lint -stdin tests/data/test.j2`
+    #         will return exit code 2 so that could be confusing.
+    #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
