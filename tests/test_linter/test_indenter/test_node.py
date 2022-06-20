@@ -30,4 +30,9 @@ class TestNode:
         print(node.statement)
 
         indentation_error = node.create_indentation_error(node, "test")
-        assert indentation_error == ()
+        print(type(indentation_error))
+        assert indentation_error == (
+            2,
+            "{% if switch.platform_settings.tcam_profile is arista.avd.defined %}",
+            "test",
+        )
