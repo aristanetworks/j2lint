@@ -4,6 +4,7 @@ content of conftest.py
 from unittest.mock import create_autospec
 import pytest
 from j2lint.linter.rule import Rule
+from j2lint.linter.error import LinterError
 from j2lint.linter.collection import RulesCollection
 
 CONTENT = "content"
@@ -42,6 +43,7 @@ def test_rule():
     r_obj.id = "T0"
     r_obj.description = "test Rule object"
     r_obj.short_description = "test-rule"
+    r_obj.severity = "LOW"
     yield r_obj
 
 
@@ -54,6 +56,7 @@ def test_other_rule():
     r_obj.id = "T1"
     r_obj.description = "other test Rule object"
     r_obj.short_description = "other-test-rule"
+    r_obj.severity = "HIGH"
     yield r_obj
 
 
@@ -62,6 +65,52 @@ def test_collection(test_rule):
     collection = RulesCollection()
     collection.extend([test_rule])
     yield collection
+
+
+@pytest.fixture
+def make_rules():
+    """
+    Return a Rule factory that takes one argument
+    `count`
+    """
+
+    def __make_n_rules(count):
+        def get_severity(integer: int):
+            return (
+                "LOW"
+                if integer % 3 == 0
+                else ("MEDIUM" if integer % 3 == 1 else "HIGH")
+            )
+
+        rules = []
+        for i in range(0, count):
+            r_obj = Rule()
+            r_obj.id = f"T{i}"
+            r_obj.description = f"test rule {i}"
+            r_obj.short_description = f"test-rule-{i}"
+            r_obj.severity = get_severity(i)
+            rules.append(r_obj)
+        return rules
+
+    return __make_n_rules
+
+
+@pytest.fixture
+def make_issues(make_rules):
+    """
+    Returns a factory that generates `count` issues
+    of type `issue_type`. Every alternate issue use one
+    of the two fixtures rules
+    """
+
+    def __make_n_issues(count, issue_type):
+        issues = {issue_type: []}
+        rules = make_rules(count)
+        for i in range(0, count):
+            issues[issue_type].append(LinterError(i + 1, "dummy", "dummy.j2", rules[i]))
+        return issues
+
+    return __make_n_issues
 
 
 @pytest.fixture()
