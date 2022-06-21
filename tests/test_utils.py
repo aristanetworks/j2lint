@@ -10,7 +10,9 @@ from j2lint.utils import (
     get_file_type,
     get_files,
     flatten,
+    get_tuple,
     delimit_jinja_statement,
+    is_rule_disabled,
 )
 from .utils import does_not_raise
 
@@ -121,13 +123,24 @@ def test_flatten(input_list, expected, raising_context):
         assert list(flatten(input_list)) == expected
 
 
-@pytest.mark.skip("Assess if we cannot replace this method")
-def test_get_tuple():
+@pytest.mark.parametrize(
+    "tuple_list, lookup_object, expected_value",
+    [
+        (
+            [(1, 2, 3), (1, 2, 4)],
+            1,
+            (1, 2, 3),
+        ),  # test that we get the first tuple that matches
+        ([(1, 2, 3), (1, 2, 4)], 4, (1, 2, 4)),
+        ([], 4, None),
+        ([(1, 2, 3), (1, 2, 4)], 5, None),
+    ],
+)
+def test_get_tuple(tuple_list, lookup_object, expected_value):
     """
     Test the utils.get_tuple function
     """
-    # TODO
-    pass
+    assert get_tuple(tuple_list, lookup_object) == expected_value
 
 
 @pytest.mark.skip
@@ -172,10 +185,52 @@ def test_get_jinja_variables():
     pass
 
 
-@pytest.mark.skip
-def test_is_rule_disabled():
+@pytest.mark.parametrize(
+    "comments, expected_value",
+    [
+        pytest.param(
+            ["{# j2lint: disable=test-rule-0 #}"], True, id="found_short_description"
+        ),
+        pytest.param(["{# j2lint: disable=T0 #}"], True, id="found_id"),
+        pytest.param(
+            ["{# j2lint: disable=deprecated-test-rule-0 #}"],
+            True,
+            id="found_deprecated_short_description",
+        ),
+        pytest.param(
+            ["{# j2lint: disable=test-rule-1 #}"],
+            False,
+            id="not_found_short_description",
+        ),
+        pytest.param(["{# j2lint: disable=T1 #}"], False, id="not_found_id"),
+        pytest.param(
+            ["{# j2lint: disable=dummy-rule, test-rule-0 #}"],
+            False,
+            id="NOT_SUPPORTED_single_comment_list",
+        ),
+        pytest.param(
+            ["{# j2lint: disable=dummy-rule, j2lint: disable=test-rule-0 #}"],
+            True,
+            id="single_comment_repeat_pattern",
+        ),
+        pytest.param(
+            ["{# j2lint: disable=dummy-rule #}", "{# j2lint: disable=test-rule-0 #}"],
+            True,
+            id="found_second_second_syntax",
+        ),
+    ],
+)
+def test_is_rule_disabled(make_rules, comments, expected_value):
     """
     Test the utils.is_rule_disabled function
     """
-    # TODO
-    pass
+    # Generate one rule through fixture which is always
+    # T0, test-rule-0
+    # adding the deprecated_short_description for this test
+    test_rule = make_rules(1)[0]
+    test_rule.deprecated_short_description = "deprecated-test-rule-0"
+    print(test_rule.deprecated_short_description)
+
+    comments_string = "\n".join(comments)
+    print(comments_string)
+    assert is_rule_disabled(comments_string, test_rule) == expected_value
