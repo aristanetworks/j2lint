@@ -129,6 +129,19 @@ def make_issues(make_rules):
 
 
 @pytest.fixture
+def make_issue_from_rule():
+    """
+    Returns a factory that generates an issue based on
+    a Rule object
+    """
+
+    def __make_issue_from_rule(rule):
+        yield LinterError(42, "dummy", "dummy.j2", rule)
+
+    return __make_issue_from_rule
+
+
+@pytest.fixture
 def j2lint_usage_string():
     return create_parser().format_help()
 

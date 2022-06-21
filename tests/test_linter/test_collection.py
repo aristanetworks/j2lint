@@ -1,6 +1,7 @@
 """
 Tests for j2lint.linter.collection.py
 """
+import logging
 import pytest
 from unittest import mock
 
@@ -8,6 +9,8 @@ from j2lint.linter.collection import RulesCollection
 from j2lint.rules.JinjaTemplateSyntaxErrorRule import JinjaTemplateSyntaxErrorRule
 from j2lint.rules.JinjaOperatorHasSpaceRule import JinjaOperatorHasSpaceRule
 from j2lint.rules.JinjaStatementDelimiterRule import JinjaStatementDelimiterRule
+
+from tests.utils import does_not_raise
 
 
 class TestRulesCollection:
@@ -41,9 +44,89 @@ class TestRulesCollection:
         assert len(collection) == 2 * len(fake_rules)
         assert collection.rules == fake_rules + fake_rules
 
-    @pytest.mark.skip("TODO")
-    def test_run(self):
-        """ """
+    @pytest.mark.parametrize(
+        "file_dict, expected_results, verify_logs",
+        [
+            pytest.param(
+                {"path": "dummy.j2"},
+                ([], []),
+                False,
+                id="non existing file",
+            ),
+            pytest.param(
+                {"path": "tests/test_linter/data/disable-rule-3.j2"},
+                (
+                    [
+                        ("T0", "test-rule-0"),
+                        ("T0", "test-rule-0"),
+                        ("T4", "test-rule-4"),
+                        ("T4", "test-rule-4"),
+                    ],
+                    [
+                        ("T1", "test-rule-1"),
+                        ("T1", "test-rule-1"),
+                    ],
+                ),
+                True,
+                id="Disabled Rule 3",
+            ),
+        ],
+    )
+    def test_run(
+        self,
+        caplog,
+        test_collection,
+        make_rules,
+        make_issue_from_rule,
+        file_dict,
+        expected_results,
+        verify_logs,
+    ):
+        """
+        Generate a collection with 5 rules with:
+        * rule number 1 being a warning
+        * rule number 2 being ignored
+        * rule number 3 being disabled in the test file for test number 2
+
+        """
+        caplog.set_level(logging.DEBUG)
+        rules = make_rules(5)
+        # make rule number 1 be a warning
+        rules[1].warn.append(rules[1])
+        rules[2].ignore = True
+        test_collection.rules = rules
+
+        def checks_side_effect(self, file_dict, text):
+            return make_issue_from_rule(self)
+
+        with mock.patch(
+            "j2lint.linter.rule.Rule.checklines",
+            side_effect=checks_side_effect,
+            autospec=True,
+        ) as patched_checklines, mock.patch(
+            "j2lint.linter.rule.Rule.checkfulltext",
+            side_effect=checks_side_effect,
+            autospec=True,
+        ) as patched_checkfulltext:
+
+            errors, warnings = test_collection.run(file_dict)
+            error_tuples = [
+                (error.rule.id, error.rule.short_description) for error in errors
+            ]
+            warning_tuples = [
+                (warning.rule.id, warning.rule.short_description)
+                for warning in warnings
+            ]
+            assert error_tuples == expected_results[0]
+            assert warning_tuples == expected_results[1]
+
+        if verify_logs:
+            # True for every test that goes beyond the file do not exist
+            assert any("Ignoring rule T2" in message for message in caplog.messages)
+            # True for the test file
+            assert any(
+                "Skipping linting rule T3" in message for message in caplog.messages
+            )
 
     def test__repr__(self, test_collection, test_other_rule):
         """
