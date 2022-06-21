@@ -202,12 +202,10 @@ def test_sort_and_print_issues(
 
 
 @pytest.mark.parametrize(
-    "argv, expected_stdout, expected_stderr, expected_exit_code, expected_raise, number_errors, number_warnings, expected_logs",
+    "argv, expected_stdout, expected_stderr, expected_exit_code, expected_raise, number_errors, number_warnings",
     [
-        pytest.param([], "", "HELP", 1, does_not_raise(), 0, 0, [], id="no input"),
-        pytest.param(
-            ["-h"], "HELP", "", 0, pytest.raises(SystemExit), 0, 0, [], id="help"
-        ),
+        pytest.param([], "", "HELP", 1, does_not_raise(), 0, 0, id="no input"),
+        pytest.param(["-h"], "HELP", "", 0, pytest.raises(SystemExit), 0, 0, id="help"),
         pytest.param(
             ["-ver"],
             "Jinja2-Linter Version 0.1\n",
@@ -216,7 +214,6 @@ def test_sort_and_print_issues(
             does_not_raise(),
             0,
             0,
-            [],
             id="version",
         ),
         pytest.param(
@@ -227,7 +224,6 @@ def test_sort_and_print_issues(
             does_not_raise(),
             0,
             0,
-            [],
             id="log level INFO",
         ),
         pytest.param(
@@ -255,18 +251,6 @@ Jinja2 linting finished with 1 issue(s) and 1 warning(s)
             does_not_raise(),
             1,
             1,
-            [
-                (
-                    "root",
-                    40,
-                    "Linting rule: T0\nRule description: test rule 0\nError line: dummy.j2:1 dummy\nError message: test rule 0\n",
-                ),
-                (
-                    "root",
-                    40,
-                    "Linting rule: T0\nRule description: test rule 0\nError line: dummy.j2:1 dummy\nError message: test rule 0\n",
-                ),
-            ],
             id="verbose, one error, one warning",
         ),
         pytest.param(
@@ -277,20 +261,6 @@ Jinja2 linting finished with 1 issue(s) and 1 warning(s)
             does_not_raise(),
             1,
             1,
-            [
-                (
-                    "root",
-                    40,
-                    '{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", '
-                    '"linenumber": 1, "line": "dummy", "severity": "LOW"}',
-                ),
-                (
-                    "root",
-                    40,
-                    '{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", '
-                    '"linenumber": 1, "line": "dummy", "severity": "LOW"}',
-                ),
-            ],
             id="json, one error, one warning",
         ),
         pytest.param(
@@ -301,7 +271,6 @@ Jinja2 linting finished with 1 issue(s) and 1 warning(s)
             does_not_raise(),
             0,
             0,
-            [],
             id="list rules",
         ),
         pytest.param(
@@ -312,38 +281,6 @@ Jinja2 linting finished with 1 issue(s) and 1 warning(s)
             does_not_raise(),
             0,
             0,
-            [
-                (
-                    "root",
-                    10,
-                    "Lint options selected Namespace(files=['tests/data/test.j2'], ignore=[], "
-                    "warn=[], list=False, "
-                    f"rules_dir=['{RULES_DIR}'], "
-                    "verbose=False, debug=True, json=False, stdin=False, log=False, "
-                    "version=False, vv=True)",
-                ),
-                ("root", 10, "Loading plugin JinjaVariableNameCaseRule"),
-                ("root", 10, "Loading plugin JinjaStatementHasSpacesRule"),
-                ("root", 10, "Loading plugin JinjaTemplateSyntaxErrorRule"),
-                ("root", 10, "Loading plugin JinjaTemplateSingleStatementRule"),
-                ("root", 10, "Loading plugin JinjaStatementDelimiterRule"),
-                ("root", 10, "Loading plugin JinjaTemplateIndentationRule"),
-                ("root", 10, "Loading plugin JinjaVariableHasSpaceRule"),
-                ("root", 10, "Loading plugin JinjaVariableNameFormatRule"),
-                ("root", 10, "Loading plugin JinjaTemplateNoTabsRule"),
-                ("root", 10, "Loading plugin JinjaOperatorHasSpaceRule"),
-                (
-                    "root",
-                    20,
-                    "Created collection from rules directory " f"{RULES_DIR}",
-                ),
-                (
-                    "root",
-                    10,
-                    "Linting directory {'tests/data/test.j2'}: files ['tests/data/test.j2']",
-                ),
-            ],
-            #        [],
             id="log level DEBUG",
         ),
         pytest.param(
@@ -354,13 +291,6 @@ Jinja2 linting finished with 1 issue(s) and 1 warning(s)
             does_not_raise(),
             0,
             0,
-            [
-                (
-                    "root",
-                    20,
-                    "Created collection from rules directory " f"{RULES_DIR}",
-                )
-            ],
             id="stdout / vv",
         ),
     ],
@@ -377,12 +307,9 @@ def test_run(
     expected_raise,
     number_errors,
     number_warnings,
-    expected_logs,
 ):
     """
     Test the j2lint.cli.run method
-
-    For  now hardcoding the result of the Runner.run to ([], [])
 
     This test is a bit too complex and should probably be splitted out to test various
     functionalities
@@ -415,7 +342,10 @@ def test_run(
             else:
                 assert expected_stdout in captured.out
             assert run_return_value == expected_exit_code
-            assert caplog.record_tuples == expected_logs
+            if ("-stdout" in argv or "--vv" in argv) and (
+                "-d" in argv or "--debug" in argv
+            ):
+                assert "DEBUG" in [record.levelname for record in caplog.records]
 
 
 def test_run_stdin(capsys):
