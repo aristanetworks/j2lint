@@ -99,6 +99,10 @@ def sort_and_print_issues(options, lint_issues, issue_type, json_output):
             total_issues = total_issues + len(issues)
             sorted_issues = sort_issues(issues)
             if options.json:
+                # pylint: disable = fixme
+                # FIXME - this is not doing the correct job as it will overwrite
+                # whatever is in the issue_type key in the dictionnary
+                # The outcome is that for json, only the last file errors are printed
                 json_output[issue_type] = ([json.loads(str(issue)) for issue in sorted_issues])
             else:
                 print("************ File {}".format(key))
