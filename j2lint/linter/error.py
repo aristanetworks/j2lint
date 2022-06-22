@@ -32,7 +32,6 @@ class LinterError:
                 formatstr = u"Linting rule: {0}\nRule description: {1}\nError line: {2}:{3} {4}\nError message: {5}\n"
             error = formatstr.format(self.rule.id, self.rule.description,
                                      self.filename, self.linenumber, self.line, self.message, self.rule.short_description)
-        logger.error(error)
         return error
 
 
