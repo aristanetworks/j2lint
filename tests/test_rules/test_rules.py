@@ -107,5 +107,5 @@ def test_rules(
 
     assert caplog.record_tuples == expected_log
 
-    assert warnings_ids == j2_warnings_ids
-    assert errors_ids == j2_errors_ids
+    assert sorted(warnings_ids) == sorted(j2_warnings_ids)
+    assert sorted(errors_ids) == sorted(j2_errors_ids)
