@@ -10,7 +10,7 @@ from j2lint.logger import logger
 
 class Rule:
     """Rule class which acts as a base class for rules with regex match
-    functions.
+       functions.
     """
 
     id = None
@@ -52,17 +52,13 @@ class Rule:
         errors = []
 
         if not self.check:
-            logger.debug(
-                "Check line rule does not exist for {}".format(__class__.__name__)
-            )
+            logger.debug("Check line rule does not exist for {}".format(
+                __class__.__name__))
             return errors
 
         if not self.is_valid_language(file):
             logger.debug(
-                "Skipping file {}. Linter does not support linting this file type".format(
-                    file
-                )
-            )
+                "Skipping file {}. Linter does not support linting this file type".format(file))
             return errors
 
         for (index, line) in enumerate(text.split("\n")):
@@ -70,13 +66,13 @@ class Rule:
             # FIXME - parsing jinja2 templates .. lines starting with `#
             #         should probably still be parsed somewhow as these
             #         are not comments.
-            if line.lstrip().startswith("#"):
+            if line.lstrip().startswith('#'):
                 continue
 
             result = self.check(file, line)
             if not result:
                 continue
-            errors.append(LinterError(index + 1, line, file["path"], self))
+            errors.append(LinterError(index+1, line, file['path'], self))
         return errors
 
     def checkfulltext(self, file, text):
@@ -92,22 +88,19 @@ class Rule:
         errors = []
 
         if not self.checktext:
-            logger.debug(
-                "Check text rule does not exist for {}".format(__class__.__name__)
-            )
+            logger.debug("Check text rule does not exist for {}".format(
+                __class__.__name__))
             return errors
 
         if not self.is_valid_language(file):
             logger.debug(
-                "Skipping file {}. Linter does not support linting this file type".format(
-                    file
-                )
-            )
+                "Skipping file {}. Linter does not support linting this file type".format(file))
             return errors
 
         results = self.checktext(file, text)
 
         for line, section, message in results:
-            errors.append(LinterError(line, section, file["path"], self, message))
+            errors.append(LinterError(
+                line, section, file['path'], self, message))
 
         return errors

@@ -9,7 +9,8 @@ from j2lint.linter.runner import Runner
 
 @pytest.fixture
 def runner(mock_collection):
-    return Runner(mock_collection, "test.j2", checked_files=None)
+    # TODO remove the config param once this is fixed in the codebase
+    return Runner(mock_collection, "test.j2", "unused config", checked_files=None)
 
 
 class TestRunner:

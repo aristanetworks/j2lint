@@ -27,11 +27,12 @@ def load_plugins(directory):
     result = []
     file_handle = None
 
-    for pluginfile in glob.glob(os.path.join(directory, "[A-Za-z]*.py")):
-        pluginname = os.path.basename(pluginfile.replace(".py", ""))
+    for pluginfile in glob.glob(os.path.join(directory, '[A-Za-z]*.py')):
+        pluginname = os.path.basename(pluginfile.replace('.py', ''))
         try:
             logger.debug("Loading plugin {}".format(pluginname))
-            spec = importlib.util.spec_from_file_location(pluginname, pluginfile)
+            spec = importlib.util.spec_from_file_location(
+                pluginname, pluginfile)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             obj = getattr(module, pluginname)()
@@ -99,7 +100,8 @@ def get_files(file_or_dir_names):
         else:
             if get_file_type(file_or_dir) == LANGUAGE_JINJA:
                 file_paths.append(file_or_dir)
-    logger.debug("Linting directory {}: files {}".format(file_or_dir_names, file_paths))
+    logger.debug("Linting directory {}: files {}".format(
+        file_or_dir_names, file_paths))
     return file_paths
 
 
@@ -115,7 +117,8 @@ def flatten(l):
     if not isinstance(l, (list, tuple)):
         raise TypeError(f"flatten is expecting a list or tuple and received {l}")
     for el in l:
-        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+        if (isinstance(el, Iterable) and
+                not isinstance(el, (str, bytes))):
             yield from flatten(el)
         else:
             yield el
@@ -175,16 +178,18 @@ def get_jinja_statements(text, indentation=False):
     """
     statements = []
     count = 0
-    regex_pattern = re.compile("(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
-    newline_pattern = re.compile(r"\n")
-    lines = text.split("\n")
+    regex_pattern = re.compile(
+        "(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
+    newline_pattern = re.compile(r'\n')
+    lines = text.split('\n')
     for m in regex_pattern.finditer(text):
         count += 1
-        start_line = len(newline_pattern.findall(text, 0, m.start(2))) + 1
-        end_line = len(newline_pattern.findall(text, 0, m.end(2))) + 1
+        start_line = len(newline_pattern.findall(text, 0, m.start(2)))+1
+        end_line = len(newline_pattern.findall(text, 0, m.end(2)))+1
         if indentation and lines[start_line - 1].split()[0] not in ["{%", "{%-", "{%+"]:
             continue
-        statements.append((m.group(2), start_line, end_line, m.group(1), m.group(4)))
+        statements.append(
+            (m.group(2), start_line, end_line, m.group(1), m.group(4)))
     logger.debug("Found jinja statements {}".format(statements))
     return statements
 
@@ -211,7 +216,8 @@ def get_jinja_comments(text):
         [list]: returns list of jinja comments
     """
     comments = []
-    regex_pattern = re.compile("(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
+    regex_pattern = re.compile(
+        "(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
     for line in regex_pattern.finditer(text):
         comments.append(line.group(2))
     return comments
@@ -227,7 +233,8 @@ def get_jinja_variables(text):
         [list]: returns list of jinja variables
     """
     variables = []
-    regex_pattern = regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
+    regex_pattern = regex_pattern = re.compile(
+        "(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
     for line in regex_pattern.finditer(text):
         variables.append(line.group(2))
     return variables
@@ -250,9 +257,8 @@ def is_rule_disabled(text, rule):
             if rule.short_description == line.group(1):
                 return True
             # FIXME - remove next release
-            if hasattr(
-                rule, "deprecated_short_description"
-            ) and rule.deprecated_short_description == line.group(1):
+            if (hasattr(rule, "deprecated_short_description") and
+               rule.deprecated_short_description == line.group(1)):
                 return True
             if rule.id == line.group(1):
                 return True

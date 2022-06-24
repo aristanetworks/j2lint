@@ -14,7 +14,7 @@ class Runner:
           for each file in cli.py
     """
 
-    def __init__(self, collection, file_name, checked_files=None):
+    def __init__(self, collection, file_name, config, checked_files=None):
         self.collection = collection
         self.files = set()
         self.files.add((file_name, get_file_type(file_name)))
@@ -46,7 +46,7 @@ class Runner:
             logger.debug("Running linting rules for {}".format(file))
             file_path = file[0]
             file_type = file[1]
-            file_dict = {"path": file_path, "type": file_type}
+            file_dict = {'path': file_path, 'type': file_type}
             # pylint: disable = fixme
             # FIXME - as of now it seems that both next tests
             #         will never occurs as self.files is always
@@ -61,13 +61,13 @@ class Runner:
 
         errors = []
         warnings = []
-        # FIXME - if there are multiple files,
-        # errros and warnings are overwritten..
+        # pylint: disable = fixme
+        # FIXME - if there are multiple files, errors and warnings are overwritten..
         for file in files:
             errors, warnings = self.collection.run(file)
 
         # Update list of checked files
-        self.checked_files.update([file_dict["path"] for file_dict in files])
+        self.checked_files.update([file_dict['path'] for file_dict in files])
 
         # TODO - log also warnings
         logger.info("Linting errors found {}".format(errors))

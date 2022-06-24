@@ -10,12 +10,13 @@ from j2lint.logger import logger
 
 
 class JinjaTemplateIndentationRule(Rule):
-    """Rule class to check the jinja statement indentation is correct."""
+    """Rule class to check the jinja statement indentation is correct.
+    """
 
-    id = "S3"
-    short_description = "jinja-statements-indentation"
+    id = 'S3'
+    short_description = 'jinja-statements-indentation'
     description = "All J2 statements must be indented by 4 more spaces within jinja delimiter. To close a control, end tag must have same indentation level."
-    severity = "HIGH"
+    severity = 'HIGH'
 
     def checktext(self, file, text):
         """Checks if the given text has the error
@@ -31,7 +32,7 @@ class JinjaTemplateIndentationRule(Rule):
         errors = []
         statements = []
 
-        with open(file["path"]) as template:
+        with open(file['path']) as template:
             text = template.read()
             # Collect only Jinja Statements within delimiters {% and %} and ignore the other statements
             lines = get_jinja_statements(text, indentation=True)
@@ -41,10 +42,8 @@ class JinjaTemplateIndentationRule(Rule):
             try:
                 root.check_indentation(errors, lines, 0)
             except Exception as e:
-                logger.error(
-                    "Indentation check failed for file %s: Error: %s"
-                    % (file["path"], str(e))
-                )
+                logger.error("Indentation check failed for file %s: Error: %s" %
+                             (file['path'], str(e)))
             for error in errors:
                 result.append((error[0], error[1], error[2]))
 
