@@ -21,8 +21,8 @@ class TestRunner:
         """
         test Runner.is_already_checked method
         """
-        runner.checked_files = checked_files
-        assert runner.is_already_checked(file_path) == expected
+        test_runner.checked_files = checked_files
+        assert test_runner.is_already_checked(file_path) == expected
 
     # FIXME: refactor the code and augment the tests..
     #        today if we give multiple files to a runner
@@ -46,22 +46,22 @@ class TestRunner:
 
         This test is "bad" for now.
         """
-        runner.files = set()
+        test_runner.files = set()
         for file in runner_files:
-            runner.files.add((file, get_file_type(file)))
+            test_runner.files.add((file, get_file_type(file)))
 
         # Fake return
         with mock.patch(
             "j2lint.linter.collection.RulesCollection.run"
         ) as patched_collection_run:
             patched_collection_run.return_value = ([], [])
-            result = runner.run()
+            result = test_runner.run()
 
             assert len(runner_files) == patched_collection_run.call_count
             assert result == ([], [])
 
-            for file in runner.files:
+            for file in test_runner.files:
                 patched_collection_run.assert_any_call(
                     {"path": file[0], "type": file[1]}
                 )
-                assert file[0] in runner.checked_files
+                assert file[0] in test_runner.checked_files

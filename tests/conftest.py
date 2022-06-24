@@ -8,6 +8,7 @@ from j2lint.cli import create_parser
 from j2lint.linter.rule import Rule
 from j2lint.linter.error import LinterError
 from j2lint.linter.collection import RulesCollection
+from j2lint.linter.runner import Runner
 
 CONTENT = "content"
 
