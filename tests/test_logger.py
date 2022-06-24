@@ -25,6 +25,8 @@ def logger():
 def test_add_handler(logger, stream_handler, log_level):
     """
     Test j2lint.logger.add_handler
+
+    Verify that the correct type of handler is added
     """
     add_handler(logger, stream_handler, log_level)
     logger.setLevel.assert_called_once_with(log_level)

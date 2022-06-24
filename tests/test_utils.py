@@ -21,6 +21,8 @@ from .utils import does_not_raise
 def test_load_plugins():
     """
     Test the utils.load_plugins function
+
+    For now this is being tested via other calling methods
     """
     # TODO
     pass

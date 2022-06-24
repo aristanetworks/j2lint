@@ -18,6 +18,9 @@ from .utils import does_not_raise, j2lint_default_rules_string
 
 @pytest.fixture
 def default_namespace():
+    """
+    Default ArgPase namespace for j2lint
+    """
     return Namespace(
         files=[],
         ignore=[],
@@ -56,6 +59,13 @@ def default_namespace():
 def test_create_parser(default_namespace, argv, namespace_modifications):
     """
     Test j2lint.cli.create_parser
+
+    the namespace_modifications is a dictionnary where key
+    is one of the keys in the namespace and value is the value
+    it should be overwritten to.
+
+    This test only verifies that given a set of arguments on the
+    cli, the parser returns the correct values in the Namespace
     """
     expected_namespace = default_namespace
     for key, value in namespace_modifications.items():
@@ -66,23 +76,24 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
 
 
 @pytest.mark.parametrize(
-    "number_issues, modifications, expected_sorted_issues_ids",
+    "number_issues, issues_modifications, expected_sorted_issues_ids",
     [
         (0, {}, []),
         (1, {}, [("dummy.j2", "T0", 1, "test-rule-0")]),
-        (
+        pytest.param(
             2,
             {},
             [
                 ("dummy.j2", "T0", 1, "test-rule-0"),
                 ("dummy.j2", "T1", 2, "test-rule-1"),
             ],
+            id="sort-on-linenumber",
         ),
         pytest.param(
             2,
             {2: {"filename": "aaa.j2"}},
             [("aaa.j2", "T1", 2, "test-rule-1"), ("dummy.j2", "T0", 1, "test-rule-0")],
-            id="filename",
+            id="sort-on-filename",
         ),
         pytest.param(
             2,
@@ -91,20 +102,29 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
                 ("dummy.j2", "AA", 1, "test-rule-1"),
                 ("dummy.j2", "T0", 1, "test-rule-0"),
             ],
-            id="rule id",
+            id="sort-on-rule-id",
         ),
     ],
 )
 def test_sort_issues(
-    make_issues, number_issues, modifications, expected_sorted_issues_ids
+    make_issues, number_issues, issues_modifications, expected_sorted_issues_ids
 ):
     """
     Test j2lint.cli.sort_issues
+
+    the issues_modificartions is a dictionary that has the following
+    structure:
+
+      { <issue-index>: { <key>: <desired_value }
+
+    the test will go over these modifications and apply them to the
+    appropriate issues, apply the sort_issues method and verifies the
+    ordering is correct
     """
     issues = make_issues(number_issues)
     # In the next step we apply modifications on the generated LinterErrors
     # if required
-    for index, modification in modifications.items():
+    for index, modification in issues_modifications.items():
         for key, value in modification.items():
             if isinstance(value, dict):
                 nested_obj = getattr(issues[index - 1], key)
@@ -313,6 +333,9 @@ def test_run(
 
     This test is a bit too complex and should probably be splitted out to test various
     functionalities
+
+    the call is to test the various options of the main entry point, patching away inner
+    methods when required. The id of the tests explains the intention.
     """
     if "-stdout" in argv or "--vv" in argv:
         caplog.set_level(logging.INFO)
