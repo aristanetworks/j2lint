@@ -101,18 +101,18 @@ def test_sort_issues(
     """
     Test j2lint.cli.sort_issues
     """
-    issues = make_issues(number_issues, "DUMMY")
+    issues = make_issues(number_issues)
     # In the next step we apply modifications on the generated LinterErrors
     # if required
     for index, modification in modifications.items():
         for key, value in modification.items():
             if isinstance(value, dict):
-                nested_obj = getattr(issues["DUMMY"][index - 1], key)
+                nested_obj = getattr(issues[index - 1], key)
                 for n_key, n_value in value.items():
                     setattr(nested_obj, n_key, n_value)
             else:
-                setattr(issues["DUMMY"][index - 1], key, value)
-    sorted_issues = sort_issues(issues["DUMMY"])
+                setattr(issues[index - 1], key, value)
+    sorted_issues = sort_issues(issues)
     sorted_issues_ids = [
         (issue.filename, issue.rule.id, issue.linenumber, issue.rule.short_description)
         for issue in sorted_issues
@@ -188,7 +188,7 @@ def test_sort_and_print_issues(
     if options.json:
         settings.output = "json"
 
-    issues = make_issues(number_issues, issue_type)
+    issues = {issue_type: make_issues(number_issues)}
     json_output = {}
     total_count, json_output = sort_and_print_issues(
         options, issues, issue_type, json_output
@@ -330,8 +330,8 @@ def test_run(
         with patch("j2lint.cli.Runner.run") as mocked_runner_run, patch(
             "logging.disable"
         ) as mocked_logging_disable:
-            errors = make_issues(number_errors, "ERRORS")
-            warnings = make_issues(number_warnings, "WARNINGS")
+            errors = {"ERRORS": make_issues(number_errors)}
+            warnings = {"WARNINGS": make_issues(number_warnings)}
             mocked_runner_run.return_value = (errors["ERRORS"], warnings["WARNINGS"])
             run_return_value = run(argv)
             captured = capsys.readouterr()
