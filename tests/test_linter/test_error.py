@@ -7,27 +7,22 @@ from j2lint.settings import settings
 from j2lint.linter.error import LinterError
 
 RULE_TEXT_OUTPUT = (
-    "Linting rule: T1\n"
-    "Rule description: Pytest Fixture Rule\n"
-    "Error line: fake filename:42 fake line\n"
-    "Error message: Pytest Fixture Rule\n"
+    "Linting rule: T0\n"
+    "Rule description: test rule 0\n"
+    "Error line: dummy.j2:1 dummy\n"
+    "Error message: test rule 0\n"
 )
 RULE_JSON_OUTPUT = (
-    '{"id": "T1", "message": "Pytest Fixture Rule", '
-    '"filename": "fake filename", "linenumber": 42, '
-    '"line": "fake line", "severity": "LOW"}'
+    '{"id": "T0", "message": "test rule 0", '
+    '"filename": "dummy.j2", "linenumber": 1, '
+    '"line": "dummy", "severity": "LOW"}'
 )
-
-
-@pytest.fixture
-def linter_error(mock_rule, message=None):
-    return LinterError(42, "fake line", "fake filename", mock_rule, message=message)
 
 
 @pytest.mark.parametrize(
     "verbose, output, expected",
     [
-        (False, "text", "fake filename:42 Pytest Fixture Rule (pytest-fixture)"),
+        (False, "text", "dummy.j2:1 test rule 0 (test-rule-0)"),
         (False, "json", RULE_JSON_OUTPUT),
         (
             True,
@@ -38,7 +33,7 @@ def linter_error(mock_rule, message=None):
         (True, "blah", RULE_TEXT_OUTPUT),
     ],
 )
-def test_LinterError_repr(linter_error, verbose, output, expected):
+def test_LinterError_repr(test_issue, verbose, output, expected):
     """
     Test the different __repr__ formats for LinterError
 
@@ -51,4 +46,4 @@ def test_LinterError_repr(linter_error, verbose, output, expected):
     """
     settings.verbose = verbose
     settings.output = output
-    assert repr(linter_error) == expected
+    assert repr(test_issue) == expected

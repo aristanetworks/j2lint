@@ -1,16 +1,11 @@
 """
 Tests for j2lint.linter.runner.py
 """
+from unittest import mock
 import pytest
 
 from j2lint.utils import get_file_type
 from j2lint.linter.runner import Runner
-
-
-@pytest.fixture
-def runner(mock_collection):
-    # TODO remove the config param once this is fixed in the codebase
-    return Runner(mock_collection, "test.j2", "unused config", checked_files=None)
 
 
 class TestRunner:
@@ -22,7 +17,7 @@ class TestRunner:
             ("test.j2", ("test.j2"), True),
         ],
     )
-    def test_is_already_checked(self, runner, file_path, checked_files, expected):
+    def test_is_already_checked(self, test_runner, file_path, checked_files, expected):
         """
         test Runner.is_already_checked method
         """
@@ -42,7 +37,7 @@ class TestRunner:
             (["test.txt"]),
         ],
     )
-    def test_run(self, runner, runner_files):
+    def test_run(self, test_runner, runner_files):
         """
         test Runner.run method
 
@@ -56,12 +51,17 @@ class TestRunner:
             runner.files.add((file, get_file_type(file)))
 
         # Fake return
-        runner.collection.run.return_value = ([], [])
-        result = runner.run()
+        with mock.patch(
+            "j2lint.linter.collection.RulesCollection.run"
+        ) as patched_collection_run:
+            patched_collection_run.return_value = ([], [])
+            result = runner.run()
 
-        assert len(runner_files) == runner.collection.run.call_count
-        assert result == ([], [])
+            assert len(runner_files) == patched_collection_run.call_count
+            assert result == ([], [])
 
-        for file in runner.files:
-            runner.collection.run.assert_any_call({"path": file[0], "type": file[1]})
-            assert file[0] in runner.checked_files
+            for file in runner.files:
+                patched_collection_run.assert_any_call(
+                    {"path": file[0], "type": file[1]}
+                )
+                assert file[0] in runner.checked_files

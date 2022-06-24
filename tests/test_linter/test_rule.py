@@ -13,7 +13,7 @@ class TestRule:
         """
         Test the Rule __repr__ format
         """
-        assert str(test_rule) == "T0: test Rule object"
+        assert str(test_rule) == "T0: test rule 0"
 
     @pytest.mark.skip("This method will be removed and is tested through other methods")
     def test_is_valid_language(self, test_rule, file):

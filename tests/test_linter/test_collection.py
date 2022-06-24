@@ -132,11 +132,9 @@ class TestRulesCollection:
         """
         Test the RuleCollection.extend method
         """
-        assert str(test_collection) == "T0: test Rule object"
+        assert str(test_collection) == "T0: test rule 0"
         test_collection.extend([test_other_rule])
-        assert (
-            str(test_collection) == "T0: test Rule object\nT1: other test Rule object"
-        )
+        assert str(test_collection) == "T0: test rule 0\nT1: test rule 1"
 
     # FIXME
     # when removing the support for deprecating-short-description

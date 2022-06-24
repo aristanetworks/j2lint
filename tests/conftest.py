@@ -26,53 +26,9 @@ def default_settings():
 
 
 @pytest.fixture
-def mock_rule():
-    """
-    Return a MagicMock with the spec of a Rule object
-    """
-    r_obj = create_autospec(Rule)
-    r_obj.id = "T1"
-    r_obj.short_description = "pytest-fixture"
-    r_obj.description = "Pytest Fixture Rule"
-    r_obj.severity = "LOW"
-    yield r_obj
-
-
-@pytest.fixture
-def mock_collection(mock_rule):
-    """
-    Return a MagicMock with the spec of a Collection object
-    """
-    collection = create_autospec(RulesCollection)
-    # one rule for now
-    collection.rules = [mock_rule]
-    yield collection
-
-
-@pytest.fixture
-def test_rule():
-    """
-    return a Rule object to use in tests
-    """
-    r_obj = Rule()
-    r_obj.id = "T0"
-    r_obj.description = "test Rule object"
-    r_obj.short_description = "test-rule"
-    r_obj.severity = "LOW"
-    yield r_obj
-
-
-@pytest.fixture
-def test_other_rule():
-    """
-    return a Rule object to use in tests
-    """
-    r_obj = Rule()
-    r_obj.id = "T1"
-    r_obj.description = "other test Rule object"
-    r_obj.short_description = "other-test-rule"
-    r_obj.severity = "HIGH"
-    yield r_obj
+def test_runner(test_collection):
+    # TODO remove the config param once this is fixed in the codebase
+    return Runner(test_collection, "test.j2", "unused config", checked_files=None)
 
 
 @pytest.fixture
@@ -111,6 +67,23 @@ def make_rules():
 
 
 @pytest.fixture
+def test_rule(make_rules):
+    """
+    return a Rule object to use in test
+    from the make_rules
+    """
+    return make_rules(1)[0]
+
+
+@pytest.fixture
+def test_other_rule(make_rules):
+    """
+    return a Rule object to use in tests
+    """
+    return make_rules(2)[1]
+
+
+@pytest.fixture
 def make_issues(make_rules):
     """
     Returns a factory that generates `count` issues
@@ -139,6 +112,14 @@ def make_issue_from_rule():
         yield LinterError(42, "dummy", "dummy.j2", rule)
 
     return __make_issue_from_rule
+
+
+@pytest.fixture
+def test_issue(make_issues):
+    """
+    Get one issue from the make_issues factory
+    """
+    return make_issues(1, "DUMMY")["DUMMY"][0]
 
 
 @pytest.fixture
