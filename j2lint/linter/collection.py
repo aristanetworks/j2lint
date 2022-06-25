@@ -70,7 +70,8 @@ class RulesCollection:
             else:
                 errors.extend(rule.checklines(file_dict, text))
                 errors.extend(rule.checkfulltext(file_dict, text))
-
+        for error in errors:
+            logger.error(error)
         return errors, warnings
 
     def __repr__(self):
