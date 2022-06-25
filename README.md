@@ -68,7 +68,8 @@ Python version 3.6+
     ```bash
     sudo apt-get install python3-pip
     pip3 install jinja2
-    cd jinja2-linter
+    git clone https://github.com/aristanetworks/j2lint
+    cd j2lint
     python setup.py install
     ```
 
