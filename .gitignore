@@ -5,3 +5,7 @@ build
 dist
 *.egg-info
 **/.python-version
+.tox/**
+tests/tmp/**
+.coverage
+**/.DS_Store

@@ -12,6 +12,7 @@ class Rule:
     """Rule class which acts as a base class for rules with regex match
        functions.
     """
+
     id = None
     description = None
     check = None
@@ -30,6 +31,8 @@ class Rule:
 
         Returns:
             boolean: True if file extension is correct
+
+        TODO: refactor to use the j2lint.utils.is_valid_language
         """
 
         if is_valid_file_type(file["path"]):
@@ -59,6 +62,10 @@ class Rule:
             return errors
 
         for (index, line) in enumerate(text.split("\n")):
+            # pylint: disable = fixme
+            # FIXME - parsing jinja2 templates .. lines starting with `#
+            #         should probably still be parsed somewhow as these
+            #         are not comments.
             if line.lstrip().startswith('#'):
                 continue
 

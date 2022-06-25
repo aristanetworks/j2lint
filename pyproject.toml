@@ -1,0 +1,41 @@
+# content of pyproject.toml
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = clean,py36,py37,py38,py39,py310,report
+
+[gh-actions]
+python =
+  3.6: py36
+  3.7: py37
+  3.8: py38
+  3.9: py39
+  3.10: py310, coverage
+
+[testenv]
+deps =
+  pytest
+  pytest-cov
+commands = pytest
+
+[testenv:clean]
+deps = coverage[toml]
+skip_install = true
+commands = coverage erase
+
+[testenv:report]
+deps = coverage[toml]
+commands = coverage report
+# add the following to make the report fail under some percentage
+# commands = coverage report --fail-under=80
+depends = py310
+"""
+
+[tool.pytest.ini_options]
+addopts = "-ra -q -s -vv --capture=tee-sys --basetemp ./tests/tmp --cov --cov-append"
+log_level = "WARNING"
+log_cli = "True"
+
+[tool.coverage.run]
+source = ['j2lint']
+omit = ["j2lint/__main__.py"]

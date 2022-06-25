@@ -27,6 +27,8 @@ class RulesCollection:
 
         Args:
             more (list): list of rules classes
+
+        Note: This does not protect against duplicate rules
         """
         self.rules.extend(more)
 
@@ -49,7 +51,7 @@ class RulesCollection:
         except IOError as e:
             print("WARNING: Couldn't open %s - %s" %
                   (file_dict['path'], e.strerror), file=sys.stderr)
-            return errors
+            return errors, warnings
 
         for rule in self.rules:
             if rule.ignore:

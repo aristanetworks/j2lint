@@ -11,6 +11,9 @@ JINJA_STATEMENT_TAG_NAMES = [
 class JinjaStatement:
     """Class for representing a jinja statement.
     """
+    # pylint: disable = fixme
+    # FIXME - this could probably be a method in Node rather than a class
+    #         with no method
     begin = None
     words = []
 

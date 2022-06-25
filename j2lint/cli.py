@@ -36,6 +36,8 @@ def create_parser():
     Returns:
         Object: Argument parser object
     """
+    # TODO some flag names are questionable..
+    # TODO is stdin feature actually needed ???
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],
@@ -97,6 +99,10 @@ def sort_and_print_issues(options, lint_issues, issue_type, json_output):
             total_issues = total_issues + len(issues)
             sorted_issues = sort_issues(issues)
             if options.json:
+                # pylint: disable = fixme
+                # FIXME - this is not doing the correct job as it will overwrite
+                # whatever is in the issue_type key in the dictionnary
+                # The outcome is that for json, only the last file errors are printed
                 json_output[issue_type] = ([json.loads(str(issue)) for issue in sorted_issues])
             else:
                 print("************ File {}".format(key))
@@ -114,6 +120,10 @@ def run(args=None):
     Returns:
         int: 0 on success
     """
+    # pylint: disable = fixme
+    # FIXME - `j2lint -stdin tests/data/test.j2`
+    #         will return exit code 2 so that could be confusing.
+    #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 

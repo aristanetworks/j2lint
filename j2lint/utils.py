@@ -4,6 +4,7 @@ import glob
 import importlib.util
 import os
 import re
+
 try:
     from collections.abc import Iterable
 except ImportError:
@@ -65,6 +66,8 @@ def get_file_type(file_name):
 
     Returns:
         string: jinja or None
+
+    TODO: this method and the previous one are redundant
     """
     if is_valid_file_type(file_name):
         return LANGUAGE_JINJA
@@ -81,6 +84,11 @@ def get_files(file_or_dir_names):
         list: list of file paths
     """
     file_paths = []
+
+    if not isinstance(file_or_dir_names, (list, set)):
+        raise TypeError(
+            f"get_files expects a list or a set and got {file_or_dir_names}"
+        )
 
     for file_or_dir in file_or_dir_names:
         if os.path.isdir(file_or_dir):
@@ -106,6 +114,8 @@ def flatten(l):
     Yields:
         list: flattened list
     """
+    if not isinstance(l, (list, tuple)):
+        raise TypeError(f"flatten is expecting a list or tuple and received {l}")
     for el in l:
         if (isinstance(el, Iterable) and
                 not isinstance(el, (str, bytes))):
@@ -133,8 +143,35 @@ def get_tuple(l, item):
 def get_jinja_statements(text, indentation=False):
     """Gets jinja statements with {%[-/+] [-]%} delimiters
 
+    The regex `regex_pattern` will return multiple groups when it matches
+    Note that this is a multiline regex
+
     Args:
         text (string): multiline text to search the jinja statements in
+        indentation (bool): Set to True if parsing for indentation, it will allow
+                            to retrieve multiple lines
+    Example:
+
+    For this given template:
+
+        {# tcam-profile #}
+        {% if switch.platform_settings.tcam_profile is arista.avd.defined %}
+        tcam_profile:
+          system: {{ switch.platform_settings.tcam_profile }}
+        {% endif %}
+
+    With indentation=True
+
+        Found jinja statements [(' if switch.platform_settings.tcam_profile is arista.avd.defined ', 2, 2, '{%', '%}'), (' endif ', 5, 5, '{%', '%}')]
+
+    With indentation=False
+
+        Found jinja statements []
+        Found jinja statements [(' if switch.platform_settings.tcam_profile is arista.avd.defined ', 1, 1, '{%', '%}')]
+        Found jinja statements []
+        Found jinja statements []
+        Found jinja statements [(' endif ', 1, 1, '{%', '%}')]
+        Found jinja statements []
 
     Returns:
         [list]: list of jinja statements

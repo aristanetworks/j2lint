@@ -22,6 +22,7 @@ jinja_delimiter_stack = []
 class Node:
     """Node class which represents a jinja file as a tree
     """
+
     statement = None
     tag = None
     node_start = 0
@@ -40,6 +41,8 @@ class Node:
         Returns:
             Node: new Node class object
         """
+        # pylint: disable = fixme
+        # FIXME - this should just be an __init__
         node = Node()
         statement = JinjaStatement(line)
         node.statement = statement
@@ -60,6 +63,8 @@ class Node:
         Returns:
             tuple: tuple representing the indentation error
         """
+        # pylint: disable = fixme
+        # FIXME - why are we passing both self and node???
         return (node.statement.start_line_no,
                 delimit_jinja_statement(node.statement.line,
                                         node.statement.start_delimiter,

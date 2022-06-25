@@ -45,6 +45,8 @@ class JinjaOperatorHasSpaceRule(Rule):
             for match in regx:
                 line = line.replace(("\"" + match + "\""), '""')
 
+        # pylint: disable = fixme
+        # FIXME - be able to detect multiple times the same operator
         for (regex, operator) in zip(self.regexes, self.operators):
             if regex.search(line):
                 issues.append(operator)
