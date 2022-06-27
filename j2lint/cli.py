@@ -35,8 +35,8 @@ def create_parser():
     Returns:
         Object: Argument parser object
     """
-    # TODO some flag names are questionable..
-    # TODO is stdin feature actually needed ???
+    # TODO some flag names are questionable.. # pylint: disable=fixme
+    # TODO is stdin feature actually needed ??? # pylint: disable=fixme
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],

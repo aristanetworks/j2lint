@@ -123,8 +123,8 @@ def flatten(nested_list):
     Yields:
         list: flattened list
     """
-    if not isinstance(l, (list, tuple)):
-        raise TypeError(f"flatten is expecting a list or tuple and received {l}")
+    if not isinstance(nested_list, (list, tuple)):
+        raise TypeError(f"flatten is expecting a list or tuple and received {nested_list}")
     for element in nested_list:
         if isinstance(element, Iterable) and not isinstance(element, (str, bytes)):
             yield from flatten(element)
@@ -170,12 +170,14 @@ def get_jinja_statements(text, indentation=False):
 
     With indentation=True
 
-        Found jinja statements [(' if switch.platform_settings.tcam_profile is arista.avd.defined ', 2, 2, '{%', '%}'), (' endif ', 5, 5, '{%', '%}')]
+        Found jinja statements [(' if switch.platform_settings.tcam_profile
+        is arista.avd.defined ', 2, 2, '{%', '%}'), (' endif ', 5, 5, '{%', '%}')]
 
     With indentation=False
 
         Found jinja statements []
-        Found jinja statements [(' if switch.platform_settings.tcam_profile is arista.avd.defined ', 1, 1, '{%', '%}')]
+        Found jinja statements [(' if switch.platform_settings.tcam_profile is
+        arista.avd.defined ', 1, 1, '{%', '%}')]
         Found jinja statements []
         Found jinja statements []
         Found jinja statements [(' endif ', 1, 1, '{%', '%}')]
