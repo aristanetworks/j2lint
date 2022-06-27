@@ -50,7 +50,7 @@ class RulesCollection:
         except IOError as error:
             print(f"WARNING: Couldn't open {file_dict['path']} - {error.strerror}"
                   , file=sys.stderr)
-            return errors
+            return errors, warnings
 
         for rule in self.rules:
             if rule.ignore:
@@ -64,10 +64,9 @@ class RulesCollection:
 
             logger.debug("Running linting rule %s on file %s",
                 rule, file_dict['path'])
-            rule_obj = rule()
-            if rule in rule_obj.warn:
-                warnings.extend(rule_obj.checklines(file_dict, text))
-                warnings.extend(rule_obj.checkfulltext(file_dict, text))
+            if rule in rule.warn:
+                warnings.extend(rule.checklines(file_dict, text))
+                warnings.extend(rule.checkfulltext(file_dict, text))
 
             else:
                 errors.extend(rule.checklines(file_dict, text))

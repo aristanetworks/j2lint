@@ -97,7 +97,7 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
         ),
         pytest.param(
             2,
-            {2: {"rule": {"id": "AA"}, "linenumber": 1}},
+            {2: {"rule": {"id": "AA"}, "line_number": 1}},
             [
                 ("dummy.j2", "AA", 1, "test-rule-1"),
                 ("dummy.j2", "T0", 1, "test-rule-0"),
@@ -134,7 +134,7 @@ def test_sort_issues(
                 setattr(issues[index - 1], key, value)
     sorted_issues = sort_issues(issues)
     sorted_issues_ids = [
-        (issue.filename, issue.rule.id, issue.linenumber, issue.rule.short_description)
+        (issue.filename, issue.rule.id, issue.line_number, issue.rule.short_description)
         for issue in sorted_issues
     ]
     assert sorted_issues_ids == expected_sorted_issues_ids
@@ -169,7 +169,7 @@ def test_sort_issues(
                             "filename": "dummy.j2",
                             "id": "T0",
                             "line": "dummy",
-                            "linenumber": 1,
+                            "line_number": 1,
                             "message": "test rule 0",
                             "severity": "LOW",
                         }
@@ -275,7 +275,7 @@ Jinja2 linting finished with 1 issue(s) and 1 warning(s)
         ),
         pytest.param(
             ["-j", "tests/data/test.j2"],
-            '{"ERRORS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "linenumber": 1, "line": "dummy", "severity": "LOW"}], "WARNINGS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "linenumber": 1, "line": "dummy", "severity": "LOW"}]}\n',
+            '{"ERRORS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}], "WARNINGS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]}\n',
             "",
             2,
             does_not_raise(),
@@ -342,7 +342,7 @@ def test_run(
     if "-d" in argv or "--debug" in argv:
         caplog.set_level(logging.DEBUG)
     # TODO this method needs to be split a bit as it has
-    # too many responsability
+    # too many responsibility
     if expected_stdout == "HELP":
         expected_stdout = j2lint_usage_string
     if expected_stdout == "DEFAULT_RULES":

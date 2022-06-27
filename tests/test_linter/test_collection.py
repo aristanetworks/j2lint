@@ -6,9 +6,9 @@ import pytest
 from unittest import mock
 
 from j2lint.linter.collection import RulesCollection
-from j2lint.rules.JinjaTemplateSyntaxErrorRule import JinjaTemplateSyntaxErrorRule
-from j2lint.rules.JinjaOperatorHasSpaceRule import JinjaOperatorHasSpaceRule
-from j2lint.rules.JinjaStatementDelimiterRule import JinjaStatementDelimiterRule
+from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
+from j2lint.rules.jinja_operator_has_spaces_rule import JinjaOperatorHasSpacesRule
+from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterRule
 
 from tests.utils import does_not_raise
 
@@ -171,7 +171,7 @@ class TestRulesCollection:
             # not instances..
             mocked_load_plugins.return_value = [
                 JinjaStatementDelimiterRule(),
-                JinjaOperatorHasSpaceRule(),
+                JinjaOperatorHasSpacesRule(),
                 JinjaTemplateSyntaxErrorRule(),
             ]
             collection = RulesCollection.create_from_directory(
