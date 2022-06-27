@@ -233,12 +233,13 @@ def run(args=None):
         settings.output = "json"
         logger.debug("JSON output enabled")
 
-    # Remove temporary file
-    remove_temporary_file(stdin_filename)
-
     total_errors, total_warnings, json_output = (
         get_linting_issues(file_or_dir_names, options, collection, checked_files))
     print_linting_result(options, total_errors, total_warnings, json_output)
+
+    # Remove temporary file
+    remove_temporary_file(stdin_filename)
+
 
     if total_errors:
         return 2

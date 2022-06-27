@@ -1,6 +1,7 @@
 """jinja_template_indentation_rule.py - Rule class to check the jinja statement
                                      indentation is correct.
 """
+from j2lint.linter.error import JinjaLinterError
 from j2lint.linter.rule import Rule
 from j2lint.linter.indenter.node import Node
 from j2lint.utils import get_jinja_statements
@@ -41,7 +42,7 @@ class JinjaTemplateIndentationRule(Rule):
             root = Node()
             try:
                 root.check_indentation(errors, lines, 0)
-            except SyntaxError as error:
+            except JinjaLinterError as error:
                 logger.error("Indentation check failed for file %s: Error: %s",
                              file['path'], str(error))
             for error in errors:

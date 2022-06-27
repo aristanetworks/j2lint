@@ -85,9 +85,6 @@ PARAMS = [
     ),
 ]
 
-LOGGER = logging.getLogger("")
-LOGGER.setLevel(logging.INFO)
-
 
 @pytest.mark.parametrize(
     "filename, j2_errors_ids, j2_warnings_ids, expected_log",
@@ -97,15 +94,17 @@ def test_rules(
     caplog, collection, filename, j2_errors_ids, j2_warnings_ids, expected_log
 ):
 
-    errors, warnings = collection.run({"path": filename})
+    caplog.set_level(logging.ERROR)
+    errors, warnings = collection.run({"path": filename, "type": "jinja"})
 
-    errors_ids = [(error.rule.id, error.linenumber) for error in errors]
+    errors_ids = [(error.rule.id, error.line_number) for error in errors]
     errors_messages = "\n".join([error.rule.description for error in errors])
-    LOGGER.info(errors_messages)
 
-    warnings_ids = [(warning.rule.id, warning.linenumber) for warning in warnings]
+    warnings_ids = [(warning.rule.id, warning.line_number) for warning in warnings]
 
-    assert caplog.record_tuples == expected_log
+    print(caplog.record_tuples)
+    for record_tuple in expected_log:
+        assert record_tuple in caplog.record_tuples
 
     assert sorted(warnings_ids) == sorted(j2_warnings_ids)
     assert sorted(errors_ids) == sorted(j2_errors_ids)

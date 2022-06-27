@@ -23,13 +23,6 @@ class TestRule:
         "check, file_path, expected_errors_ids, expected_logs",
         [
             pytest.param(
-                None,
-                {"path": "tests/test_linter/data/test.txt"},
-                [],
-                [("root", logging.DEBUG, "Check line rule does not exist for Rule")],
-                id="self.check is None",
-            ),
-            pytest.param(
                 True,
                 {"path": "tests/test_linter/data/test.txt"},
                 [],
@@ -75,13 +68,6 @@ class TestRule:
     @pytest.mark.parametrize(
         "checktext, file_path, expected_errors_ids, expected_logs",
         [
-            pytest.param(
-                None,
-                {"path": "tests/test_linter/data/test.txt"},
-                [],
-                [("root", logging.DEBUG, "Check text rule does not exist for Rule")],
-                id="self.checktext is None",
-            ),
             pytest.param(
                 True,
                 {"path": "tests/test_linter/data/test.txt"},

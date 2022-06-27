@@ -8,8 +8,7 @@ from j2lint.logger import logger
 
 
 class RulesCollection:
-    """RulesCollection class which checks the linting rules against a file.
-    """
+    """RulesCollection class which checks the linting rules against a file."""
 
     def __init__(self, verbose=False):
         self.rules = []
@@ -45,25 +44,31 @@ class RulesCollection:
         warnings = []
 
         try:
-            with open(file_dict['path'], mode='r', encoding="utf-8") as file:
+            with open(file_dict["path"], mode="r", encoding="utf-8") as file:
                 text = file.read()
         except IOError as error:
-            print(f"WARNING: Couldn't open {file_dict['path']} - {error.strerror}"
-                  , file=sys.stderr)
+            print(
+                f"WARNING: Couldn't open {file_dict['path']} - {error.strerror}",
+                file=sys.stderr,
+            )
             return errors, warnings
 
         for rule in self.rules:
             if rule.ignore:
-                logger.debug("Ignoring rule %s:%s for file %s",
-                    rule.id, rule.short_description, file_dict['path'])
+                logger.debug(
+                    "Ignoring rule %s:%s for file %s",
+                    rule.id,
+                    rule.short_description,
+                    file_dict["path"],
+                )
                 continue
             if is_rule_disabled(text, rule):
-                logger.debug("Skipping linting rule %s on file %s",
-                    rule, file_dict['path'])
+                logger.debug(
+                    "Skipping linting rule %s on file %s", rule, file_dict["path"]
+                )
                 continue
 
-            logger.debug("Running linting rule %s on file %s",
-                rule, file_dict['path'])
+            logger.debug("Running linting rule %s on file %s", rule, file_dict["path"])
             if rule in rule.warn:
                 warnings.extend(rule.checklines(file_dict, text))
                 warnings.extend(rule.checkfulltext(file_dict, text))
@@ -76,8 +81,9 @@ class RulesCollection:
         return errors, warnings
 
     def __repr__(self):
-        return "\n".join([repr(rule)
-                          for rule in sorted(self.rules, key=lambda x: x.id)])
+        return "\n".join(
+            [repr(rule) for rule in sorted(self.rules, key=lambda x: x.id)]
+        )
 
     @classmethod
     def create_from_directory(cls, rules_dir, ignore_rules, warn_rules):
@@ -115,6 +121,5 @@ class RulesCollection:
                 )
             ):
                 rule.warn.append(rule)
-        logger.info(
-            "Created collection from rules directory %s", rules_dir)
+        logger.info("Created collection from rules directory %s", rules_dir)
         return result

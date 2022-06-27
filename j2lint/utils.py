@@ -34,7 +34,7 @@ def load_plugins(directory):
                 )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-                obj = getattr(module, class_name)
+                obj = getattr(module, class_name)()
                 result.append(obj)
         except AttributeError:
             # pylint: disable=fixme
@@ -43,7 +43,10 @@ def load_plugins(directory):
             #         and only the log will be kept
             #         maybe look into the built-in __subclasses__ method
             try:
-                obj = getattr(module, plugin_name)
+                spec = importlib.util.spec_from_file_location(plugin_name, plugin_file)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                obj = getattr(module, plugin_name)()
                 result.append(obj)
             except AttributeError:
                 logger.warning("Failed to load plugin %s", plugin_name)
