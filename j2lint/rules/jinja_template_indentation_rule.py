@@ -15,7 +15,7 @@ class JinjaTemplateIndentationRule(Rule):
     id = 'S3'
     short_description = 'jinja-statements-indentation'
     description = ("All J2 statements must be indented by 4 more spaces within jinja delimiter. "
-                  "To close a control, end tag must have same indentation level.")
+                   "To close a control, end tag must have same indentation level.")
     severity = 'HIGH'
 
     def checktext(self, file, text):
@@ -47,6 +47,5 @@ class JinjaTemplateIndentationRule(Rule):
                              file['path'], str(error))
             for error in errors:
                 result.append((error[0], error[1], error[2]))
-
 
         return result

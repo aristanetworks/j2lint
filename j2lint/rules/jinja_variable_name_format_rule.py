@@ -12,7 +12,7 @@ class JinjaVariableNameFormatRule(Rule):
     id = 'V2'
     short_description = 'jinja-variable-format'
     description = ("If variable is multi-words, underscore _ shall be used "
-                  "as a separator: '{{ my_variable_name }}'")
+                   "as a separator: '{{ my_variable_name }}'")
     severity = 'LOW'
 
     regex = re.compile(r"[a-zA-Z0-9-_\"']+[-][a-zA-Z0-9-_\"']+")

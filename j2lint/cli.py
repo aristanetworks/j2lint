@@ -240,7 +240,6 @@ def run(args=None):
     # Remove temporary file
     remove_temporary_file(stdin_filename)
 
-
     if total_errors:
         return 2
 

@@ -6,10 +6,17 @@ from contextlib import contextmanager
 
 @contextmanager
 def does_not_raise():
+    """
+    Provides a context manager that does not raise anything
+    for pytest tests
+    """
     yield
 
 
 def j2lint_default_rules_string():
+    """
+    The description of the default rules
+    """
     return (
         "Jinja2 lint rules\n"
         "S0: Jinja syntax should be correct\n"

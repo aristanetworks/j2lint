@@ -11,7 +11,7 @@ class JinjaOperatorHasSpacesRule(Rule):
     id = 'S2'
     short_description = 'operator-enclosed-by-spaces'
     description = ("When variables are used in combination with an operator, "
-                  "the operator shall be enclosed by space: '{{ my_value | to_json }}'")
+                   "the operator shall be enclosed by space: '{{ my_value | to_json }}'")
     severity = 'LOW'
 
     operators = ['|', '+', '==']
@@ -19,9 +19,9 @@ class JinjaOperatorHasSpacesRule(Rule):
     for operator in operators:
         operator = "\\" + operator
         regex = (r"({[{|%](.*?)([^ |^}]" + operator + ")(.*?)[}|%]})|({[{|%](.*?)(" + operator +
-            r"[^ |^{])(.*?)[}|%]})|({[{|%](.*?)([^ |^}] \s+" + operator +
-            ")(.*?)[}|%]})|({[{|%](.*?)(" +
-            operator + r" \s+[^ |^{])(.*?)[}|%]})")
+                 r"[^ |^{])(.*?)[}|%]})|({[{|%](.*?)([^ |^}] \s+" + operator +
+                 ")(.*?)[}|%]})|({[{|%](.*?)(" +
+                 operator + r" \s+[^ |^{])(.*?)[}|%]})")
         regexes.append(re.compile(regex))
 
     def check(self, line):
@@ -53,10 +53,10 @@ class JinjaOperatorHasSpacesRule(Rule):
         if issues:
             if len(issues) > 1:
                 self.description = (f"The operators {(', '.join(issues))} need to be enclosed "
-                                   "by a single space on each side")
+                                    "by a single space on each side")
             else:
                 self.description = (f"The operator {(', '.join(issues))} needs to be enclosed"
-                                   " by a single space on each side")
+                                    " by a single space on each side")
             return True
 
         return False

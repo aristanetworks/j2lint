@@ -2,6 +2,7 @@
 """
 # pylint: disable=too-few-public-methods
 
+
 class Settings:
     """Class for jinja2 linter settings.
     """

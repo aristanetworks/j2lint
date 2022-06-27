@@ -13,7 +13,7 @@ class JinjaVariableHasSpaceRule(Rule):
     id = 'S1'
     short_description = 'single-space-decorator'
     description = ("A single space shall be added between Jinja2 curly brackets"
-                  " and a variable name: "'{{ ethernet_interface }}')
+                   " and a variable name: "'{{ ethernet_interface }}')
     severity = 'LOW'
 
     regex = re.compile(
