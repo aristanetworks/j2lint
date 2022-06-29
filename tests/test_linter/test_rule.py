@@ -23,13 +23,6 @@ class TestRule:
         "check, file_path, expected_errors_ids, expected_logs",
         [
             pytest.param(
-                None,
-                {"path": "tests/test_linter/data/test.txt"},
-                [],
-                [("root", logging.DEBUG, "Check line rule does not exist for Rule")],
-                id="self.check is None",
-            ),
-            pytest.param(
                 True,
                 {"path": "tests/test_linter/data/test.txt"},
                 [],
@@ -43,14 +36,14 @@ class TestRule:
                 id="file is wrong type",
             ),
             pytest.param(
-                lambda x, y: None,
+                lambda x: None,
                 {"path": "tests/test_linter/data/test.j2"},
                 [],
                 [],
                 id="no error",
             ),
             pytest.param(
-                lambda x, y: True,
+                lambda x: True,
                 {"path": "tests/test_linter/data/test.j2"},
                 [("T0", 1)],
                 [],
@@ -68,20 +61,13 @@ class TestRule:
         test_rule.check = check
         with open(file_path["path"], "r", encoding="utf-8") as file_d:
             errors = test_rule.checklines(file_path, file_d.read())
-        errors_ids = [(error.rule.id, error.linenumber) for error in errors]
+        errors_ids = [(error.rule.id, error.line_number) for error in errors]
         assert errors_ids == expected_errors_ids
         assert caplog.record_tuples == expected_logs
 
     @pytest.mark.parametrize(
         "checktext, file_path, expected_errors_ids, expected_logs",
         [
-            pytest.param(
-                None,
-                {"path": "tests/test_linter/data/test.txt"},
-                [],
-                [("root", logging.DEBUG, "Check text rule does not exist for Rule")],
-                id="self.checktext is None",
-            ),
             pytest.param(
                 True,
                 {"path": "tests/test_linter/data/test.txt"},
@@ -127,6 +113,6 @@ class TestRule:
         test_rule.checktext = checktext
         with open(file_path["path"], "r", encoding="utf-8") as file_d:
             errors = test_rule.checkfulltext(file_path, file_d.read())
-        errors_ids = [(error.rule.id, error.linenumber) for error in errors]
+        errors_ids = [(error.rule.id, error.line_number) for error in errors]
         assert errors_ids == expected_errors_ids
         assert caplog.record_tuples == expected_logs

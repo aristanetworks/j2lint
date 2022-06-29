@@ -12,81 +12,78 @@ def collection():
 
 PARAMS = [
     (
-        "tests/test_rules/data/JinjaTemplateSyntaxErrorRule.j2",
+        "tests/test_rules/data/jinja_template_syntax_error_rule.j2",
         [("S0", 1)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaVariableHasSpaceRule.j2",
+        "tests/test_rules/data/jinja_variable_has_space_rule.j2",
         [("S1", 1), ("S1", 2), ("S1", 3)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaOperatorHasSpaceRule.j2",
+        "tests/test_rules/data/jinja_operator_has_spaces_rule.j2",
         [("S2", 1), ("S2", 2), ("S2", 3), ("S2", 6), ("S2", 8), ("S2", 10)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaTemplateIndentationRule.j2",
+        "tests/test_rules/data/jinja_template_indentation_rule.j2",
         [("S3", 2), ("S3", 6), ("S3", 5)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaTemplateIndentationRule_fail.j2",
+        "tests/test_rules/data/jinja_template_indentation_rule.fail.j2",
         [("S0", 2), ("S3", 2)],
         [],
         [
             (
                 "root",
                 logging.ERROR,
-                "Indentation check failed for file tests/test_rules/data/JinjaTemplateIndentationRule_fail.j2: Error: Tag is out of order 'endfor'",
+                "Indentation check failed for file tests/test_rules/data/jinja_template_indentation_rule.fail.j2: Error: Tag is out of order 'endfor'",
             )
         ],
     ),
     (
-        "tests/test_rules/data/JinjaStatementHasSpacesRule.j2",
+        "tests/test_rules/data/jinja_statement_has_spaces_rule.j2",
         [("S4", 1), ("S4", 2), ("S4", 3)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaTemplateNoTabsRule.j2",
+        "tests/test_rules/data/jinja_template_no_tabs_rule.j2",
         [("S5", 1)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaStatementDelimiterRule.j2",
+        "tests/test_rules/data/jinja_statement_delimiter_rule.j2",
         [("S6", 1), ("S6", 3), ("S6", 5)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaTemplateSingleStatementRule.j2",
+        "tests/test_rules/data/jinja_template_single_statement_rule.j2",
         [("S7", 1)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaVariableNameCaseRule.j2",
+        "tests/test_rules/data/jinja_variable_name_case_rule.j2",
         [("V1", 1), ("V1", 2), ("V1", 3)],
         [],
         [],
     ),
     (
-        "tests/test_rules/data/JinjaVariableNameFormatRule.j2",
+        "tests/test_rules/data/jinja_variable_name_format_rule.j2",
         [("V2", 1)],
         [],
         [],
     ),
 ]
-
-LOGGER = logging.getLogger("")
-LOGGER.setLevel(logging.INFO)
 
 
 @pytest.mark.parametrize(
@@ -96,16 +93,26 @@ LOGGER.setLevel(logging.INFO)
 def test_rules(
     caplog, collection, filename, j2_errors_ids, j2_warnings_ids, expected_log
 ):
+    """
+    caplog: fixture to capture logs
+    collection: a collection from the j2lint default rules
+    filename: the name of the file to parse
+    j2_errors_ids: the ids of the expected errors (<ID>, <Line Number>)
+    j2_warnings_ids: the ids of the expected warnings (<ID>, <Line Number>)
+    expected_log: a list of expected log tuples as defined per caplog.record_tuples
+    """
 
-    errors, warnings = collection.run({"path": filename})
+    caplog.set_level(logging.ERROR)
+    errors, warnings = collection.run({"path": filename, "type": "jinja"})
 
-    errors_ids = [(error.rule.id, error.linenumber) for error in errors]
+    errors_ids = [(error.rule.id, error.line_number) for error in errors]
     errors_messages = "\n".join([error.rule.description for error in errors])
-    LOGGER.info(errors_messages)
 
-    warnings_ids = [(warning.rule.id, warning.linenumber) for warning in warnings]
+    warnings_ids = [(warning.rule.id, warning.line_number) for warning in warnings]
 
-    assert caplog.record_tuples == expected_log
+    print(caplog.record_tuples)
+    for record_tuple in expected_log:
+        assert record_tuple in caplog.record_tuples
 
     assert sorted(warnings_ids) == sorted(j2_warnings_ids)
     assert sorted(errors_ids) == sorted(j2_errors_ids)

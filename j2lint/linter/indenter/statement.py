@@ -1,5 +1,6 @@
 """statement.py - Class and variables for jinja statements.
 """
+# pylint: disable=too-few-public-methods
 import re
 JINJA_STATEMENT_TAG_NAMES = [
     ('for', 'else', 'endfor'),
@@ -18,7 +19,7 @@ class JinjaStatement:
     words = []
 
     def __init__(self, line):
-        whitespaces = re.findall('\s*', line[0])
+        whitespaces = re.findall(r'\s*', line[0])
 
         self.begin = len(whitespaces[0])
         self.line = line[0]

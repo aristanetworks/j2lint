@@ -1,6 +1,5 @@
 """collection.py - Class to create a collection of linting rules.
 """
-from collections import defaultdict
 import os
 import sys
 
@@ -9,8 +8,7 @@ from j2lint.logger import logger
 
 
 class RulesCollection:
-    """RulesCollection class which checks the linting rules against a file.
-    """
+    """RulesCollection class which checks the linting rules against a file."""
 
     def __init__(self, verbose=False):
         self.rules = []
@@ -46,27 +44,35 @@ class RulesCollection:
         warnings = []
 
         try:
-            with open(file_dict['path'], mode='r') as f:
-                text = f.read()
-        except IOError as e:
-            print("WARNING: Couldn't open %s - %s" %
-                  (file_dict['path'], e.strerror), file=sys.stderr)
+            with open(file_dict["path"], mode="r", encoding="utf-8") as file:
+                text = file.read()
+        except IOError as error:
+            print(
+                f"WARNING: Couldn't open {file_dict['path']} - {error.strerror}",
+                file=sys.stderr,
+            )
             return errors, warnings
 
         for rule in self.rules:
             if rule.ignore:
-                logger.debug("Ignoring rule {}:{} for file {}".format(
-                    rule.id, rule.short_description, file_dict['path']))
+                logger.debug(
+                    "Ignoring rule %s:%s for file %s",
+                    rule.id,
+                    rule.short_description,
+                    file_dict["path"],
+                )
                 continue
             if is_rule_disabled(text, rule):
-                logger.debug("Skipping linting rule {} on file {}".format(
-                    rule, file_dict['path']))
+                logger.debug(
+                    "Skipping linting rule %s on file %s", rule, file_dict["path"]
+                )
                 continue
-            logger.debug("Running linting rule {} on file {}".format(
-                rule, file_dict['path']))
+
+            logger.debug("Running linting rule %s on file %s", rule, file_dict["path"])
             if rule in rule.warn:
                 warnings.extend(rule.checklines(file_dict, text))
                 warnings.extend(rule.checkfulltext(file_dict, text))
+
             else:
                 errors.extend(rule.checklines(file_dict, text))
                 errors.extend(rule.checkfulltext(file_dict, text))
@@ -75,23 +81,25 @@ class RulesCollection:
         return errors, warnings
 
     def __repr__(self):
-        return "\n".join([repr(rule)
-                          for rule in sorted(self.rules, key=lambda x: x.id)])
+        return "\n".join(
+            [repr(rule) for rule in sorted(self.rules, key=lambda x: x.id)]
+        )
 
     @classmethod
-    def create_from_directory(clazz, rules_dir, ignore_rules, warn_rules):
+    def create_from_directory(cls, rules_dir, ignore_rules, warn_rules):
         """Creates a collection from all rule modules
 
         Args:
-            clazz (Object): object of a rule class
+            cls (Object): object of a rule class
             rules_dir (string): rules directory
             ignore_rules (list): list of rule descriptions to ignore
 
         Returns:
             list: a collection of rule objects
         """
-        result = clazz()
+        result = cls()
         result.rules = load_plugins(os.path.expanduser(rules_dir))
+        # pylint: disable=fixme
         # FIXME: once the first version of j2lint is tagged and publish,
         #        remove the deprecated_short_description
         for rule in result.rules:
@@ -113,6 +121,5 @@ class RulesCollection:
                 )
             ):
                 rule.warn.append(rule)
-        logger.info(
-            "Created collection from rules directory {}".format(rules_dir))
+        logger.info("Created collection from rules directory %s", rules_dir)
         return result

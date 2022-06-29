@@ -1,4 +1,4 @@
-"""JinjaVariableHasSpaceRule.py - Rule class to check if jinja variables have
+"""jinja_variable_has_space_rule.py - Rule class to check if jinja variables have
                                   single space between curly brackets and
                                   variable name.
 """
@@ -12,20 +12,21 @@ class JinjaVariableHasSpaceRule(Rule):
     """
     id = 'S1'
     short_description = 'single-space-decorator'
-    description = "A single space shall be added between Jinja2 curly brackets and a variable’s name: '{{ ethernet_interface }}'"
+    description = ("A single space shall be added between Jinja2 curly brackets"
+                   " and a variable name: "'{{ ethernet_interface }}')
     severity = 'LOW'
 
     regex = re.compile(
         r"{{[^ \-\+\d]|{{[-\+][^ ]|[^ \-\+\d]}}|[^ {][-\+\d]}}|{{ \s+[^ \-\+]|[^ \-\+] \s+}}")
 
-    def check(self, file, line):
+    def check(self, line):
         """Checks if the given line matches the error regex
 
           Args:
-              file (string): file path
               line (string): a single line from the file
 
           Returns:
               Object: Returns error object if found else None
           """
+
         return self.regex.search(line)

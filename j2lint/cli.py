@@ -1,7 +1,6 @@
 """cli.py - Command line argument parser.
 """
 import sys
-import errno
 import os
 import argparse
 import logging
@@ -36,8 +35,8 @@ def create_parser():
     Returns:
         Object: Argument parser object
     """
-    # TODO some flag names are questionable..
-    # TODO is stdin feature actually needed ???
+    # TODO some flag names are questionable.. # pylint: disable=fixme
+    # TODO is stdin feature actually needed ??? # pylint: disable=fixme
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],
@@ -80,11 +79,37 @@ def sort_issues(issues):
     issues.sort(
         key=lambda issue: (
             issue.filename,
-            issue.linenumber,
+            issue.line_number,
             issue.rule.id
         )
     )
     return issues
+
+
+def get_linting_issues(file_or_dir_names, options, collection, checked_files):
+    """ checking errors and warnings """
+    lint_errors = {}
+    lint_warnings = {}
+    json_output = {}
+    files = get_files(file_or_dir_names)
+
+    # Get linting issues
+    for file_name in files:
+        runner = Runner(collection, file_name, checked_files)
+        if file_name not in lint_errors:
+            lint_errors[file_name] = []
+        if file_name not in lint_warnings:
+            lint_warnings[file_name] = []
+        j2_errors, j2_warnings = runner.run()
+        lint_errors[file_name].extend(j2_errors)
+        lint_warnings[file_name].extend(j2_warnings)
+
+    total_errors, json_output = sort_and_print_issues(options, lint_errors,
+                                                      'ERRORS', json_output)
+    total_warnings, json_output = sort_and_print_issues(options, lint_warnings,
+                                                        'WARNINGS', json_output)
+
+    return total_errors, total_warnings, json_output
 
 
 def sort_and_print_issues(options, lint_issues, issue_type, json_output):
@@ -105,10 +130,29 @@ def sort_and_print_issues(options, lint_issues, issue_type, json_output):
                 # The outcome is that for json, only the last file errors are printed
                 json_output[issue_type] = ([json.loads(str(issue)) for issue in sorted_issues])
             else:
-                print("************ File {}".format(key))
+                print(f"************ File {key}")
                 for j2_issue in sorted_issues:
-                    print("{}".format(j2_issue))
+                    print(f"{j2_issue}")
     return total_issues, json_output
+
+
+def print_linting_result(options, total_errors, total_warnings, json_output):
+    """ print linting result """
+    if options.json:
+        print(json.dumps(json_output))
+    elif not total_errors and not total_warnings:
+        print("Linting complete. No problems found.")
+    else:
+        print(f"Jinja2 linting finished with "
+              f"{total_errors} issue(s) and {total_warnings} warning(s)")
+
+    return total_errors
+
+
+def remove_temporary_file(stdin_filename):
+    """ Remove temporary file """
+    if stdin_filename:
+        os.unlink(stdin_filename)
 
 
 def run(args=None):
@@ -124,6 +168,10 @@ def run(args=None):
     # FIXME - `j2lint -stdin tests/data/test.j2`
     #         will return exit code 2 so that could be confusing.
     #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
+
+    # pylint: disable=too-many-branches, fixme
+    # FIXME - remove this during refactoring
+
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
@@ -141,7 +189,7 @@ def run(args=None):
         if options.vv:
             add_handler(logger, True, log_level)
 
-    logger.debug("Lint options selected {}".format(options))
+    logger.debug("Lint options selected %s", options)
 
     stdin_filename = None
     file_or_dir_names = set(options.files)
@@ -155,13 +203,13 @@ def run(args=None):
 
     # Collect the rules from the configuration
     collection = RulesCollection(options.verbose)
-    for rulesdir in options.rules_dir:
+    for rules_dir in options.rules_dir:
         collection.extend(RulesCollection.create_from_directory(
-            rulesdir, options.ignore, options.warn))
+            rules_dir, options.ignore, options.warn))
 
     # List lint rules
     if options.list:
-        rules = "Jinja2 lint rules\n{}\n".format(collection)
+        rules = f"Jinja2 lint rules\n{collection}\n"
         print(rules)
         logger.debug(rules)
         return 0
@@ -185,39 +233,14 @@ def run(args=None):
         settings.output = "json"
         logger.debug("JSON output enabled")
 
-    lint_errors = {}
-    lint_warnings = {}
-    files = get_files(file_or_dir_names)
-
-    # Get linting issues
-    for file_name in files:
-        runner = Runner(collection, file_name, checked_files)
-        if file_name not in lint_errors:
-            lint_errors[file_name] = []
-        if file_name not in lint_warnings:
-            lint_warnings[file_name] = []
-        j2_errors, j2_warnings = runner.run()
-        lint_errors[file_name].extend(j2_errors)
-        lint_warnings[file_name].extend(j2_warnings)
+    total_errors, total_warnings, json_output = (
+        get_linting_issues(file_or_dir_names, options, collection, checked_files))
+    print_linting_result(options, total_errors, total_warnings, json_output)
 
     # Remove temporary file
-    if stdin_filename:
-        os.unlink(stdin_filename)
-
-    # Sort and print linting issues
-    json_output = {}
-
-    total_errors, json_output = sort_and_print_issues(options, lint_errors, 'ERRORS', json_output)
-    total_warnings, json_output = sort_and_print_issues(options, lint_warnings, 'WARNINGS', json_output)
-
-    if options.json:
-        print(json.dumps(json_output))
-    elif not total_errors and not total_warnings:
-        print("Linting complete. No problems found.")
-    else:
-        print(f"Jinja2 linting finished with "
-              f"{total_errors} issue(s) and {total_warnings} warning(s)")
+    remove_temporary_file(stdin_filename)
 
     if total_errors:
         return 2
+
     return 0

@@ -1,7 +1,6 @@
-"""JinjaTemplateSyntaxErrorRule.py - Rule class to check that file does not
+"""jinja_template_syntax_error_rule.py - Rule class to check that file does not
                                      have jinja syntax errors.
 """
-import re
 import jinja2
 from j2lint.linter.rule import Rule
 
@@ -28,12 +27,13 @@ class JinjaTemplateSyntaxErrorRule(Rule):
 
         env = jinja2.Environment(
             extensions=['jinja2.ext.do', 'jinja2.ext.loopcontrols'])
-        with open(file['path']) as template:
+        with open(file['path'], encoding="utf-8") as template:
             try:
                 # Try to read the contents of the file as jinja2
                 block = template.read()
                 env.parse(block)
-            except jinja2.TemplateSyntaxError as e:
-                result.append((e.lineno, text.split(
-                    "\n")[e.lineno - 1], e.message))
+            except jinja2.TemplateSyntaxError as error:
+                result.append((error.lineno, text.split(
+                    "\n")[error.lineno - 1], error.message))
+
         return result

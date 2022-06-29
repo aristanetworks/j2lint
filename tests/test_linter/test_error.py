@@ -14,7 +14,7 @@ RULE_TEXT_OUTPUT = (
 )
 RULE_JSON_OUTPUT = (
     '{"id": "T0", "message": "test rule 0", '
-    '"filename": "dummy.j2", "linenumber": 1, '
+    '"filename": "dummy.j2", "line_number": 1, '
     '"line": "dummy", "severity": "LOW"}'
 )
 

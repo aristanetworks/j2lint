@@ -1,4 +1,4 @@
-""" JinjaVariableNameFormatRule.py - Rule class to check that variable names
+""" jinja_variable_name_format_rule.py - Rule class to check that variable names
                                      only use underscores.
 """
 import re
@@ -11,16 +11,16 @@ class JinjaVariableNameFormatRule(Rule):
     """
     id = 'V2'
     short_description = 'jinja-variable-format'
-    description = "If variable is multi-words, underscore _ shall be used as a separator: '{{ my_variable_name }}'"
+    description = ("If variable is multi-words, underscore _ shall be used "
+                   "as a separator: '{{ my_variable_name }}'")
     severity = 'LOW'
 
     regex = re.compile(r"[a-zA-Z0-9-_\"']+[-][a-zA-Z0-9-_\"']+")
 
-    def check(self, file, line):
+    def check(self, line):
         """Checks if the given line matches the error regex
 
         Args:
-            file (string): file path
             line (string): a single line from the file
 
         Returns:
@@ -32,8 +32,6 @@ class JinjaVariableNameFormatRule(Rule):
             matches = [match for match in matches if (
                 "'" not in match) and ('"' not in match)]
             if matches:
-                # pylint: disable = fixme
-                # FIXME - this print should be removed.
-                print(matches)
                 return True
+
         return False

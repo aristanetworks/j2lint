@@ -170,8 +170,7 @@ def test_runner(test_collection):
     """
     Fixture to get a test runner using the test_collection
     """
-    # TODO remove the config param once this is fixed in the codebase
-    yield Runner(test_collection, "test.j2", "unused config", checked_files=None)
+    yield Runner(test_collection, "test.j2", checked_files=None)
 
 
 @pytest.fixture

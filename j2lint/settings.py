@@ -1,5 +1,6 @@
 """settings.py - Settings class for jinja2 linter.
 """
+# pylint: disable=too-few-public-methods
 
 
 class Settings:
