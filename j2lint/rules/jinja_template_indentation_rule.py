@@ -42,7 +42,7 @@ class JinjaTemplateIndentationRule(Rule):
             root = Node()
             try:
                 root.check_indentation(errors, lines, 0)
-            except JinjaLinterError as error:
+            except (JinjaLinterError, TypeError, IndexError) as error:
                 logger.error("Indentation check failed for file %s: Error: %s",
                              file['path'], str(error))
             for error in errors:
