@@ -1,4 +1,4 @@
-[![GitHub license](https://badgen.net/github/license/aristanetworks/j2lint.js)](https://github.com/aristanetworks/j2lint/blob/devel/LICENSE)
+[![GitHub license](https://badgen.net/github/license/aristanetworks/j2lint)](https://github.com/aristanetworks/j2lint/blob/devel/LICENSE)
 [![PyPI version fury.io](https://badge.fury.io/py/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
 [![PyPI status](https://img.shields.io/pypi/status/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
