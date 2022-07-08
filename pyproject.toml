@@ -21,7 +21,7 @@ classifiers = [
 ]
 keywords = ["j2lint", "linter", "jinja", "lint"]
 dependencies = [
-    "j2lint",
+    "jinja2",
 ]
 requires-python = ">=3.6"
 
