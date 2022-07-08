@@ -1,8 +1,8 @@
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
-[![PyPI version fury.io](https://badge.fury.io/py/ansicolortags.svg)](https://pypi.python.org/pypi/j2lint/)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](https://pypi.python.org/pypi/j2lint/)
-[![PyPI status](https://img.shields.io/pypi/status/ansicolortags.svg)](https://pypi.python.org/pypi/j2lint/)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![GitHub license](https://badgen.net/github/license/aristanetworks/j2lint.js)](https://github.com/aristanetworks/j2lint/blob/devel/LICENSE)
+[![PyPI version fury.io](https://badge.fury.io/py/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
+[![PyPI status](https://img.shields.io/pypi/status/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/aristanetworks/j2lint/graphs/commit-activity)
 
 # Jinja2-Linter
 
