@@ -1,4 +1,52 @@
-# content of pyproject.toml
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "j2lint"
+version = "0.1.0"
+description = "Command-line utility that checks for best practices in Jinja2."
+readme = "README.md"
+# TODO fix authors
+authors = [{ name = "Arista", email = "info@realpython.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["j2lint", "linter", "jinja", "lint"]
+dependencies = [
+    "j2lint",
+]
+requires-python = ">=3.6"
+
+[project.optional-dependencies]
+dev = ["pytest", "pre-commit", "bumpver"]
+
+[project.urls]
+Homepage = "https://github.com/aristanetworks/j2lint.git"
+"Bug Tracker" = "https://github.com/aristanetworks/j2lint/issues"
+
+[project.scripts]
+j2lint = "j2lint.cli:run"
+
+[tool.bumpver]
+current_version = "0.1.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Bump: version {old_version} -> {new_version}"
+commit          = true
+tag             = true
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"j2lint/__init__.py" = ["{version}"]
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
