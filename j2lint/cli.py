@@ -115,6 +115,7 @@ def get_linting_issues(file_or_dir_names, options, collection, checked_files):
 def sort_and_print_issues(options, lint_issues, issue_type, json_output):
     """ Sort and print linting errors """
     total_issues = 0
+    json_output[issue_type] = []
     if lint_issues:
         for key, issues in lint_issues.items():
             if not issues:
@@ -124,11 +125,7 @@ def sort_and_print_issues(options, lint_issues, issue_type, json_output):
             total_issues = total_issues + len(issues)
             sorted_issues = sort_issues(issues)
             if options.json:
-                # pylint: disable = fixme
-                # FIXME - this is not doing the correct job as it will overwrite
-                # whatever is in the issue_type key in the dictionnary
-                # The outcome is that for json, only the last file errors are printed
-                json_output[issue_type] = ([json.loads(str(issue)) for issue in sorted_issues])
+                json_output[issue_type].append([json.loads(str(issue)) for issue in sorted_issues])
             else:
                 print(f"************ File {key}")
                 for j2_issue in sorted_issues:
@@ -235,6 +232,7 @@ def run(args=None):
 
     total_errors, total_warnings, json_output = (
         get_linting_issues(file_or_dir_names, options, collection, checked_files))
+
     print_linting_result(options, total_errors, total_warnings, json_output)
 
     # Remove temporary file
