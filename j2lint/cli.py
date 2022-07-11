@@ -90,7 +90,7 @@ def get_linting_issues(file_or_dir_names, options, collection, checked_files):
     """ checking errors and warnings """
     lint_errors = {}
     lint_warnings = {}
-    json_output = {}
+    json_output = {'ERRORS': [], 'WARNINGS': []}
     files = get_files(file_or_dir_names)
 
     # Get linting issues
@@ -112,10 +112,23 @@ def get_linting_issues(file_or_dir_names, options, collection, checked_files):
     return total_errors, total_warnings, json_output
 
 
+def get_json_output(sorted_issues, issue_type, json_output):
+    """ getting json output """
+    settings.output = "json"
+    logger.debug("JSON output enabled")
+    json_output[issue_type].append([json.loads(str(issue)) for issue in sorted_issues])
+
+
+def print_non_json_output(key, sorted_issues):
+    """ print non-json output """
+    print(f"************ File {key}")
+    for j2_issue in sorted_issues:
+        print(f"{j2_issue}")
+
+
 def sort_and_print_issues(options, lint_issues, issue_type, json_output):
     """ Sort and print linting errors """
     total_issues = 0
-    json_output[issue_type] = []
     if lint_issues:
         for key, issues in lint_issues.items():
             if not issues:
@@ -125,11 +138,9 @@ def sort_and_print_issues(options, lint_issues, issue_type, json_output):
             total_issues = total_issues + len(issues)
             sorted_issues = sort_issues(issues)
             if options.json:
-                json_output[issue_type].append([json.loads(str(issue)) for issue in sorted_issues])
+                get_json_output(sorted_issues, issue_type, json_output)
             else:
-                print(f"************ File {key}")
-                for j2_issue in sorted_issues:
-                    print(f"{j2_issue}")
+                print_non_json_output(key, sorted_issues)
     return total_issues, json_output
 
 
@@ -166,8 +177,6 @@ def run(args=None):
     #         will return exit code 2 so that could be confusing.
     #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
 
-    # pylint: disable=too-many-branches, fixme
-    # FIXME - remove this during refactoring
 
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
@@ -225,10 +234,6 @@ def run(args=None):
     if options.verbose:
         settings.verbose = True
         logger.debug("Verbose mode enabled")
-
-    if options.json:
-        settings.output = "json"
-        logger.debug("JSON output enabled")
 
     total_errors, total_warnings, json_output = (
         get_linting_issues(file_or_dir_names, options, collection, checked_files))
