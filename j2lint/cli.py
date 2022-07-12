@@ -11,7 +11,6 @@ from j2lint.linter.collection import RulesCollection
 from j2lint.linter.runner import Runner
 from j2lint.utils import get_files
 from j2lint.logger import logger, add_handler
-from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
 IGNORE_RULES = WARN_RULES = ['jinja-syntax-error',
@@ -114,16 +113,15 @@ def get_linting_issues(file_or_dir_names, options, collection, checked_files):
 
 def get_json_output(sorted_issues, issue_type, json_output):
     """ getting json output """
-    settings.output = "json"
-    logger.debug("JSON output enabled")
-    json_output[issue_type].append([json.loads(str(issue)) for issue in sorted_issues])
+    for issue in sorted_issues:
+        json_output[issue_type].append(json.loads(str(issue.to_json())))
 
 
-def print_non_json_output(key, sorted_issues):
+def print_issues(key, sorted_issues, verbose):
     """ print non-json output """
     print(f"************ File {key}")
     for j2_issue in sorted_issues:
-        print(f"{j2_issue}")
+        print(f"{j2_issue.to_string(verbose)}")
 
 
 def sort_and_print_issues(options, lint_issues, issue_type, json_output):
@@ -140,7 +138,7 @@ def sort_and_print_issues(options, lint_issues, issue_type, json_output):
             if options.json:
                 get_json_output(sorted_issues, issue_type, json_output)
             else:
-                print_non_json_output(key, sorted_issues)
+                print_issues(key, sorted_issues, options.verbose)
     return total_issues, json_output
 
 
@@ -176,7 +174,6 @@ def run(args=None):
     # FIXME - `j2lint -stdin tests/data/test.j2`
     #         will return exit code 2 so that could be confusing.
     #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
-
 
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
@@ -229,11 +226,6 @@ def run(args=None):
     if not file_or_dir_names:
         parser.print_help(file=sys.stderr)
         return 1
-
-    # Print verbose output for linting
-    if options.verbose:
-        settings.verbose = True
-        logger.debug("Verbose mode enabled")
 
     total_errors, total_warnings, json_output = (
         get_linting_issues(file_or_dir_names, options, collection, checked_files))
