@@ -25,23 +25,21 @@ class LinterError:
             logger.debug("Verbose mode enabled")
             format_str = ("Linting rule: {0}\nRule description: "
                           "{1}\nError line: {2}:{3} {4}\nError message: {5}\n")
-        error = format_str.format(self.rule.id, self.rule.description,
+        return format_str.format(self.rule.id, self.rule.description,
                                   self.filename, self.line_number, self.line,
                                   self.message, self.rule.short_description)
-        return error
 
 
     def to_json(self):
         """ setting json output format"""
         logger.debug("JSON output enabled")
-        error = json.dumps({"id": self.rule.id,
+        return json.dumps({"id": self.rule.id,
                             "message": self.message,
                             "filename": self.filename,
                             "line_number": self.line_number,
                             "line": self.line,
                             "severity": self.rule.severity
                             })
-        return error
 
 
 class JinjaLinterError(Exception):
