@@ -85,11 +85,10 @@ def sort_issues(issues):
     return issues
 
 
-def get_linting_issues(file_or_dir_names, options, collection, checked_files):
+def get_linting_issues(file_or_dir_names, collection, checked_files):
     """ checking errors and warnings """
     lint_errors = {}
     lint_warnings = {}
-    json_output = {'ERRORS': [], 'WARNINGS': []}
     files = get_files(file_or_dir_names)
 
     # Get linting issues
@@ -100,57 +99,63 @@ def get_linting_issues(file_or_dir_names, options, collection, checked_files):
         if file_name not in lint_warnings:
             lint_warnings[file_name] = []
         j2_errors, j2_warnings = runner.run()
-        lint_errors[file_name].extend(j2_errors)
-        lint_warnings[file_name].extend(j2_warnings)
+        lint_errors[file_name].extend(sort_issues(j2_errors))
+        lint_warnings[file_name].extend(sort_issues(j2_warnings))
 
-    total_errors, json_output = sort_and_print_issues(options, lint_errors,
-                                                      'ERRORS', json_output)
-    total_warnings, json_output = sort_and_print_issues(options, lint_warnings,
-                                                        'WARNINGS', json_output)
-
-    return total_errors, total_warnings, json_output
+    return lint_errors, lint_warnings
 
 
-def get_json_output(sorted_issues, issue_type, json_output):
-    """ getting json output """
-    for issue in sorted_issues:
-        json_output[issue_type].append(json.loads(str(issue.to_json())))
+def print_json_output(lint_errors, lint_warnings):
+    """ printing json output """
+
+    json_output = {'ERRORS': [], 'WARNINGS': []}
+    for _, errors in lint_errors.items():
+        for error in errors:
+            json_output['ERRORS'].append(json.loads(str(error.to_json())))
+    for _, warnings in lint_warnings.items():
+        for warning in warnings:
+            json_output['WARNINGS'].append(json.loads(str(warning.to_json())))
+    print(f"\n {json.dumps(json_output)}")
+
+    return len(json_output['ERRORS']), len(json_output['WARNINGS'])
 
 
-def print_issues(key, sorted_issues, verbose):
+def print_string_output(lint_errors, lint_warnings, verbose):
     """ print non-json output """
-    print(f"************ File {key}")
-    for j2_issue in sorted_issues:
-        print(f"{j2_issue.to_string(verbose)}")
 
-
-def sort_and_print_issues(options, lint_issues, issue_type, json_output):
-    """ Sort and print linting errors """
-    total_issues = 0
-    if lint_issues:
-        for key, issues in lint_issues.items():
-            if not issues:
-                continue
-            if not total_issues and not options.json:
+    def print_issues(lint_issues, issue_type):
+        total_issues = 0
+        if lint_issues:
+            if not total_issues:
                 print(f"\nJINJA2 LINT {issue_type}")
-            total_issues = total_issues + len(issues)
-            sorted_issues = sort_issues(issues)
-            if options.json:
-                get_json_output(sorted_issues, issue_type, json_output)
-            else:
-                print_issues(key, sorted_issues, options.verbose)
-    return total_issues, json_output
+            for key, issues in lint_issues.items():
+                total_issues = len(issues)
+                if not issues:
+                    continue
+                else:
+                    print(f"************ File {key}")
+                    for j2_issue in issues:
+                        print(f"{j2_issue.to_string(verbose)}")
+
+    total_lint_errors = sum([len(issues) for _, issues in lint_errors.items()])
+    total_lint_warnings = sum([len(issues) for _, issues in lint_warnings.items()])
+
+    if total_lint_errors:
+        print_issues(lint_errors, "ERRORS")
+    if total_lint_warnings:
+        print_issues(lint_warnings, "WARNINGS")
+
+    return total_lint_errors, total_lint_warnings
 
 
-def print_linting_result(options, total_errors, total_warnings, json_output):
+def print_linting_result(total_errors, total_warnings):
     """ print linting result """
-    if options.json:
-        print(json.dumps(json_output))
-    elif not total_errors and not total_warnings:
+
+    if not total_errors and not total_warnings:
         print("Linting complete. No problems found.")
     else:
-        print(f"Jinja2 linting finished with "
-              f"{total_errors} issue(s) and {total_warnings} warning(s)")
+        print(f"\nJinja2 linting finished with "
+              f"{total_errors} error(s) and {total_warnings} warning(s)")
 
     return total_errors
 
@@ -227,15 +232,21 @@ def run(args=None):
         parser.print_help(file=sys.stderr)
         return 1
 
-    total_errors, total_warnings, json_output = (
-        get_linting_issues(file_or_dir_names, options, collection, checked_files))
+    lint_errors, lint_warnings = (
+        get_linting_issues(file_or_dir_names, collection, checked_files))
 
-    print_linting_result(options, total_errors, total_warnings, json_output)
+    if options.json:
+        logger.debug("JSON output enabled")
+        total_lint_errors, total_lint_warnings = print_json_output(lint_errors, lint_warnings)
+    else:
+        total_lint_errors, total_lint_warnings = print_string_output(lint_errors, lint_warnings, options.verbose)
+
+    print_linting_result(total_lint_errors, total_lint_warnings)
 
     # Remove temporary file
     remove_temporary_file(stdin_filename)
 
-    if total_errors:
+    if total_lint_errors:
         return 2
 
     return 0

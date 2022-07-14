@@ -32,7 +32,6 @@ class LinterError:
 
     def to_json(self):
         """ setting json output format"""
-        logger.debug("JSON output enabled")
         return json.dumps({"id": self.rule.id,
                             "message": self.message,
                             "filename": self.filename,
