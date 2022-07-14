@@ -115,27 +115,25 @@ def print_json_output(lint_errors, lint_warnings):
     for _, warnings in lint_warnings.items():
         for warning in warnings:
             json_output['WARNINGS'].append(json.loads(str(warning.to_json())))
-    print(f"\n {json.dumps(json_output)}")
+    print(f"\n {json.dumps(json_output)}\n")
 
     return len(json_output['ERRORS']), len(json_output['WARNINGS'])
 
 
 def print_string_output(lint_errors, lint_warnings, verbose):
     """ print non-json output """
-
+    # pylint: disable = consider-using-generator
     def print_issues(lint_issues, issue_type):
         total_issues = 0
-        if lint_issues:
-            if not total_issues:
-                print(f"\nJINJA2 LINT {issue_type}")
-            for key, issues in lint_issues.items():
-                total_issues = len(issues)
-                if not issues:
-                    continue
-                else:
-                    print(f"************ File {key}")
-                    for j2_issue in issues:
-                        print(f"{j2_issue.to_string(verbose)}")
+        if not total_issues:
+            print(f"\nJINJA2 LINT {issue_type}")
+        for key, issues in lint_issues.items():
+            total_issues = len(issues)
+            if not issues:
+                continue
+            print(f"************ File {key}")
+            for j2_issue in issues:
+                print(f"{j2_issue.to_string(verbose)}")
 
     total_lint_errors = sum([len(issues) for _, issues in lint_errors.items()])
     total_lint_warnings = sum([len(issues) for _, issues in lint_warnings.items()])
@@ -175,6 +173,9 @@ def run(args=None):
     Returns:
         int: 0 on success
     """
+    # pylint: disable=too-many-branches, fixme
+    # FIXME - remove this during refactoring
+
     # pylint: disable = fixme
     # FIXME - `j2lint -stdin tests/data/test.j2`
     #         will return exit code 2 so that could be confusing.
@@ -239,7 +240,8 @@ def run(args=None):
         logger.debug("JSON output enabled")
         total_lint_errors, total_lint_warnings = print_json_output(lint_errors, lint_warnings)
     else:
-        total_lint_errors, total_lint_warnings = print_string_output(lint_errors, lint_warnings, options.verbose)
+        total_lint_errors, total_lint_warnings = print_string_output(lint_errors,
+                                                                     lint_warnings, options.verbose)
 
     print_linting_result(total_lint_errors, total_lint_warnings)
 
