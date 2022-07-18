@@ -2,7 +2,6 @@
 content of conftest.py
 """
 import pytest
-from j2lint.settings import settings
 from j2lint.cli import create_parser
 from j2lint.linter.rule import Rule
 from j2lint.linter.error import LinterError
@@ -13,18 +12,6 @@ CONTENT = "content"
 
 # TODO - proper way to compare LinterError following:
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
-
-
-@pytest.fixture(autouse=True)
-def default_settings():
-    """
-    Make sure all tests start with default settings
-
-    This fixture is auto applied to all tests (autouse = True)
-    """
-    settings.verbose = False
-    settings.log_level = "info"
-    settings.output = "text"
 
 
 @pytest.fixture

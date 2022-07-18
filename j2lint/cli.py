@@ -101,13 +101,11 @@ def get_linting_issues(file_or_dir_names, collection, checked_files):
         j2_errors, j2_warnings = runner.run()
         lint_errors[file_name].extend(sort_issues(j2_errors))
         lint_warnings[file_name].extend(sort_issues(j2_warnings))
-
     return lint_errors, lint_warnings
 
 
 def print_json_output(lint_errors, lint_warnings):
     """ printing json output """
-
     json_output = {'ERRORS': [], 'WARNINGS': []}
     for _, errors in lint_errors.items():
         for error in errors:
@@ -115,7 +113,7 @@ def print_json_output(lint_errors, lint_warnings):
     for _, warnings in lint_warnings.items():
         for warning in warnings:
             json_output['WARNINGS'].append(json.loads(str(warning.to_json())))
-    print(f"\n {json.dumps(json_output)}\n")
+    print(f"\n{json.dumps(json_output)}")
 
     return len(json_output['ERRORS']), len(json_output['WARNINGS'])
 
@@ -143,19 +141,13 @@ def print_string_output(lint_errors, lint_warnings, verbose):
     if total_lint_warnings:
         print_issues(lint_warnings, "WARNINGS")
 
-    return total_lint_errors, total_lint_warnings
-
-
-def print_linting_result(total_errors, total_warnings):
-    """ print linting result """
-
-    if not total_errors and not total_warnings:
-        print("Linting complete. No problems found.")
+    if not total_lint_errors and not total_lint_warnings:
+        print("\nLinting complete. No problems found.")
     else:
         print(f"\nJinja2 linting finished with "
-              f"{total_errors} error(s) and {total_warnings} warning(s)")
+              f"{total_lint_errors} error(s) and {total_lint_warnings} warning(s)")
 
-    return total_errors
+    return total_lint_errors, total_lint_warnings
 
 
 def remove_temporary_file(stdin_filename):
@@ -238,12 +230,11 @@ def run(args=None):
 
     if options.json:
         logger.debug("JSON output enabled")
-        total_lint_errors, total_lint_warnings = print_json_output(lint_errors, lint_warnings)
+        total_lint_errors, _ = print_json_output(lint_errors, lint_warnings)
     else:
-        total_lint_errors, total_lint_warnings = print_string_output(lint_errors,
-                                                                     lint_warnings, options.verbose)
+        total_lint_errors, _ = print_string_output(lint_errors,
+                                                   lint_warnings, options.verbose)
 
-    print_linting_result(total_lint_errors, total_lint_warnings)
 
     # Remove temporary file
     remove_temporary_file(stdin_filename)
