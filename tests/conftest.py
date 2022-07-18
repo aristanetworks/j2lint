@@ -1,7 +1,6 @@
 """
 content of conftest.py
 """
-from unittest.mock import create_autospec
 import pytest
 from j2lint.settings import settings
 from j2lint.cli import create_parser

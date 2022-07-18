@@ -4,7 +4,6 @@ Tests for j2lint.linter.error.py
 import pytest
 
 from j2lint.settings import settings
-from j2lint.linter.error import LinterError
 
 RULE_TEXT_OUTPUT = (
     "Linting rule: T0\n"

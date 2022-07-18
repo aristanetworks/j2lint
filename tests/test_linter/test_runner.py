@@ -5,7 +5,6 @@ from unittest import mock
 import pytest
 
 from j2lint.utils import get_file_type
-from j2lint.linter.runner import Runner
 
 
 class TestRunner:

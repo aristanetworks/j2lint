@@ -4,9 +4,6 @@ Tests for j2lint.linter.rule.py
 import logging
 import pytest
 
-from j2lint.linter.rule import logger
-from j2lint.linter.rule import Rule
-
 
 class TestRule:
     def test__repr__(self, test_rule):

@@ -5,7 +5,7 @@ import os
 import pytest
 
 from j2lint.utils import (
-    load_plugins,
+    # load_plugins,
     is_valid_file_type,
     get_file_type,
     get_files,

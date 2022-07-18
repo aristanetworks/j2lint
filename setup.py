@@ -1,6 +1,6 @@
 """ setup module """
 import setuptools
-from j2lint import __author__, __license__, NAME, VERSION, DESCRIPTION
+from j2lint import NAME, VERSION, DESCRIPTION
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
