@@ -162,7 +162,7 @@ def run(args=None):
         int: 0 on success
     """
     # pylint: disable=too-many-branches
-    # given the number of input parameters,
+    # given the number of input parameters, it is acceptable to keep these many branches.
 
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])

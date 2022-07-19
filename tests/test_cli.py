@@ -300,7 +300,7 @@ Jinja2 linting finished with 1 error(s) and 1 warning(s)
         ),
         pytest.param(
             ["-j", "tests/data/test.j2"],
-            '{"ERRORS": '
+            '\n{"ERRORS": '
             '[{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}], '
             '"WARNINGS": '
             '[{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]'
@@ -425,7 +425,7 @@ def test_run_stdin(capsys):
         matches = re.match(
             r"\nJINJA2 LINT ERRORS\n\*\*\*\*\*\*\*\*\*\*\*\* File \/.*\n(\/.*.j2):1 "
             r"Jinja statement should have a single space before and after: '{% statement %}' "
-            r"\(jinja-statements-single-space\)\nJinja2 linting finished with 1 issue\(s\) "
+            r"\(jinja-statements-single-space\)\n\nJinja2 linting finished with 1 error\(s\) "
             r"and 0 warning\(s\)\n",
             captured.out,
             re.MULTILINE,
