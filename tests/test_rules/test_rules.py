@@ -43,7 +43,8 @@ PARAMS = [
             (
                 "root",
                 logging.ERROR,
-                "Indentation check failed for file tests/test_rules/data/jinja_template_indentation_rule.JinjaLinterError.j2: Error: Tag is out of order 'endfor'",
+                "Indentation check failed for file tests/test_rules/data/jinja_template_indentation_rule.JinjaLinterError.j2: "
+                "Error: Tag is out of order 'endfor'",
             )
         ],
     ),
@@ -55,7 +56,8 @@ PARAMS = [
             (
                 "root",
                 logging.ERROR,
-                "Indentation check failed for file tests/test_rules/data/jinja_template_indentation_rule.TypeError.j2: Error: '<' not supported between instances of 'NoneType' and 'int'",
+                "Indentation check failed for file tests/test_rules/data/jinja_template_indentation_rule.TypeError.j2: "
+                "Error: '<' not supported between instances of 'NoneType' and 'int'",
             )
         ],
     ),
@@ -70,7 +72,8 @@ PARAMS = [
             #              (
             #                 "root",
             #                 logging.ERROR,
-            #                 "Indentation check failed for file tests/test_rules/data/jinja_template_indentation_rule.IndexError.j2: Error: list index out of range",
+            #                 "Indentation check failed for file tests/test_rules/data/jinja_template_indentation_rule.IndexError.j2: "
+            #                 "Error: list index out of range",
             #             )
         ],
     ),
@@ -133,7 +136,6 @@ def test_rules(
     errors, warnings = collection.run({"path": filename, "type": "jinja"})
 
     errors_ids = [(error.rule.id, error.line_number) for error in errors]
-    errors_messages = "\n".join([error.rule.description for error in errors])
 
     warnings_ids = [(warning.rule.id, warning.line_number) for warning in warnings]
 

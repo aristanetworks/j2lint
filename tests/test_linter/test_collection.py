@@ -10,8 +10,6 @@ from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErr
 from j2lint.rules.jinja_operator_has_spaces_rule import JinjaOperatorHasSpacesRule
 from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterRule
 
-from tests.utils import does_not_raise
-
 
 class TestRulesCollection:
     def test__len__(self, test_collection):
@@ -103,11 +101,11 @@ class TestRulesCollection:
             "j2lint.linter.rule.Rule.checklines",
             side_effect=checks_side_effect,
             autospec=True,
-        ) as patched_checklines, mock.patch(
+        ), mock.patch(
             "j2lint.linter.rule.Rule.checkfulltext",
             side_effect=checks_side_effect,
             autospec=True,
-        ) as patched_checkfulltext:
+        ):
 
             errors, warnings = test_collection.run(file_dict)
             error_tuples = [

@@ -4,14 +4,13 @@ Tests for j2lint.cli.py
 import logging
 import os
 import re
-from unittest.mock import create_autospec, patch
+from unittest.mock import patch
 from argparse import Namespace
 
 import pytest
 
 from j2lint.settings import settings
 from j2lint.cli import sort_issues, sort_and_print_issues, create_parser, run, RULES_DIR
-from j2lint.linter.error import LinterError
 
 from .utils import does_not_raise, j2lint_default_rules_string
 
@@ -275,7 +274,11 @@ Jinja2 linting finished with 1 issue(s) and 1 warning(s)
         ),
         pytest.param(
             ["-j", "tests/data/test.j2"],
-            '{"ERRORS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}], "WARNINGS": [{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]}\n',
+            '{"ERRORS": '
+            '[{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}], '
+            '"WARNINGS": '
+            '[{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]'
+            "}\n",
             "",
             2,
             does_not_raise(),
@@ -352,7 +355,7 @@ def test_run(
     with expected_raise:
         with patch("j2lint.cli.Runner.run") as mocked_runner_run, patch(
             "logging.disable"
-        ) as mocked_logging_disable:
+        ):
             errors = {"ERRORS": make_issues(number_errors)}
             warnings = {"WARNINGS": make_issues(number_warnings)}
             mocked_runner_run.return_value = (errors["ERRORS"], warnings["WARNINGS"])
@@ -383,20 +386,23 @@ def test_run_stdin(capsys):
 
     In this test, the isatty answer is mocked.
     """
-    with patch("logging.disable") as mocked_logging_disable, patch(
-        "sys.stdin"
-    ) as patched_stdin, patch("os.unlink", side_effect=os.unlink) as mocked_os_unlink:
+    with patch("sys.stdin") as patched_stdin, patch(
+        "os.unlink", side_effect=os.unlink
+    ) as mocked_os_unlink, patch("logging.disable"):
         patched_stdin.isatty.return_value = False
         patched_stdin.read.return_value = "{%set test=42 %}"
         run_return_value = run(["--log", "--stdin"])
         patched_stdin.isatty.assert_called_once()
         captured = capsys.readouterr()
         matches = re.match(
-            r"\nJINJA2 LINT ERRORS\n\*\*\*\*\*\*\*\*\*\*\*\* File \/.*\n(\/.*.j2):1 Jinja statement should have a single space before and after: '{% statement %}' \(jinja-statements-single-space\)\nJinja2 linting finished with 1 issue\(s\) and 0 warning\(s\)\n",
+            r"\nJINJA2 LINT ERRORS\n\*\*\*\*\*\*\*\*\*\*\*\* File \/.*\n(\/.*.j2):1 "
+            r"Jinja statement should have a single space before and after: '{% statement %}' "
+            r"\(jinja-statements-single-space\)\nJinja2 linting finished with 1 issue\(s\) "
+            r"and 0 warning\(s\)\n",
             captured.out,
             re.MULTILINE,
         )
         assert matches is not None
         mocked_os_unlink.assert_called_with(matches.groups()[0])
-        assert os.path.exists(matches.groups()[0]) == False
+        assert os.path.exists(matches.groups()[0]) is False
         assert run_return_value == 2

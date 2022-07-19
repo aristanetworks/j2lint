@@ -1,8 +1,6 @@
 """
 Tests for j2lint.settings.py
 """
-import pytest
-
 from j2lint.settings import settings
 
 
