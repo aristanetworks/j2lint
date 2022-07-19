@@ -20,7 +20,8 @@ def logger():
 
 
 @pytest.mark.parametrize(
-    "stream_handler, log_level", [(False, logging.DEBUG), (True, logging.ERROR)]
+    "stream_handler, log_level", [
+        (False, logging.DEBUG), (True, logging.ERROR)]
 )
 def test_add_handler(logger, stream_handler, log_level):
     """

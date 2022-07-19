@@ -216,7 +216,8 @@ def test_get_jinja_variables():
             id="single_comment_repeat_pattern",
         ),
         pytest.param(
-            ["{# j2lint: disable=dummy-rule #}", "{# j2lint: disable=test-rule-0 #}"],
+            ["{# j2lint: disable=dummy-rule #}",
+                "{# j2lint: disable=test-rule-0 #}"],
             True,
             id="found_second_second_syntax",
         ),

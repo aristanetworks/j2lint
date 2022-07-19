@@ -34,8 +34,6 @@ def create_parser():
     Returns:
         Object: Argument parser object
     """
-    # TODO some flag names are questionable.. # pylint: disable=fixme
-    # TODO is stdin feature actually needed ??? # pylint: disable=fixme
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],
@@ -58,9 +56,9 @@ def create_parser():
                         action='store_true', help='accept template from STDIN')
     parser.add_argument('--log', default=False,
                         action='store_true', help='enable logging')
-    parser.add_argument('-ver', '--version', default=False,
+    parser.add_argument('--version', default=False,
                         action='store_true', help='Version of j2lint')
-    parser.add_argument('-stdout', '--vv', default=False,
+    parser.add_argument('-o', '--stdout', default=False,
                         action='store_true', help='stdout logging')
 
     return parser
@@ -120,21 +118,19 @@ def print_json_output(lint_errors, lint_warnings):
 
 def print_string_output(lint_errors, lint_warnings, verbose):
     """ print non-json output """
-    # pylint: disable = consider-using-generator
+
     def print_issues(lint_issues, issue_type):
-        total_issues = 0
-        if not total_issues:
-            print(f"\nJINJA2 LINT {issue_type}")
+        print(f"\nJINJA2 LINT {issue_type}")
         for key, issues in lint_issues.items():
-            total_issues = len(issues)
             if not issues:
                 continue
             print(f"************ File {key}")
             for j2_issue in issues:
                 print(f"{j2_issue.to_string(verbose)}")
 
-    total_lint_errors = sum([len(issues) for _, issues in lint_errors.items()])
-    total_lint_warnings = sum([len(issues) for _, issues in lint_warnings.items()])
+    total_lint_errors = sum(len(issues) for _, issues in lint_errors.items())
+    total_lint_warnings = sum(len(issues)
+                              for _, issues in lint_warnings.items())
 
     if total_lint_errors:
         print_issues(lint_errors, "ERRORS")
@@ -165,20 +161,15 @@ def run(args=None):
     Returns:
         int: 0 on success
     """
-    # pylint: disable=too-many-branches, fixme
-    # FIXME - remove this during refactoring
-
-    # pylint: disable = fixme
-    # FIXME - `j2lint -stdin tests/data/test.j2`
-    #         will return exit code 2 so that could be confusing.
-    #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
+    # pylint: disable=too-many-branches
+    # given the number of input parameters,
 
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
     # Enable logs
 
-    if not options.log and not options.vv:
+    if not options.log and not options.stdout:
         logging.disable(sys.maxsize)
 
     else:
@@ -187,7 +178,7 @@ def run(args=None):
             log_level = logging.DEBUG
         if options.log:
             add_handler(logger, False, log_level)
-        if options.vv:
+        if options.stdout:
             add_handler(logger, True, log_level)
 
     logger.debug("Lint options selected %s", options)
@@ -234,7 +225,6 @@ def run(args=None):
     else:
         total_lint_errors, _ = print_string_output(lint_errors,
                                                    lint_warnings, options.verbose)
-
 
     # Remove temporary file
     remove_temporary_file(stdin_filename)

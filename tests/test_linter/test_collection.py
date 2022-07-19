@@ -120,7 +120,8 @@ class TestRulesCollection:
 
         if verify_logs:
             # True for every test that goes beyond the file do not exist
-            assert any("Ignoring rule T2" in message for message in caplog.messages)
+            assert any(
+                "Ignoring rule T2" in message for message in caplog.messages)
             # True for the test file
             assert any(
                 "Skipping linting rule T3" in message for message in caplog.messages
@@ -146,7 +147,8 @@ class TestRulesCollection:
             pytest.param(
                 [], ["S0", "operator-enclosed-by-spaces"], id="warn_no_ignore"
             ),
-            pytest.param(["S0"], ["operator-enclosed-by-spaces"], id="ignore_no_warn"),
+            pytest.param(["S0"], ["operator-enclosed-by-spaces"],
+                         id="ignore_no_warn"),
             pytest.param([], ["S42"], id="ignore_absent_rule"),
             pytest.param(["S42"], [], id="warn_absent_rule"),
             pytest.param(

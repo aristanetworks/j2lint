@@ -68,7 +68,8 @@ class RulesCollection:
                 )
                 continue
 
-            logger.debug("Running linting rule %s on file %s", rule, file_dict["path"])
+            logger.debug("Running linting rule %s on file %s",
+                         rule, file_dict["path"])
             if rule in rule.warn:
                 warnings.extend(rule.checklines(file_dict, text))
                 warnings.extend(rule.checkfulltext(file_dict, text))
