@@ -100,6 +100,7 @@ class Rule:
         results = self.checktext(file, text)
 
         for line, section, message in results:
-            errors.append(LinterError(line, section, file["path"], self, message))
+            errors.append(LinterError(
+                line, section, file["path"], self, message))
 
         return errors

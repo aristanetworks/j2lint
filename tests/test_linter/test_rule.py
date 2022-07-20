@@ -86,7 +86,8 @@ class TestRule:
                 id="no error",
             ),
             pytest.param(
-                lambda x, y: [(1, "section1", "message1"), (2, "section2", "message2")],
+                lambda x, y: [(1, "section1", "message1"),
+                              (2, "section2", "message2")],
                 {"path": "tests/test_linter/data/test.j2"},
                 [("T0", 1), ("T0", 2)],
                 [],
