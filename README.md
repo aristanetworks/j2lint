@@ -149,7 +149,7 @@ j2lint <path-to-directory-of-templates> --json
     * File name - jinja_operator_has_spaces_rule.py
     * Class name - JinjaOperatorHasSpacesRule
     > **Note**
-    > The code supports also file names as PascalCase to be backward compatible with legacy deployments which were using this file name format. This will be deprecated once j2lint is published.
+    > The code supports the file name of rules in snake_case only and the support for PascalCase filenames for rules has been deprecated.
 3. Run the jinja2 linter using --rules-dir option
 
     ```bash
