@@ -11,7 +11,6 @@ from j2lint.linter.collection import RulesCollection
 from j2lint.linter.runner import Runner
 from j2lint.utils import get_files
 from j2lint.logger import logger, add_handler
-from j2lint.settings import settings
 
 RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
 IGNORE_RULES = WARN_RULES = ['jinja-syntax-error',
@@ -35,8 +34,6 @@ def create_parser():
     Returns:
         Object: Argument parser object
     """
-    # TODO some flag names are questionable.. # pylint: disable=fixme
-    # TODO is stdin feature actually needed ??? # pylint: disable=fixme
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
     parser.add_argument(dest='files', metavar='FILE', nargs='*', default=[],
@@ -59,9 +56,9 @@ def create_parser():
                         action='store_true', help='accept template from STDIN')
     parser.add_argument('--log', default=False,
                         action='store_true', help='enable logging')
-    parser.add_argument('-ver', '--version', default=False,
+    parser.add_argument('--version', default=False,
                         action='store_true', help='Version of j2lint')
-    parser.add_argument('-stdout', '--vv', default=False,
+    parser.add_argument('-o', '--stdout', default=False,
                         action='store_true', help='stdout logging')
 
     return parser
@@ -86,11 +83,10 @@ def sort_issues(issues):
     return issues
 
 
-def get_linting_issues(file_or_dir_names, options, collection, checked_files):
+def get_linting_issues(file_or_dir_names, collection, checked_files):
     """ checking errors and warnings """
     lint_errors = {}
     lint_warnings = {}
-    json_output = {}
     files = get_files(file_or_dir_names)
 
     # Get linting issues
@@ -101,52 +97,53 @@ def get_linting_issues(file_or_dir_names, options, collection, checked_files):
         if file_name not in lint_warnings:
             lint_warnings[file_name] = []
         j2_errors, j2_warnings = runner.run()
-        lint_errors[file_name].extend(j2_errors)
-        lint_warnings[file_name].extend(j2_warnings)
-
-    total_errors, json_output = sort_and_print_issues(options, lint_errors,
-                                                      'ERRORS', json_output)
-    total_warnings, json_output = sort_and_print_issues(options, lint_warnings,
-                                                        'WARNINGS', json_output)
-
-    return total_errors, total_warnings, json_output
+        lint_errors[file_name].extend(sort_issues(j2_errors))
+        lint_warnings[file_name].extend(sort_issues(j2_warnings))
+    return lint_errors, lint_warnings
 
 
-def sort_and_print_issues(options, lint_issues, issue_type, json_output):
-    """ Sort and print linting errors """
-    total_issues = 0
-    if lint_issues:
+def print_json_output(lint_errors, lint_warnings):
+    """ printing json output """
+    json_output = {'ERRORS': [], 'WARNINGS': []}
+    for _, errors in lint_errors.items():
+        for error in errors:
+            json_output['ERRORS'].append(json.loads(str(error.to_json())))
+    for _, warnings in lint_warnings.items():
+        for warning in warnings:
+            json_output['WARNINGS'].append(json.loads(str(warning.to_json())))
+    print(f"\n{json.dumps(json_output)}")
+
+    return len(json_output['ERRORS']), len(json_output['WARNINGS'])
+
+
+def print_string_output(lint_errors, lint_warnings, verbose):
+    """ print non-json output """
+
+    def print_issues(lint_issues, issue_type):
+        print(f"\nJINJA2 LINT {issue_type}")
         for key, issues in lint_issues.items():
             if not issues:
                 continue
-            if not total_issues and not options.json:
-                print(f"\nJINJA2 LINT {issue_type}")
-            total_issues = total_issues + len(issues)
-            sorted_issues = sort_issues(issues)
-            if options.json:
-                # pylint: disable = fixme
-                # FIXME - this is not doing the correct job as it will overwrite
-                # whatever is in the issue_type key in the dictionnary
-                # The outcome is that for json, only the last file errors are printed
-                json_output[issue_type] = ([json.loads(str(issue)) for issue in sorted_issues])
-            else:
-                print(f"************ File {key}")
-                for j2_issue in sorted_issues:
-                    print(f"{j2_issue}")
-    return total_issues, json_output
+            print(f"************ File {key}")
+            for j2_issue in issues:
+                print(f"{j2_issue.to_string(verbose)}")
 
+    total_lint_errors = sum(len(issues) for _, issues in lint_errors.items())
+    total_lint_warnings = sum(len(issues)
+                              for _, issues in lint_warnings.items())
 
-def print_linting_result(options, total_errors, total_warnings, json_output):
-    """ print linting result """
-    if options.json:
-        print(json.dumps(json_output))
-    elif not total_errors and not total_warnings:
-        print("Linting complete. No problems found.")
+    if total_lint_errors:
+        print_issues(lint_errors, "ERRORS")
+    if total_lint_warnings:
+        print_issues(lint_warnings, "WARNINGS")
+
+    if not total_lint_errors and not total_lint_warnings:
+        print("\nLinting complete. No problems found.")
     else:
-        print(f"Jinja2 linting finished with "
-              f"{total_errors} issue(s) and {total_warnings} warning(s)")
+        print(f"\nJinja2 linting finished with "
+              f"{total_lint_errors} error(s) and {total_lint_warnings} warning(s)")
 
-    return total_errors
+    return total_lint_errors, total_lint_warnings
 
 
 def remove_temporary_file(stdin_filename):
@@ -164,20 +161,15 @@ def run(args=None):
     Returns:
         int: 0 on success
     """
-    # pylint: disable = fixme
-    # FIXME - `j2lint -stdin tests/data/test.j2`
-    #         will return exit code 2 so that could be confusing.
-    #         `j2lint: error: argument -s/--stdin: ignored explicit argument 'tdin'`
-
-    # pylint: disable=too-many-branches, fixme
-    # FIXME - remove this during refactoring
+    # pylint: disable=too-many-branches
+    # given the number of input parameters, it is acceptable to keep these many branches.
 
     parser = create_parser()
     options = parser.parse_args(args if args is not None else sys.argv[1:])
 
     # Enable logs
 
-    if not options.log and not options.vv:
+    if not options.log and not options.stdout:
         logging.disable(sys.maxsize)
 
     else:
@@ -186,7 +178,7 @@ def run(args=None):
             log_level = logging.DEBUG
         if options.log:
             add_handler(logger, False, log_level)
-        if options.vv:
+        if options.stdout:
             add_handler(logger, True, log_level)
 
     logger.debug("Lint options selected %s", options)
@@ -224,23 +216,20 @@ def run(args=None):
         parser.print_help(file=sys.stderr)
         return 1
 
-    # Print verbose output for linting
-    if options.verbose:
-        settings.verbose = True
-        logger.debug("Verbose mode enabled")
+    lint_errors, lint_warnings = (
+        get_linting_issues(file_or_dir_names, collection, checked_files))
 
     if options.json:
-        settings.output = "json"
         logger.debug("JSON output enabled")
-
-    total_errors, total_warnings, json_output = (
-        get_linting_issues(file_or_dir_names, options, collection, checked_files))
-    print_linting_result(options, total_errors, total_warnings, json_output)
+        total_lint_errors, _ = print_json_output(lint_errors, lint_warnings)
+    else:
+        total_lint_errors, _ = print_string_output(lint_errors,
+                                                   lint_warnings, options.verbose)
 
     # Remove temporary file
     remove_temporary_file(stdin_filename)
 
-    if total_errors:
+    if total_lint_errors:
         return 2
 
     return 0

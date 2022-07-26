@@ -3,8 +3,6 @@ Tests for j2lint.linter.error.py
 """
 import pytest
 
-from j2lint.settings import settings
-
 RULE_TEXT_OUTPUT = (
     "Linting rule: T0\n"
     "Rule description: test rule 0\n"
@@ -19,30 +17,26 @@ RULE_JSON_OUTPUT = (
 
 
 @pytest.mark.parametrize(
-    "verbose, output, expected",
+    "verbose, expected",
     [
-        (False, "text", "dummy.j2:1 test rule 0 (test-rule-0)"),
-        (False, "json", RULE_JSON_OUTPUT),
+        (False, "dummy.j2:1 test rule 0 (test-rule-0)"),
         (
             True,
-            "text",
             RULE_TEXT_OUTPUT,
         ),
-        (True, "json", RULE_JSON_OUTPUT),
-        (True, "blah", RULE_TEXT_OUTPUT),
     ],
 )
-def test_LinterError_repr(test_issue, verbose, output, expected):
+def test_to_string(test_issue, verbose, expected):
     """
-    Test the different __repr__ formats for LinterError
+    Test the string formats for LinterError
+    """
 
-    Note: this implementation is probably not the best as it relies on
-          external settings being set and __repr__ should not really
-          return multiple formats.
-          It would be clean to make different function rather than
-          abusing __repr__ this way
-    TODO: refactor
+    assert test_issue.to_string(verbose) == expected
+
+
+def test_to_json(test_issue):
     """
-    settings.verbose = verbose
-    settings.output = output
-    assert repr(test_issue) == expected
+    Test the json format for LinterError
+    """
+
+    assert test_issue.to_json() == RULE_JSON_OUTPUT

@@ -27,7 +27,8 @@ def load_plugins(directory):
         plugin_name = os.path.basename(plugin_file.replace(".py", ""))
         try:
             logger.debug("Loading plugin %s", plugin_name)
-            spec = importlib.util.spec_from_file_location(plugin_name, plugin_file)
+            spec = importlib.util.spec_from_file_location(
+                plugin_name, plugin_file)
             if plugin_name != "__init__":
                 class_name = "".join(
                     str(name).capitalize() for name in plugin_name.split("_")
@@ -101,7 +102,8 @@ def get_files(file_or_dir_names):
         else:
             if get_file_type(file_or_dir) == LANGUAGE_JINJA:
                 file_paths.append(file_or_dir)
-    logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
+    logger.debug("Linting directory %s: files %s",
+                 file_or_dir_names, file_paths)
     return file_paths
 
 
@@ -115,7 +117,8 @@ def flatten(nested_list):
         list: flattened list
     """
     if not isinstance(nested_list, (list, tuple)):
-        raise TypeError(f"flatten is expecting a list or tuple and received {nested_list}")
+        raise TypeError(
+            f"flatten is expecting a list or tuple and received {nested_list}")
     for element in nested_list:
         if isinstance(element, Iterable) and not isinstance(element, (str, bytes)):
             yield from flatten(element)
@@ -179,7 +182,8 @@ def get_jinja_statements(text, indentation=False):
     """
     statements = []
     count = 0
-    regex_pattern = re.compile("(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
+    regex_pattern = re.compile(
+        "(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
     newline_pattern = re.compile(r"\n")
     lines = text.split("\n")
     for match in regex_pattern.finditer(text):
@@ -233,7 +237,8 @@ def get_jinja_variables(text):
         [list]: returns list of jinja variables
     """
     variables = []
-    regex_pattern = regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
+    regex_pattern = regex_pattern = re.compile(
+        "(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
     for line in regex_pattern.finditer(text):
         variables.append(line.group(2))
     return variables

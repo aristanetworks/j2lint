@@ -137,7 +137,8 @@ def test_rules(
 
     errors_ids = [(error.rule.id, error.line_number) for error in errors]
 
-    warnings_ids = [(warning.rule.id, warning.line_number) for warning in warnings]
+    warnings_ids = [(warning.rule.id, warning.line_number)
+                    for warning in warnings]
 
     print(caplog.record_tuples)
     for record_tuple in expected_log:

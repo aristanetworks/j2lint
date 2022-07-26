@@ -68,6 +68,4 @@ class Runner:
         # Update list of checked files
         self.checked_files.update([file_dict['path'] for file_dict in files])
 
-        # TODO - log also warnings
-        logger.info("Linting errors found %s", errors)
         return errors, warnings
