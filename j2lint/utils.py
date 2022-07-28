@@ -38,20 +38,7 @@ def load_plugins(directory):
                 obj = getattr(module, class_name)()
                 result.append(obj)
         except AttributeError:
-            # pylint: disable=fixme
-            # FIXME - support legacy rule syntax before pylint compliance
-            #         will be removed once j2lint is published.
-            #         and only the log will be kept
-            #         maybe look into the built-in __subclasses__ method
-            try:
-                spec = importlib.util.spec_from_file_location(
-                    plugin_name, plugin_file)
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                obj = getattr(module, plugin_name)()
-                result.append(obj)
-            except AttributeError:
-                logger.warning("Failed to load plugin %s", plugin_name)
+            logger.warning("Failed to load plugin %s", plugin_name)
         finally:
             if file_handle:
                 file_handle.close()
