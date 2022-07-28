@@ -9,8 +9,7 @@ name = "j2lint"
 version = "0.1.1"
 description = "Command-line utility that checks for best practices in Jinja2."
 readme = "README.md"
-# TODO fix authors
-authors = [{ name = "Arista", email = "info@realpython.com" }]
+authors = [{ name = "Arista Ansible Team", email = "ansible@arista.com" }]
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
