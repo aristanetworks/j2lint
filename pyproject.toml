@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "j2lint"
-version = "0.1.1"
+version = "1.0.0"
 description = "Command-line utility that checks for best practices in Jinja2."
 readme = "README.md"
 authors = [{ name = "Arista Ansible Team", email = "ansible@arista.com" }]
@@ -35,7 +35,7 @@ Homepage = "https://github.com/aristanetworks/j2lint.git"
 j2lint = "j2lint.cli:run"
 
 [tool.bumpver]
-current_version = "0.1.1"
+current_version = "1.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Chore: version {old_version} -> {new_version}"
 commit          = true
