@@ -1,7 +1,7 @@
 # pyproject.toml
 
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
+requires = ["setuptools>=59.6.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -53,6 +53,7 @@ push            = false
 legacy_tox_ini = """
 [tox]
 envlist = clean,py36,py37,py38,py39,py310,report
+isolated_build = True
 
 [gh-actions]
 python =
@@ -72,6 +73,10 @@ commands = pytest
 deps = coverage[toml]
 skip_install = true
 commands = coverage erase
+
+[testenv:py36]
+deps =
+  setuptools==59.6.0
 
 [testenv:report]
 deps = coverage[toml]
