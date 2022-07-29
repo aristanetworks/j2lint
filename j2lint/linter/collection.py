@@ -1,7 +1,6 @@
 """collection.py - Class to create a collection of linting rules.
 """
 import os
-import sys
 
 from j2lint.utils import load_plugins, is_rule_disabled
 from j2lint.logger import logger
@@ -47,7 +46,7 @@ class RulesCollection:
             with open(file_dict["path"], mode="r", encoding="utf-8") as file:
                 text = file.read()
         except IOError as err:
-            logger.warning(f"Could not open {file_dict['path']} - {err.strerror}")
+            logger.warning("Could not open %s - %s", file_dict["path"], err.strerror)
             return errors, warnings
 
         for rule in self.rules:
