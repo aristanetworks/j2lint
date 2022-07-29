@@ -1,7 +1,6 @@
 """collection.py - Class to create a collection of linting rules.
 """
 import os
-import sys
 
 from j2lint.utils import load_plugins, is_rule_disabled
 from j2lint.logger import logger
@@ -46,11 +45,8 @@ class RulesCollection:
         try:
             with open(file_dict["path"], mode="r", encoding="utf-8") as file:
                 text = file.read()
-        except IOError as error:
-            print(
-                f"WARNING: Couldn't open {file_dict['path']} - {error.strerror}",
-                file=sys.stderr,
-            )
+        except IOError as err:
+            logger.warning("Could not open %s - %s", file_dict["path"], err.strerror)
             return errors, warnings
 
         for rule in self.rules:
@@ -68,8 +64,7 @@ class RulesCollection:
                 )
                 continue
 
-            logger.debug("Running linting rule %s on file %s",
-                         rule, file_dict["path"])
+            logger.debug("Running linting rule %s on file %s", rule, file_dict["path"])
             if rule in rule.warn:
                 warnings.extend(rule.checklines(file_dict, text))
                 warnings.extend(rule.checkfulltext(file_dict, text))
@@ -77,6 +72,7 @@ class RulesCollection:
             else:
                 errors.extend(rule.checklines(file_dict, text))
                 errors.extend(rule.checkfulltext(file_dict, text))
+
         for error in errors:
             logger.error(error.to_string())
 
@@ -104,27 +100,10 @@ class RulesCollection:
         """
         result = cls()
         result.rules = load_plugins(os.path.expanduser(rules_dir))
-        # pylint: disable=fixme
-        # FIXME: once the first version of j2lint is tagged and publish,
-        #        remove the deprecated_short_description
         for rule in result.rules:
-            if (
-                rule.short_description in ignore_rules
-                or rule.id in ignore_rules
-                or (
-                    hasattr(rule, "deprecated_short_description")
-                    and rule.deprecated_short_description in ignore_rules
-                )
-            ):
+            if rule.short_description in ignore_rules or rule.id in ignore_rules:
                 rule.ignore = True
-            if (
-                rule.short_description in warn_rules
-                or rule.id in warn_rules
-                or (
-                    hasattr(rule, "deprecated_short_description")
-                    and rule.deprecated_short_description in warn_rules
-                )
-            ):
+            if rule.short_description in warn_rules or rule.id in warn_rules:
                 rule.warn.append(rule)
         logger.info("Created collection from rules directory %s", rules_dir)
         return result

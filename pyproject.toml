@@ -1,16 +1,65 @@
-# content of pyproject.toml
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "j2lint"
+version = "1.0.0"
+description = "Command-line utility that validates jinja2 syntax according to Arista's AVD style guide."
+readme = "README.md"
+authors = [{ name = "Arista Ansible Team", email = "ansible@arista.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+]
+keywords = ["j2lint", "linter", "jinja", "lint"]
+dependencies = [
+    "jinja2",
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = ["pytest", "pre-commit", "bumpver"]
+
+[project.urls]
+Homepage = "https://github.com/aristanetworks/j2lint.git"
+"Bug Tracker" = "https://github.com/aristanetworks/j2lint/issues"
+
+[project.scripts]
+j2lint = "j2lint.cli:run"
+
+[tool.bumpver]
+current_version = "1.0.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Chore: version {old_version} -> {new_version}"
+commit          = true
+tag             = true
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"j2lint/__init__.py" = ["{version}"]
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = clean,py36,py37,py38,py39,py310,report
+envlist = clean,py38,py39,py310,report
+isolated_build = True
 
 [gh-actions]
 python =
-  3.6: py36
-  3.7: py37
   3.8: py38
   3.9: py39
-  3.10: py310, coverage
+  3.10: py310, coverage, report
 
 [testenv]
 deps =
