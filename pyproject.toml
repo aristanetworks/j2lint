@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "j2lint"
 version = "1.0.0"
-description = "Command-line utility that checks for best practices in Jinja2."
+description = "Command-line utility that validates jinja2 syntax according to Arista's AVD style guide.
 readme = "README.md"
 authors = [{ name = "Arista Ansible Team", email = "ansible@arista.com" }]
 license = { file = "LICENSE" }
