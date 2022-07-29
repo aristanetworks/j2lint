@@ -26,7 +26,7 @@ Build a Jinja2 linter that will provide the following capabilities:
 | S3   | `jinja-statements-indentation`  | Nested jinja code block shall follow next rules:<br>- All J2 statements must be enclosed by 1 space<br>- All J2 statements must be indented by 4 more spaces within jinja delimiter<br>- To close a control, end tag must have same indentation level |
 | S4   | `jinja-statements-single-space` | Jinja statement should have a single space before and after |
 | S5   | `jinja-statements-no-tabs`      | Indentation are 4 spaces and NOT tabulation |
-| S6*  | `jinja-statements-delimiter`    | Jinja statements should not have {%- or {%+ or -%} as delimiters |
+| S6   | `jinja-statements-delimiter`    | Jinja statements should not have {%- or {%+ or -%} as delimiters |
 | S7   | `single-statement-per-line`     | Jinja statements should be on separate lines |
 | V1   | `jinja-variable-lower-case`     | All variables shall use lower case |
 | V2   | `jinja-variable-format`         | If variable is multi-words, underscore _ shall be used as a separator |
@@ -53,7 +53,7 @@ pip3 install j2lint
 pip3 install git+https://github.com/aristanetworks/j2lint.git
 ```
 
-### Git approach
+### Install with Git approach
 
 1. Create a virtual environment and activate it
 
