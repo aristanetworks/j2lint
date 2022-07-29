@@ -12,10 +12,9 @@ AVD Ecosystem - Jinja2 Linter
 
 Build a Jinja2 linter that will provide the following capabilities:
 
-- Validate syntax according to [AVD style guide](https://avd.sh/en/latest/docs/contribution/style-guide.html)
-- Develop extension that works with VSCode and potentially other IDEs i.e PyCharm
-  - if supporting multiple IDEs adds too much complexity, support for VSCode will take priority
-- Capability to run as a GitHub Action and used to enforce style in our CI pipeline
+- Validate syntax according to [AVD style guide](https://avd.sh/en/stable/docs/contribution/style-guide.html).
+- Capability to run as part of a CI pipeline to enforce j2lint rules.
+- Develop an extension that works with VSCode and potentially other IDEs i.e PyCharm.
 
 ## Syntax and code style issues
 
@@ -32,36 +31,29 @@ Build a Jinja2 linter that will provide the following capabilities:
 | V1   | `jinja-variable-lower-case`     | All variables shall use lower case |
 | V2   | `jinja-variable-format`         | If variable is multi-words, underscore _ shall be used as a separator |
 
-> **Warning**
-> _*Deprecation Warning_: There was a typo from day 1 in the j2lint repo on
-> delim**i**ter. It was written delim**e**ter. The current code version has fixed the
-> typo but to ensure backward compatibility the old syntax is still supported.
-> It will be deprecated when j2lint is officially released.
-
 ## Getting Started
+
+### Requirements
+
+Python version 3.8+
 
 ### Install with pip
 
 To get started, you can use Python pip to install j2lint:
 
+**Install the latest stable version:**
+
 ```bash
-pip install git+https://github.com/aristanetworks/j2lint.git
+pip3 install j2lint
+```
+
+**Install the latest development version:**
+
+```bash
+pip3 install git+https://github.com/aristanetworks/j2lint.git
 ```
 
 ### Git approach
-
-To get started with j2lint code, clone the Jinja2 Linter project on your system:
-
-```
-git clone https://github.com/aristanetworks/j2lint.git
-```
-
-### Prerequisites
-
-Python version 3.8+
-
-
-### Creating the environment
 
 1. Create a virtual environment and activate it
 
@@ -134,13 +126,13 @@ j2lint <path-to-directory-of-templates> --json
 
 3. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
 
-
     ```jinja2
     {# j2lint: disable=S6}
 
     # OR
     {# j2lint: disable=jinja-delimiter #}
     ```
+
 4. Disabling multiple rules
 
     ```jinja2
@@ -151,11 +143,10 @@ j2lint <path-to-directory-of-templates> --json
 
 1. Create a new rules directory under j2lint folder.
 2. Add custom rule classes which are similar to classes in j2lint/rules directory:
-    The file name of rules should be in snake_case and the class name should be the PascalCase version of file name. For example:
-    * File name - jinja_operator_has_spaces_rule.py
-    * Class name - JinjaOperatorHasSpacesRule
-    > **Note**
-    > The code supports the file name of rules in snake_case only and the support for PascalCase filenames for rules has been deprecated.
+    The file name of rules should be in snake_case and the class name should be the PascalCase version of the file name. For example:
+    - File name: `jinja_operator_has_spaces_rule.py`
+    - Class name: `JinjaOperatorHasSpacesRule`
+
 3. Run the jinja2 linter using --rules-dir option
 
     ```bash
@@ -180,14 +171,15 @@ j2lint --stdin
 ### Using j2lint as a pre-commit-hook
 
 1. Add j2lint pre-commit hook inside your repository in .pre-commit-config.yaml.
-```bash
-   - repo: https://github.com/aristanetworks/j2lint.git
-     rev: <release_tag/sha>
-     hooks:
-       - id: j2lint
-```
 
-2. Run pre-commit -> ```pre-commit run --all-files ```
+    ```bash
+    - repo: https://github.com/aristanetworks/j2lint.git
+        rev: <release_tag/sha>
+        hooks:
+        - id: j2lint
+    ```
+
+2. Run pre-commit -> `pre-commit run --all-files`
 
 ## Acknowledgments
 
