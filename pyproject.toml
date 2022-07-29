@@ -1,7 +1,7 @@
 # pyproject.toml
 
 [build-system]
-requires = ["setuptools>=59.6.0", "wheel"]
+requires = ["setuptools>=61.1.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -25,7 +25,7 @@ keywords = ["j2lint", "linter", "jinja", "lint"]
 dependencies = [
     "jinja2",
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 
 [project.optional-dependencies]
 dev = ["pytest", "pre-commit", "bumpver"]
@@ -52,16 +52,14 @@ push            = false
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = clean,py36,py37,py38,py39,py310,report
+envlist = clean,py38,py39,py310,report
 isolated_build = True
 
 [gh-actions]
 python =
-  3.6: py36
-  3.7: py37
   3.8: py38
   3.9: py39
-  3.10: py310, coverage
+  3.10: py310, coverage, report
 
 [testenv]
 deps =
@@ -73,10 +71,6 @@ commands = pytest
 deps = coverage[toml]
 skip_install = true
 commands = coverage erase
-
-[testenv:py36]
-deps =
-  setuptools==59.6.0
 
 [testenv:report]
 deps = coverage[toml]

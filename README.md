@@ -58,7 +58,7 @@ git clone https://github.com/aristanetworks/j2lint.git
 
 ### Prerequisites
 
-Python version 3.6+
+Python version 3.8+
 
 
 ### Creating the environment
