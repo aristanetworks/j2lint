@@ -195,11 +195,6 @@ def test_get_jinja_variables():
         ),
         pytest.param(["{# j2lint: disable=T0 #}"], True, id="found_id"),
         pytest.param(
-            ["{# j2lint: disable=deprecated-test-rule-0 #}"],
-            True,
-            id="found_deprecated_short_description",
-        ),
-        pytest.param(
             ["{# j2lint: disable=test-rule-1 #}"],
             False,
             id="not_found_short_description",
@@ -229,10 +224,7 @@ def test_is_rule_disabled(make_rules, comments, expected_value):
     """
     # Generate one rule through fixture which is always
     # T0, test-rule-0
-    # adding the deprecated_short_description for this test
     test_rule = make_rules(1)[0]
-    test_rule.deprecated_short_description = "deprecated-test-rule-0"
-    print(test_rule.deprecated_short_description)
 
     comments_string = "\n".join(comments)
     print(comments_string)

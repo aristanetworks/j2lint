@@ -135,9 +135,6 @@ class TestRulesCollection:
         test_collection.extend([test_other_rule])
         assert str(test_collection) == "T0: test rule 0\nT1: test rule 1"
 
-    # FIXME
-    # when removing the support for deprecating-short-description
-    # remove the appropriate test
     @pytest.mark.parametrize(
         "ignore_rules, warn_rules",
         [
@@ -151,11 +148,6 @@ class TestRulesCollection:
                          id="ignore_no_warn"),
             pytest.param([], ["S42"], id="ignore_absent_rule"),
             pytest.param(["S42"], [], id="warn_absent_rule"),
-            pytest.param(
-                ["jinja-statements-delimeter"],
-                [],
-                id="deprecated_short_description",
-            ),
         ],
     )
     def test_create_from_directory(self, ignore_rules, warn_rules):
@@ -182,15 +174,5 @@ class TestRulesCollection:
             for rule in collection.rules:
                 if rule.id in ignore_rules or rule.short_description in ignore_rules:
                     assert rule.ignore is True
-                elif (
-                    hasattr(rule, "deprecated_short_description")
-                    and rule.deprecated_short_description in ignore_rules
-                ):
-                    assert rule.ignore is True
                 if rule.id in warn_rules or rule.short_description in warn_rules:
-                    assert rule in rule.warn
-                elif (
-                    hasattr(rule, "deprecated_short_description")
-                    and rule.deprecated_short_description in warn_rules
-                ):
                     assert rule in rule.warn

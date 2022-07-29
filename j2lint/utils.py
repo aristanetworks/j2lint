@@ -260,12 +260,6 @@ def is_rule_disabled(text, rule):
         for line in regex.finditer(comment):
             if rule.short_description == line.group(1):
                 return True
-            # pylint: disable=fixme
-            # FIXME - remove next release
-            if hasattr(
-                rule, "deprecated_short_description"
-            ) and rule.deprecated_short_description == line.group(1):
-                return True
             if rule.id == line.group(1):
                 return True
     return False
