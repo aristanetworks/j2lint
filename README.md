@@ -53,25 +53,6 @@ pip3 install j2lint
 pip3 install git+https://github.com/aristanetworks/j2lint.git
 ```
 
-### Install with Git approach
-
-1. Create a virtual environment and activate it
-
-    ```bash
-    python3 -m venv myenv
-    source myenv/bin/activate
-    ```
-
-2. Install pip, jinja2 and jinja2-linter
-
-    ```bash
-    sudo apt-get install python3-pip
-    pip3 install jinja2
-    git clone https://github.com/aristanetworks/j2lint
-    cd j2lint
-    python setup.py install
-    ```
-
 ## Running the linter
 
 ```bash
