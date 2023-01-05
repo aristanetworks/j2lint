@@ -55,8 +55,6 @@ class Rule:
         )
 
     def checktext(self, file: dict[str, Any], text: str) -> list[Any]:
-        """This method is expected to be overriden by child classes"""
-        # pylint: disable=unused-argument
         return []
 
     def check(self, line: str) -> Any:
