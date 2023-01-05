@@ -1,6 +1,8 @@
 """jinja_variable_name_case_rule.py - Rule class to check the variables use
                                   lower case.
 """
+from __future__ import annotations
+
 import re
 
 from j2lint.linter.rule import Rule
@@ -17,14 +19,14 @@ class JinjaVariableNameCaseRule(Rule):
 
     regex = re.compile(r"([a-zA-Z0-9-_\"']*[A-Z][a-zA-Z0-9-_\"']*)")
 
-    def check(self, line):
+    def check(self, line: str) -> bool:
         """Checks if the given line matches the error regex
 
         Args:
             line (string): a single line from the file
 
         Returns:
-            Object: Returns error object if found else None
+            bool: Returns True if any variable does not comply with the regex
         """
         variables = get_jinja_variables(line)
         for var in variables:

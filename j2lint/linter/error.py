@@ -1,22 +1,35 @@
 """error.py - Error classes to format the lint errors.
 """
+from __future__ import annotations
+
 import json
+from typing import TYPE_CHECKING
 
 from j2lint.logger import logger
+
+if TYPE_CHECKING:
+    from .rule import Rule
 
 
 class LinterError:
     """Class for lint errors."""
 
-    def __init__(self, line_number, line, filename, rule, message=None):
+    def __init__(
+        self,
+        line_number: int,
+        line: str,
+        filename: str,
+        rule: Rule,
+        message: str | None = None,
+    ) -> None:
         # pylint: disable=too-many-arguments
         self.line_number = line_number
         self.line = line
         self.filename = filename
         self.rule = rule
-        self.message = rule.description if not message else message
+        self.message = message or rule.description
 
-    def to_string(self, verbose=False):
+    def to_string(self, verbose: bool = False) -> str:
         """setting string output format"""
         if not verbose:
             format_str = "{2}:{3} {5} ({6})"
@@ -36,7 +49,7 @@ class LinterError:
             self.rule.short_description,
         )
 
-    def to_json(self):
+    def to_json(self) -> str:
         """setting json output format"""
         return json.dumps(
             {

@@ -1,25 +1,31 @@
 """collection.py - Class to create a collection of linting rules.
 """
+from __future__ import annotations
+
 import os
+from collections.abc import Iterable
 
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
+
+from .error import LinterError
+from .rule import Rule
 
 
 class RulesCollection:
     """RulesCollection class which checks the linting rules against a file."""
 
-    def __init__(self, verbose=False):
-        self.rules = []
+    def __init__(self, verbose: bool = False) -> None:
+        self.rules: list[Rule] = []
         self.verbose = verbose
 
-    def __iter__(self):
+    def __iter__(self) -> Iterable[Rule]:
         return iter(self.rules)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.rules)
 
-    def extend(self, more):
+    def extend(self, more: list[Rule]) -> None:
         """Extends list of rules
 
         Args:
@@ -29,18 +35,21 @@ class RulesCollection:
         """
         self.rules.extend(more)
 
-    def run(self, file_dict):
+    def run(
+        self, file_dict: dict[str, str]
+    ) -> tuple[list[LinterError], list[LinterError]]:
         """Runs the linting rules for given file
 
         Args:
             file_dict (dict): file path and file type
 
         Returns:
-            list: list of linting errors found
+            tuple(list, list): a tuple containing the list of linting errors
+                               and the list of linting warnings found
         """
         text = ""
-        errors = []
-        warnings = []
+        errors: list[LinterError] = []
+        warnings: list[LinterError] = []
 
         try:
             with open(file_dict["path"], mode="r", encoding="utf-8") as file:
@@ -81,19 +90,22 @@ class RulesCollection:
 
         return errors, warnings
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "\n".join(
             [repr(rule) for rule in sorted(self.rules, key=lambda x: x.id)]
         )
 
     @classmethod
-    def create_from_directory(cls, rules_dir, ignore_rules, warn_rules):
+    def create_from_directory(
+        cls, rules_dir: str, ignore_rules: list[str], warn_rules: list[str]
+    ) -> RulesCollection:
         """Creates a collection from all rule modules
 
         Args:
-            cls (Object): object of a rule class
             rules_dir (string): rules directory
-            ignore_rules (list): list of rule descriptions to ignore
+            ignore_rules (list): list of rule short_descriptions or ids to ignore
+            warn_rules (list): list of rule short_descriptions or ids to consider as
+                               warnings rather than errors
 
         Returns:
             list: a collection of rule objects

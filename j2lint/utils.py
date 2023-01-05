@@ -1,17 +1,28 @@
 """utils.py - Utility functions for jinja2 linter.
 """
+from __future__ import annotations
+
 import glob
 import importlib.util
 import os
 import re
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable
+from typing import TYPE_CHECKING, Any, Tuple
 
 from j2lint.logger import logger
 
+if TYPE_CHECKING:
+    from .linter.rule import Rule
+
 LANGUAGE_JINJA = "jinja"
 
+# Using Tuple from typing for 3.8 support
+# Statement type is a tuple
+# (line_without_delimiter, start_line, end_line, start_delimiter, end_delimiter)
+Statement = Tuple[str, int, int, str, str]
 
-def load_plugins(directory):
+
+def load_plugins(directory: str) -> list[Rule]:
     """Loads and executes all the Rule modules from the specified directory
 
     Args:
@@ -27,14 +38,15 @@ def load_plugins(directory):
         try:
             logger.debug("Loading plugin %s", plugin_name)
             spec = importlib.util.spec_from_file_location(plugin_name, plugin_file)
-            if plugin_name != "__init__":
+            if plugin_name != "__init__" and spec is not None:
                 class_name = "".join(
                     str(name).capitalize() for name in plugin_name.split("_")
                 )
                 module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                obj = getattr(module, class_name)()
-                result.append(obj)
+                if spec.loader is not None:
+                    spec.loader.exec_module(module)
+                    obj = getattr(module, class_name)()
+                    result.append(obj)
         except AttributeError:
             logger.warning("Failed to load plugin %s", plugin_name)
         finally:
@@ -43,7 +55,7 @@ def load_plugins(directory):
     return result
 
 
-def is_valid_file_type(file_name):
+def is_valid_file_type(file_name: str) -> bool:
     """Checks if the file is a valid Jinja file
 
     Args:
@@ -53,12 +65,10 @@ def is_valid_file_type(file_name):
         boolean: True if file type is correct
     """
     extension = os.path.splitext(file_name)[1].lower()
-    if extension in [".jinja", ".jinja2", ".j2"]:
-        return True
-    return False
+    return extension in [".jinja", ".jinja2", ".j2"]
 
 
-def get_file_type(file_name):
+def get_file_type(file_name: str) -> str | None:
     """Returns file type as Jinja or None
 
     Args:
@@ -69,12 +79,10 @@ def get_file_type(file_name):
 
     TODO: this method and the previous one are redundant
     """
-    if is_valid_file_type(file_name):
-        return LANGUAGE_JINJA
-    return None
+    return LANGUAGE_JINJA if is_valid_file_type(file_name) else None
 
 
-def get_files(file_or_dir_names):
+def get_files(file_or_dir_names: list[str]) -> list[str]:
     """Get files from a directory recursively
 
     Args:
@@ -83,7 +91,7 @@ def get_files(file_or_dir_names):
     Returns:
         list: list of file paths
     """
-    file_paths = []
+    file_paths: list[str] = []
 
     if not isinstance(file_or_dir_names, (list, set)):
         raise TypeError(
@@ -97,21 +105,20 @@ def get_files(file_or_dir_names):
                     file_path = os.path.join(root, file)
                     if get_file_type(file_path) == LANGUAGE_JINJA:
                         file_paths.append(file_path)
-        else:
-            if get_file_type(file_or_dir) == LANGUAGE_JINJA:
-                file_paths.append(file_or_dir)
+        elif get_file_type(file_or_dir) == LANGUAGE_JINJA:
+            file_paths.append(file_or_dir)
     logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
     return file_paths
 
 
-def flatten(nested_list):
+def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
     """Flattens an iterable
 
     Args:
         nested_list (list): Nested list
 
-    Yields:
-        list: flattened list
+    Returns:
+        a generator that yields the elements of each object in the nested_list
     """
     if not isinstance(nested_list, (list, tuple)):
         raise TypeError(
@@ -124,7 +131,9 @@ def flatten(nested_list):
             yield element
 
 
-def get_tuple(list_of_tuples, item):
+def get_tuple(
+    list_of_tuples: list[tuple[Any, ...]], item: Any
+) -> tuple[Any, ...] | None:
     """Checks if an item is present in any of the tuples
 
     Args:
@@ -134,13 +143,10 @@ def get_tuple(list_of_tuples, item):
     Returns:
         [tuple]: tuple if the item exists in any of the tuples
     """
-    for entry in list_of_tuples:
-        if item in entry:
-            return entry
-    return None
+    return next((entry for entry in list_of_tuples if item in entry), None)
 
 
-def get_jinja_statements(text, indentation=False):
+def get_jinja_statements(text: str, indentation: bool = False) -> list[Statement]:
     """Gets jinja statements with {%[-/+] [-]%} delimiters
 
     The regex `regex_pattern` will return multiple groups when it matches
@@ -177,8 +183,10 @@ def get_jinja_statements(text, indentation=False):
 
     Returns:
         [list]: list of jinja statements
+
+    # TODO - should probably return a JinjaStatement object..
     """
-    statements = []
+    statements: list[Statement] = []
     count = 0
     regex_pattern = re.compile("(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
     newline_pattern = re.compile(r"\n")
@@ -189,14 +197,21 @@ def get_jinja_statements(text, indentation=False):
         end_line = len(newline_pattern.findall(text, 0, match.end(2))) + 1
         if indentation and lines[start_line - 1].split()[0] not in ["{%", "{%-", "{%+"]:
             continue
+
         statements.append(
-            (match.group(2), start_line, end_line, match.group(1), match.group(4))
+            (
+                str(match.group(2)),
+                start_line,
+                end_line,
+                str(match.group(1)),
+                str(match.group(4)),
+            )
         )
     logger.debug("Found jinja statements %s", statements)
     return statements
 
 
-def delimit_jinja_statement(line, start="{%", end="%}"):
+def delimit_jinja_statement(line: str, start: str = "{%", end: str = "%}") -> str:
     """Adds end delimiters for a jinja statement
 
     Args:
@@ -208,7 +223,7 @@ def delimit_jinja_statement(line, start="{%", end="%}"):
     return start + line + end
 
 
-def get_jinja_comments(text):
+def get_jinja_comments(text: str) -> list[str]:
     """Gets jinja comments
 
     Args:
@@ -217,14 +232,12 @@ def get_jinja_comments(text):
     Returns:
         [list]: returns list of jinja comments
     """
-    comments = []
     regex_pattern = re.compile("(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
-    for line in regex_pattern.finditer(text):
-        comments.append(line.group(2))
-    return comments
+
+    return [line.group(2) for line in regex_pattern.finditer(text)]
 
 
-def get_jinja_variables(text):
+def get_jinja_variables(text: str) -> list[str]:
     """Gets jinja variables
 
     Args:
@@ -233,19 +246,16 @@ def get_jinja_variables(text):
     Returns:
         [list]: returns list of jinja variables
     """
-    variables = []
     regex_pattern = regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
-    for line in regex_pattern.finditer(text):
-        variables.append(line.group(2))
-    return variables
+    return [line.group(2) for line in regex_pattern.finditer(text)]
 
 
-def is_rule_disabled(text, rule):
+def is_rule_disabled(text: str, rule: Rule) -> bool:
     """Check if rule is disabled
 
     Args:
-        text (string): text to check jinja comments
-        rule (string): rule id or description
+        text (string): text to check
+        rule (Rule): Rule object
 
     Returns:
         [boolean]: True if rule is disabled

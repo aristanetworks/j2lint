@@ -1,8 +1,12 @@
 """jinja_template_indentation_rule.py - Rule class to check the jinja statement
                                      indentation is correct.
 """
+from __future__ import annotations
+
+from typing import Any
+
 from j2lint.linter.error import JinjaLinterError
-from j2lint.linter.indenter.node import Node
+from j2lint.linter.indenter.node import Node, NodeIndentationError
 from j2lint.linter.rule import Rule
 from j2lint.logger import logger
 from j2lint.utils import get_jinja_statements
@@ -19,7 +23,7 @@ class JinjaTemplateIndentationRule(Rule):
     )
     severity = "HIGH"
 
-    def checktext(self, file, text):
+    def checktext(self, file: dict[str, Any], text: str) -> list[NodeIndentationError]:
         """Checks if the given text has the error
 
         Args:
@@ -29,9 +33,7 @@ class JinjaTemplateIndentationRule(Rule):
         Returns:
             list: Returns list of error objects
         """
-        result = []
-        errors = []
-
+        errors: list[NodeIndentationError] = []
         with open(file["path"], encoding="utf-8") as template:
             text = template.read()
             # Collect only Jinja Statements within delimiters {% and %}
@@ -43,13 +45,11 @@ class JinjaTemplateIndentationRule(Rule):
             root = Node()
             try:
                 root.check_indentation(errors, lines, 0)
-            except (JinjaLinterError, TypeError, IndexError) as error:
+            except (JinjaLinterError, IndexError) as exc:
                 logger.error(
                     "Indentation check failed for file %s: Error: %s",
                     file["path"],
-                    str(error),
+                    str(exc),
                 )
-            for error in errors:
-                result.append((error[0], error[1], error[2]))
 
-        return result
+        return errors

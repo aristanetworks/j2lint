@@ -1,6 +1,10 @@
 """jinja_template_syntax_error_rule.py - Rule class to check that file does not
                                      have jinja syntax errors.
 """
+from __future__ import annotations
+
+from typing import Any
+
 import jinja2
 
 from j2lint.linter.rule import Rule
@@ -14,7 +18,7 @@ class JinjaTemplateSyntaxErrorRule(Rule):
     description = "Jinja syntax should be correct"
     severity = "HIGH"
 
-    def checktext(self, file, text):
+    def checktext(self, file: dict[str, Any], text: str) -> list[Any]:
         """Checks if the given text has jinja syntax error
 
         Args:

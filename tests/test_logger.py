@@ -4,19 +4,10 @@ Tests for j2lint.logger.py
 import logging
 import sys
 from logging import handlers
-from unittest.mock import create_autospec
 
 import pytest
 
 from j2lint.logger import add_handler
-
-
-@pytest.fixture
-def logger():
-    """
-    Return a MagicMock object with the spec of logging.Logger
-    """
-    return create_autospec(logging.Logger)
 
 
 @pytest.mark.parametrize(
