@@ -1,8 +1,11 @@
 """
 Tests for j2lint.linter.rule.py
 """
+import pathlib
 import logging
 import pytest
+
+TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 
 
 class TestRule:
@@ -21,27 +24,27 @@ class TestRule:
         [
             pytest.param(
                 True,
-                {"path": "tests/test_linter/data/test.txt"},
+                {"path": f"{TEST_DATA_DIR}/test.txt"},
                 [],
                 [
                     (
                         "root",
                         logging.DEBUG,
-                        "Skipping file {'path': 'tests/test_linter/data/test.txt'}. Linter does not support linting this file type",
+                        f"Skipping file {{'path': '{TEST_DATA_DIR}/test.txt'}}. Linter does not support linting this file type",
                     )
                 ],
                 id="file is wrong type",
             ),
             pytest.param(
                 lambda x: None,
-                {"path": "tests/test_linter/data/test.j2"},
+                {"path": f"{TEST_DATA_DIR}/test.j2"},
                 [],
                 [],
                 id="no error",
             ),
             pytest.param(
                 lambda x: True,
-                {"path": "tests/test_linter/data/test.j2"},
+                {"path": f"{TEST_DATA_DIR}/test.j2"},
                 [("T0", 1)],
                 [],
                 id="rule error",
@@ -67,28 +70,27 @@ class TestRule:
         [
             pytest.param(
                 True,
-                {"path": "tests/test_linter/data/test.txt"},
+                {"path": f"{TEST_DATA_DIR}/test.txt"},
                 [],
                 [
                     (
                         "root",
                         logging.DEBUG,
-                        "Skipping file {'path': 'tests/test_linter/data/test.txt'}. Linter does not support linting this file type",
+                        f"Skipping file {{'path': '{TEST_DATA_DIR}/test.txt'}}. Linter does not support linting this file type",
                     )
                 ],
                 id="file is wrong type",
             ),
             pytest.param(
                 lambda x, y: [],
-                {"path": "tests/test_linter/data/test.j2"},
+                {"path": f"{TEST_DATA_DIR}/test.j2"},
                 [],
                 [],
                 id="no error",
             ),
             pytest.param(
-                lambda x, y: [(1, "section1", "message1"),
-                              (2, "section2", "message2")],
-                {"path": "tests/test_linter/data/test.j2"},
+                lambda x, y: [(1, "section1", "message1"), (2, "section2", "message2")],
+                {"path": f"{TEST_DATA_DIR}/test.j2"},
                 [("T0", 1), ("T0", 2)],
                 [],
                 id="rule error",

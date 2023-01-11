@@ -18,9 +18,11 @@ CONTENT = "content"
 
 DEFAULT_RULE_DIR = pathlib.Path(__file__).parent.parent / "j2lint/rules"
 
+
 @pytest.fixture
 def collection():
     return RulesCollection.create_from_directory(DEFAULT_RULE_DIR, [], [])
+
 
 @pytest.fixture
 def make_rules():
@@ -180,7 +182,17 @@ def template_tmp_dir(tmp_path_factory):
     """
     Create a tmp directory with multiple files and hidden files
     """
+    tmp_dir = pathlib.Path(__file__).parent / "tmp"
+
+    # Hacking it
+    # https://stackoverflow.com/questions/40566968/how-to-dynamically-change-pytests-tmpdir-base-directory
+    # +
+    # https://docs.pytest.org/en/7.1.x/_modules/_pytest/tmpdir.html
+    # Using _given_basetemp to trigger creation
+    tmp_path_factory._given_basetemp = tmp_dir
+
     rules = tmp_path_factory.mktemp("rules", numbered=False)
+
     rules_subdir = rules / "rules_subdir"
     rules_subdir.mkdir()
     # no clue if we are suppose to find these

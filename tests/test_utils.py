@@ -2,6 +2,8 @@
 Tests for j2lint.utils.py
 """
 import os
+import pathlib
+
 import pytest
 
 from j2lint.utils import (
@@ -77,7 +79,6 @@ def test_get_file_type(file_name, expected):
         pytest.param(
             "not_a_list", None, pytest.raises(TypeError), id="Invalid input type"
         ),
-        # pytest.param(["tests/tmp/"], None, does_not_raise(), id="Directory"),
     ],
 )
 def test_get_files(file_or_dir_names, expected_value, expectation):
@@ -95,13 +96,12 @@ def test_get_files_dir(template_tmp_dir):
     # sadly cannot use fixture in parametrize...
     # https://github.com/pytest-dev/pytest/issues/349
     """
-    cwd = os.getcwd()
-    basetemp = "tests/tmp"  # as passed to pytest in pytest.ini
+    tmp_dir = pathlib.Path(__file__).parent / "tmp"  # as passed to pytest in pytest.ini
     expected = sorted(
         [
-            f"{cwd}/{basetemp}/rules/rules.j2",
-            f"{cwd}/{basetemp}/rules/rules_subdir/rules.j2",
-            f"{cwd}/{basetemp}/rules/.rules_hidden_subdir/rules.j2",
+            f"{tmp_dir}/rules/rules.j2",
+            f"{tmp_dir}/rules/rules_subdir/rules.j2",
+            f"{tmp_dir}/rules/.rules_hidden_subdir/rules.j2",
         ]
     )
     with does_not_raise():
@@ -211,8 +211,7 @@ def test_get_jinja_variables():
             id="single_comment_repeat_pattern",
         ),
         pytest.param(
-            ["{# j2lint: disable=dummy-rule #}",
-                "{# j2lint: disable=test-rule-0 #}"],
+            ["{# j2lint: disable=dummy-rule #}", "{# j2lint: disable=test-rule-0 #}"],
             True,
             id="found_second_second_syntax",
         ),
