@@ -1,6 +1,8 @@
 """
 content of conftest.py
 """
+import pathlib
+
 import pytest
 from j2lint.cli import create_parser
 from j2lint.linter.rule import Rule
@@ -13,6 +15,12 @@ CONTENT = "content"
 # TODO - proper way to compare LinterError following:
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
 
+
+DEFAULT_RULE_DIR = pathlib.Path(__file__).parent.parent / "j2lint/rules"
+
+@pytest.fixture
+def collection():
+    return RulesCollection.create_from_directory(DEFAULT_RULE_DIR, [], [])
 
 @pytest.fixture
 def make_rules():
@@ -42,7 +50,7 @@ def make_rules():
             )
 
         rules = []
-        for i in range(0, count):
+        for i in range(count):
             r_obj = Rule()
             r_obj.id = f"T{i}"
             r_obj.description = f"test rule {i}"
