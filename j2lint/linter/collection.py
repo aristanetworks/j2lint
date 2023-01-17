@@ -18,6 +18,7 @@ from .rule import Rule
 
 DEFAULT_RULE_DIR = pathlib.Path(__file__).parent.parent / "rules"
 
+
 class RulesCollection:
     """RulesCollection class which checks the linting rules against a file."""
 

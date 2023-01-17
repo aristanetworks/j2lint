@@ -19,8 +19,6 @@ from .linter.runner import Runner
 from .logger import add_handler, logger
 from .utils import get_files
 
-RULES_DIR = f"{os.path.dirname(os.path.realpath(__file__))}/rules"
-
 IGNORE_RULES = WARN_RULES = [
     "jinja-syntax-error",
     "single-space-decorator",
