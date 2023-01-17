@@ -22,7 +22,7 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_operator_has_spaces_rule.j2",
-        [("S2", 1), ("S2", 2), ("S2", 3), ("S2", 6), ("S2", 8), ("S2", 10)],
+        [("S2", 1), ("S2", 2), ("S2", 3), ("S2", 6), ("S2", 6), ("S2", 8), ("S2", 10)],
         [],
         [],
         id="jinja_operator_has_space_rule",
@@ -137,9 +137,9 @@ def test_rules(
     caplog.set_level(logging.INFO)
     errors, warnings = collection.run({"path": filename, "type": "jinja"})
 
-    errors_ids = [(error.rule.id, error.line_number) for error in errors]
+    errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]
 
-    warnings_ids = [(warning.rule.id, warning.line_number) for warning in warnings]
+    warnings_ids = [(warning.rule.rule_id, warning.line_number) for warning in warnings]
 
     print(caplog.record_tuples)
     for record_tuple in expected_log:

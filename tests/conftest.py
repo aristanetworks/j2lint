@@ -24,6 +24,23 @@ CONTENT = "content"
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
 
 
+class TestRule(Rule):
+    """
+    TestRule class for tests
+    """
+
+    rule_id = "TT"
+    description = "test"
+    short_description = "test"
+    severity = "LOW"
+
+    def checktext(self, filename, text):
+        pass
+
+    def checkline(self, filename, line, line_no):
+        pass
+
+
 @pytest.fixture
 def collection():
     """
@@ -39,7 +56,7 @@ def make_rules():
     `count` and returns count rules following the pattern
     where `i` is the index
 
-        id = Ti
+        rule_id = Ti
         description = test rule i
         short_description = test-rule-i
         severity in [LOW, MEDIUM, HIGH] based on i % 3
@@ -61,8 +78,8 @@ def make_rules():
 
         rules = []
         for i in range(count):
-            r_obj = Rule()
-            r_obj.id = f"T{i}"
+            r_obj = TestRule()
+            r_obj.rule_id = f"T{i}"
             r_obj.description = f"test rule {i}"
             r_obj.short_description = f"test-rule-{i}"
             r_obj.severity = get_severity(i)
@@ -78,7 +95,7 @@ def test_rule(make_rules):
     return a Rule object to use in test
     from the make_rules - it will have
 
-        id = T0
+        rule_id = T0
         description = test rule 0
         short_description = test-rule-0
         severity = LOW
@@ -92,7 +109,7 @@ def test_other_rule(make_rules):
     return the second  Rule object to use in test
     from the make_rules - it will have
 
-        id = T1
+        rule_id = T1
         description = test rule 1
         short_description = test-rule-1
         severity = MEDIUM

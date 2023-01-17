@@ -43,7 +43,7 @@ class LinterError:
         else:
             logger.debug("Verbose mode enabled")
             text.append("Linting rule: ")
-            text.append(f"{self.rule.id}\n", "blue")
+            text.append(f"{self.rule.rule_id}\n", "blue")
             text.append("Rule description: ")
             text.append(f"{self.rule.description}\n", "blue")
             text.append("Error line: ")
@@ -59,7 +59,7 @@ class LinterError:
         """setting json output format"""
         return json.dumps(
             {
-                "id": self.rule.id,
+                "id": self.rule.rule_id,
                 "message": self.message,
                 "filename": self.filename,
                 "line_number": self.line_number,

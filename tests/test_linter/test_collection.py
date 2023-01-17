@@ -60,12 +60,9 @@ class TestRulesCollection:
                 (
                     [
                         ("T0", "test-rule-0"),
-                        ("T0", "test-rule-0"),
-                        ("T4", "test-rule-4"),
                         ("T4", "test-rule-4"),
                     ],
                     [
-                        ("T1", "test-rule-1"),
                         ("T1", "test-rule-1"),
                     ],
                 ),
@@ -102,20 +99,16 @@ class TestRulesCollection:
             return make_issue_from_rule(self)
 
         with mock.patch(
-            "j2lint.linter.rule.Rule.checklines",
-            side_effect=checks_side_effect,
-            autospec=True,
-        ), mock.patch(
-            "j2lint.linter.rule.Rule.checkfulltext",
+            "j2lint.linter.rule.Rule.checkrule",
             side_effect=checks_side_effect,
             autospec=True,
         ):
             errors, warnings = test_collection.run(file_dict)
             error_tuples = [
-                (error.rule.id, error.rule.short_description) for error in errors
+                (error.rule.rule_id, error.rule.short_description) for error in errors
             ]
             warning_tuples = [
-                (warning.rule.id, warning.rule.short_description)
+                (warning.rule.rule_id, warning.rule.short_description)
                 for warning in warnings
             ]
             assert error_tuples == expected_results[0]
@@ -177,7 +170,10 @@ class TestRulesCollection:
             mocked_load_plugins.assert_called_once_with("dummy")
             assert collection.rules == mocked_load_plugins.return_value
             for rule in collection.rules:
-                if rule.id in ignore_rules or rule.short_description in ignore_rules:
+                if (
+                    rule.rule_id in ignore_rules
+                    or rule.short_description in ignore_rules
+                ):
                     assert rule.ignore is True
-                if rule.id in warn_rules or rule.short_description in warn_rules:
+                if rule.rule_id in warn_rules or rule.short_description in warn_rules:
                     assert rule in rule.warn

@@ -7,18 +7,22 @@ from typing import Any
 
 import jinja2
 
+from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule
 
 
 class JinjaTemplateSyntaxErrorRule(Rule):
     """Rule class to check that file does not have jinja syntax errors."""
 
-    id = "S0"
-    short_description = "jinja-syntax-error"
+    rule_id = "S0"
     description = "Jinja syntax should be correct"
+    short_description = "jinja-syntax-error"
     severity = "HIGH"
 
-    def checktext(self, file: dict[str, Any], text: str) -> list[Any]:
+    def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
+        super().__init__()
+
+    def checktext(self, filename: str, text: str) -> list[LinterError]:
         """Checks if the given text has jinja syntax error
 
         Args:
@@ -33,14 +37,20 @@ class JinjaTemplateSyntaxErrorRule(Rule):
         env = jinja2.Environment(
             extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"]
         )
-        with open(file["path"], encoding="utf-8") as template:
-            try:
-                # Try to read the contents of the file as jinja2
-                block = template.read()
-                env.parse(block)
-            except jinja2.TemplateSyntaxError as error:
-                result.append(
-                    (error.lineno, text.split("\n")[error.lineno - 1], error.message)
+        try:
+            env.parse(text)
+        except jinja2.TemplateSyntaxError as error:
+            result.append(
+                LinterError(
+                    error.lineno,
+                    text.split("\n")[error.lineno - 1],
+                    filename,
+                    self,
+                    error.message,
                 )
+            )
 
         return result
+
+    def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
+        raise NotImplementedError
