@@ -1,8 +1,9 @@
 """
 Tests for j2lint.linter.rule.py
 """
-import pathlib
 import logging
+import pathlib
+
 import pytest
 
 TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"

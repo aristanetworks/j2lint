@@ -2,8 +2,8 @@
 """
 import os
 
-from j2lint.utils import load_plugins, is_rule_disabled
 from j2lint.logger import logger
+from j2lint.utils import is_rule_disabled, load_plugins
 
 
 class RulesCollection:

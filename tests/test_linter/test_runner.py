@@ -2,6 +2,7 @@
 Tests for j2lint.linter.runner.py
 """
 from unittest import mock
+
 import pytest
 
 from j2lint.utils import get_file_type

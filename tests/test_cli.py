@@ -4,14 +4,23 @@ Tests for j2lint.cli.py
 import logging
 import os
 import re
-from unittest.mock import patch
 from argparse import Namespace
+from unittest.mock import patch
 
 import pytest
 
-from j2lint.cli import print_string_output, print_json_output, sort_issues, create_parser, run, RULES_DIR
+from j2lint.cli import (
+    RULES_DIR,
+    create_parser,
+    print_json_output,
+    print_string_output,
+    run,
+    sort_issues,
+)
 
 from .utils import does_not_raise, j2lint_default_rules_string
+
+# pylint: disable=too-many-locals,too-many-arguments,fixme
 
 
 @pytest.fixture
@@ -90,8 +99,7 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
         pytest.param(
             2,
             {2: {"filename": "aaa.j2"}},
-            [("aaa.j2", "T1", 2, "test-rule-1"),
-             ("dummy.j2", "T0", 1, "test-rule-0")],
+            [("aaa.j2", "T1", 2, "test-rule-1"), ("dummy.j2", "T0", 1, "test-rule-0")],
             id="sort-on-filename",
         ),
         pytest.param(
@@ -106,7 +114,7 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
     ],
 )
 def test_sort_issues(
-        make_issues, number_issues, issues_modifications, expected_sorted_issues_ids
+    make_issues, number_issues, issues_modifications, expected_sorted_issues_ids
 ):
     """
     Test j2lint.cli.sort_issues
@@ -135,8 +143,7 @@ def test_sort_issues(
                 setattr(issues[index - 1], key, value)
     sorted_issues = sort_issues(issues)
     sorted_issues_ids = [
-        (issue.filename, issue.rule.id,
-         issue.line_number, issue.rule.short_description)
+        (issue.filename, issue.rule.id, issue.line_number, issue.rule.short_description)
         for issue in sorted_issues
     ]
     assert sorted_issues_ids == expected_sorted_issues_ids
@@ -146,10 +153,20 @@ def test_sort_issues(
     "options, number_errors, number_warnings, expected_output, expected_stdout",
     [
         pytest.param(
-            Namespace(verbose=False), 0, 0, (0, 0), "\nLinting complete. No problems found.\n", id="No issue - cli"
+            Namespace(verbose=False),
+            0,
+            0,
+            (0, 0),
+            "\nLinting complete. No problems found.\n",
+            id="No issue - cli",
         ),
         pytest.param(
-            Namespace(verbose=True), 0, 0, (0, 0), "\nLinting complete. No problems found.\n", id="No issue - cli"
+            Namespace(verbose=True),
+            0,
+            0,
+            (0, 0),
+            "\nLinting complete. No problems found.\n",
+            id="No issue - cli",
         ),
         pytest.param(
             Namespace(verbose=False),
@@ -181,13 +198,13 @@ Jinja2 linting finished with 0 error(s) and 1 warning(s)
     ],
 )
 def test_print_string_output(
-        capsys,
-        make_issues,
-        options,
-        number_errors,
-        number_warnings,
-        expected_output,
-        expected_stdout,
+    capsys,
+    make_issues,
+    options,
+    number_errors,
+    number_warnings,
+    expected_output,
+    expected_stdout,
 ):
     """
     Test j2lint.cli.print_string_output
@@ -196,7 +213,8 @@ def test_print_string_output(
     errors = {"ERRORS": make_issues(number_errors)}
     warnings = {"WARNINGS": make_issues(number_warnings)}
     total_errors, total_warnings = print_string_output(
-        errors, warnings, options.verbose)
+        errors, warnings, options.verbose
+    )
 
     assert total_errors == expected_output[0]
     assert total_warnings == expected_output[1]
@@ -209,27 +227,39 @@ def test_print_string_output(
     "number_errors, number_warnings, expected_output, expected_stdout",
     [
         pytest.param(
-            0, 0, (0, 0), '\n{"ERRORS": [], "WARNINGS": []}\n', id="No issue - json"),
-        pytest.param(1, 0, (1, 0), '\n{"ERRORS": [{"id": "T0", "message": "test rule 0", '
-                                   '"filename": "dummy.j2", "line_number": 1, '
-                     '"line": "dummy", "severity": "LOW"}], "WARNINGS": []}\n', id="one error - json"),
-        pytest.param(1, 1, (1, 1), '\n{"ERRORS": [{"id": "T0", "message": "test rule 0", '
-                                   '"filename": "dummy.j2", "line_number": 1, '
-                     '"line": "dummy", "severity": "LOW"}], "WARNINGS": [{"id": "T0", "message": "test rule 0", '
-                     '"filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]}\n',
-                     id="one error and one warnings - json"),
+            0, 0, (0, 0), '\n{"ERRORS": [], "WARNINGS": []}\n', id="No issue - json"
+        ),
+        pytest.param(
+            1,
+            0,
+            (1, 0),
+            '\n{"ERRORS": [{"id": "T0", "message": "test rule 0", '
+            '"filename": "dummy.j2", "line_number": 1, '
+            '"line": "dummy", "severity": "LOW"}], "WARNINGS": []}\n',
+            id="one error - json",
+        ),
+        pytest.param(
+            1,
+            1,
+            (1, 1),
+            '\n{"ERRORS": [{"id": "T0", "message": "test rule 0", '
+            '"filename": "dummy.j2", "line_number": 1, '
+            '"line": "dummy", "severity": "LOW"}], "WARNINGS": [{"id": "T0", "message": "test rule 0", '
+            '"filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]}\n',
+            id="one error and one warnings - json",
+        ),
     ],
 )
 def test_print_json_output(
-        capsys,
-        make_issues,
-        number_errors,
-        number_warnings,
-        expected_output,
-        expected_stdout,
+    capsys,
+    make_issues,
+    number_errors,
+    number_warnings,
+    expected_output,
+    expected_stdout,
 ):
     """
-        Test j2lint.cli.print_json_output
+    Test j2lint.cli.print_json_output
     """
 
     errors = {"ERRORS": make_issues(number_errors)}
@@ -248,8 +278,7 @@ def test_print_json_output(
     "argv, expected_stdout, expected_stderr, expected_exit_code, expected_raise, number_errors, number_warnings",
     [
         pytest.param([], "", "HELP", 1, does_not_raise(), 0, 0, id="no input"),
-        pytest.param(["-h"], "HELP", "", 0,
-                     pytest.raises(SystemExit), 0, 0, id="help"),
+        pytest.param(["-h"], "HELP", "", 0, pytest.raises(SystemExit), 0, 0, id="help"),
         pytest.param(
             ["--version"],
             "Jinja2-Linter Version v1.0.0\n",
@@ -345,17 +374,17 @@ Jinja2 linting finished with 1 error(s) and 1 warning(s)
     ],
 )
 def test_run(
-        capsys,
-        caplog,
-        j2lint_usage_string,
-        make_issues,
-        argv,
-        expected_stdout,
-        expected_stderr,
-        expected_exit_code,
-        expected_raise,
-        number_errors,
-        number_warnings,
+    capsys,
+    caplog,
+    j2lint_usage_string,
+    make_issues,
+    argv,
+    expected_stdout,
+    expected_stderr,
+    expected_exit_code,
+    expected_raise,
+    number_errors,
+    number_warnings,
 ):
     """
     Test the j2lint.cli.run method
@@ -384,8 +413,7 @@ def test_run(
         ):
             errors = {"ERRORS": make_issues(number_errors)}
             warnings = {"WARNINGS": make_issues(number_warnings)}
-            mocked_runner_run.return_value = (
-                errors["ERRORS"], warnings["WARNINGS"])
+            mocked_runner_run.return_value = (errors["ERRORS"], warnings["WARNINGS"])
             run_return_value = run(argv)
             captured = capsys.readouterr()
             if "-o" not in argv and "--stdout" not in argv:
@@ -396,10 +424,9 @@ def test_run(
                 assert expected_stdout in captured.out
             assert run_return_value == expected_exit_code
             if ("-o" in argv or "--stdout" in argv) and (
-                    "-d" in argv or "--debug" in argv
+                "-d" in argv or "--debug" in argv
             ):
-                assert "DEBUG" in [
-                    record.levelname for record in caplog.records]
+                assert "DEBUG" in [record.levelname for record in caplog.records]
 
 
 def test_run_stdin(capsys):

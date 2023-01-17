@@ -8,9 +8,9 @@ from unittest import mock
 import pytest
 
 from j2lint.linter.collection import RulesCollection
-from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
 from j2lint.rules.jinja_operator_has_spaces_rule import JinjaOperatorHasSpacesRule
 from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterRule
+from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
 
 TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 

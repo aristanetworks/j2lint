@@ -2,9 +2,9 @@
              line and text based rule.
 """
 
-from j2lint.utils import is_valid_file_type
 from j2lint.linter.error import LinterError
 from j2lint.logger import logger
+from j2lint.utils import is_valid_file_type
 
 
 class Rule:
@@ -100,7 +100,6 @@ class Rule:
         results = self.checktext(file, text)
 
         for line, section, message in results:
-            errors.append(LinterError(
-                line, section, file["path"], self, message))
+            errors.append(LinterError(line, section, file["path"], self, message))
 
         return errors

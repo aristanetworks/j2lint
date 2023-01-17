@@ -1,22 +1,23 @@
 """
 Tests for j2lint.utils.py
 """
-import os
 import pathlib
 
 import pytest
 
 from j2lint.utils import (
-    # load_plugins,
-    is_valid_file_type,
+    delimit_jinja_statement,
+    flatten,
     get_file_type,
     get_files,
-    flatten,
     get_tuple,
-    delimit_jinja_statement,
     is_rule_disabled,
+    is_valid_file_type,
 )
+
 from .utils import does_not_raise
+
+# pylint: disable=fixme
 
 
 @pytest.mark.skip
@@ -27,7 +28,6 @@ def test_load_plugins():
     For now this is being tested via other calling methods
     """
     # TODO
-    pass
 
 
 @pytest.mark.parametrize(
@@ -151,7 +151,6 @@ def test_get_jinja_statements():
     Test the utils.get_jinja_statements function
     """
     # TODO
-    pass
 
 
 @pytest.mark.parametrize(
@@ -175,7 +174,6 @@ def test_get_jinja_comments():
     Test the utils.get_jinja_comments function
     """
     # TODO
-    pass
 
 
 @pytest.mark.skip
@@ -184,7 +182,6 @@ def test_get_jinja_variables():
     Test the utils.get_jinja_variables function
     """
     # TODO
-    pass
 
 
 @pytest.mark.parametrize(

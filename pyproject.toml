@@ -23,12 +23,25 @@ classifiers = [
 ]
 keywords = ["j2lint", "linter", "jinja", "lint"]
 dependencies = [
-    "jinja2",
+    "jinja2>=3.0",
 ]
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
-dev = ["pytest", "pre-commit", "bumpver"]
+dev = [
+  "pre-commit",
+  "bumpver",
+]
+test = [
+  "pytest",
+  "pytest-cov",
+]
+lint = [
+  "black>=22.8.0",
+  "isort[colors]>=5.10.1",
+  "pylint>=2.15.9",
+  "flake8>=4.0.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/aristanetworks/j2lint.git"
@@ -49,10 +62,20 @@ push            = false
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "j2lint/__init__.py" = ["{version}"]
 
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 160
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = clean,py38,py39,py310,report
+envlist =
+  clean,
+  py38
+  py39
+  py310,
+  lint,
+  report
+
 isolated_build = True
 
 [gh-actions]
@@ -62,10 +85,24 @@ python =
   3.10: py310, coverage, report
 
 [testenv]
-deps =
-  pytest
-  pytest-cov
-commands = pytest
+description = run the test driver with {basepython}
+extras = test
+
+commands =
+  pytest  {tty:--color=yes}
+
+[testenv:lint]
+description = check the code style
+extras =
+  lint
+  test
+commands =
+  flake8 --max-line-length=160 --config=/dev/null j2lint
+  flake8 --max-line-length=160 --config=/dev/null tests
+  pylint j2lint
+  pylint tests --disable redefined-outer-name
+  black --check --diff --color .
+  isort --check --diff --color .
 
 [testenv:clean]
 deps = coverage[toml]
@@ -88,3 +125,19 @@ log_cli = "True"
 [tool.coverage.run]
 source = ['j2lint']
 omit = ["j2lint/__main__.py"]
+
+[tool.mypy]
+follow_imports = "skip"
+ignore_missing_imports = true
+warn_redundant_casts = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+strict_optional = true
+
+# for strict mypy: (this is the tricky one :-))
+disallow_untyped_defs = true
+mypy_path = "j2lint"
+
+[tool.isort]
+profile = "black"

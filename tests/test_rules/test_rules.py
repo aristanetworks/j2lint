@@ -3,8 +3,6 @@ import pathlib
 
 import pytest
 
-from j2lint.linter.collection import RulesCollection
-
 TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 
 PARAMS = [

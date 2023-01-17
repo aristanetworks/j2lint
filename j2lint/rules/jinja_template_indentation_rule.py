@@ -2,21 +2,22 @@
                                      indentation is correct.
 """
 from j2lint.linter.error import JinjaLinterError
-from j2lint.linter.rule import Rule
 from j2lint.linter.indenter.node import Node
-from j2lint.utils import get_jinja_statements
+from j2lint.linter.rule import Rule
 from j2lint.logger import logger
+from j2lint.utils import get_jinja_statements
 
 
 class JinjaTemplateIndentationRule(Rule):
-    """Rule class to check the jinja statement indentation is correct.
-    """
+    """Rule class to check the jinja statement indentation is correct."""
 
-    id = 'S3'
-    short_description = 'jinja-statements-indentation'
-    description = ("All J2 statements must be indented by 4 more spaces within jinja delimiter. "
-                   "To close a control, end tag must have same indentation level.")
-    severity = 'HIGH'
+    id = "S3"
+    short_description = "jinja-statements-indentation"
+    description = (
+        "All J2 statements must be indented by 4 more spaces within jinja delimiter. "
+        "To close a control, end tag must have same indentation level."
+    )
+    severity = "HIGH"
 
     def checktext(self, file, text):
         """Checks if the given text has the error
@@ -31,7 +32,7 @@ class JinjaTemplateIndentationRule(Rule):
         result = []
         errors = []
 
-        with open(file['path'], encoding="utf-8") as template:
+        with open(file["path"], encoding="utf-8") as template:
             text = template.read()
             # Collect only Jinja Statements within delimiters {% and %}
             # and ignore the other statements
@@ -43,8 +44,11 @@ class JinjaTemplateIndentationRule(Rule):
             try:
                 root.check_indentation(errors, lines, 0)
             except (JinjaLinterError, TypeError, IndexError) as error:
-                logger.error("Indentation check failed for file %s: Error: %s",
-                             file['path'], str(error))
+                logger.error(
+                    "Indentation check failed for file %s: Error: %s",
+                    file["path"],
+                    str(error),
+                )
             for error in errors:
                 result.append((error[0], error[1], error[2]))
 
