@@ -32,6 +32,7 @@ repos:
           - -d duplicate-code
         additional_dependencies:
           - jinja2
+          - rich
         exclude: ^tests/
 
   - repo: https://github.com/pycqa/isort

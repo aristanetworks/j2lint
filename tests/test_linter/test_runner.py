@@ -46,10 +46,7 @@ class TestRunner:
 
         This test is "bad" for now.
         """
-        test_runner.files = set()
-        for file in runner_files:
-            test_runner.files.add((file, get_file_type(file)))
-
+        test_runner.files = {(file, get_file_type(file)) for file in runner_files}
         # Fake return
         with mock.patch(
             "j2lint.linter.collection.RulesCollection.run"

@@ -1,8 +1,9 @@
 """logger.py - Creates logger object.
 """
 import logging
-import sys
 from logging import handlers
+
+from rich.logging import RichHandler
 
 JINJA2_LOG_FILE = "jinja2-linter.log"
 
@@ -22,6 +23,6 @@ def add_handler(log: logging.Logger, stream_handler: bool, log_level: int) -> No
         file_handler.setFormatter(log_format)
         log.addHandler(file_handler)
     else:
-        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler = RichHandler()
         console_handler.setFormatter(log_format)
         log.addHandler(console_handler)

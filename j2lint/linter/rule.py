@@ -3,7 +3,10 @@
 """
 from __future__ import annotations
 
+import json
 from typing import Any
+
+from rich.text import Text
 
 from j2lint.linter.error import LinterError
 from j2lint.logger import logger
@@ -21,9 +24,35 @@ class Rule:
     severity: str | None = None
     ignore: bool = False
     warn: list[Any] = []
+    origin: str = "BUILT-IN"
 
     def __repr__(self) -> str:
         return f"{self.id}: {self.description}"
+
+    def to_rich(self) -> Text:
+        """
+        Return a rich reprsentation of the rule, e.g.:
+            S0 Jinja syntax should be correct (jinja-syntax-error)
+
+        Where `S0` is in red and `(jinja-syntax-error)` in blue
+        """
+        res = Text()
+        res.append(f"{self.id} ", "red")
+        res.append(self.description)
+        res.append(f" ({self.short_description})", "blue")
+        return res
+
+    def to_json(self) -> str:
+        """Return a json representation of the rule"""
+        return json.dumps(
+            {
+                "id": self.id,
+                "short_description": self.short_description,
+                "description": self.description,
+                "severity": self.severity,
+                "origin": self.origin,
+            }
+        )
 
     def checktext(self, file: dict[str, Any], text: str) -> list[Any]:
         """This method is expected to be overriden by child classes"""

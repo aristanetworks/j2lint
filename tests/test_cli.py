@@ -8,8 +8,10 @@ from argparse import Namespace
 from unittest.mock import patch
 
 import pytest
+from rich.console import ConsoleDimensions
 
 from j2lint.cli import (
+    CONSOLE,
     create_parser,
     print_json_output,
     print_string_output,
@@ -17,9 +19,22 @@ from j2lint.cli import (
     sort_issues,
 )
 
-from .utils import does_not_raise, j2lint_default_rules_string
+from .utils import (
+    NO_ERROR_NO_WARNING_JSON,
+    ONE_ERROR,
+    ONE_ERROR_JSON,
+    ONE_ERROR_ONE_WARNING_JSON,
+    ONE_ERROR_ONE_WARNING_VERBOSE,
+    ONE_ERROR_REGEX,
+    ONE_WARNING_VERBOSE,
+    does_not_raise,
+    j2lint_default_rules_string,
+)
 
 # pylint: disable=fixme, too-many-arguments
+
+# Fixed size console for tests output
+CONSOLE.size = ConsoleDimensions(width=80, height=74)
 
 
 @pytest.mark.parametrize(
@@ -135,7 +150,7 @@ def test_sort_issues(
             0,
             0,
             (0, 0),
-            "\nLinting complete. No problems found.\n",
+            "",
             id="No issue - cli",
         ),
         pytest.param(
@@ -143,7 +158,7 @@ def test_sort_issues(
             0,
             0,
             (0, 0),
-            "\nLinting complete. No problems found.\n",
+            "Linting complete. No problems found!\n",
             id="No issue - cli",
         ),
         pytest.param(
@@ -151,8 +166,7 @@ def test_sort_issues(
             1,
             0,
             (1, 0),
-            "\nJINJA2 LINT ERRORS\n************ File ERRORS\ndummy.j2:1 test rule 0 (test-rule-0)\n\n"
-            "Jinja2 linting finished with 1 error(s) and 0 warning(s)\n",
+            ONE_ERROR,
             id="One error - cli",
         ),
         pytest.param(
@@ -160,17 +174,7 @@ def test_sort_issues(
             0,
             1,
             (0, 1),
-            """
-JINJA2 LINT WARNINGS
-************ File WARNINGS
-Linting rule: T0
-Rule description: test rule 0
-Error line: dummy.j2:1 dummy
-Error message: test rule 0
-
-
-Jinja2 linting finished with 0 error(s) and 1 warning(s)
-""",
+            ONE_WARNING_VERBOSE,
             id="One warning - cli",
         ),
     ],
@@ -188,8 +192,8 @@ def test_print_string_output(
     Test j2lint.cli.print_string_output
     """
 
-    errors = {"ERRORS": make_issues(number_errors)}
-    warnings = {"WARNINGS": make_issues(number_warnings)}
+    errors = {"dummy.j2": make_issues(number_errors)}
+    warnings = {"dummy.j2": make_issues(number_warnings)}
     total_errors, total_warnings = print_string_output(
         errors, warnings, options.verbose
     )
@@ -205,26 +209,25 @@ def test_print_string_output(
     "number_errors, number_warnings, expected_output, expected_stdout",
     [
         pytest.param(
-            0, 0, (0, 0), '\n{"ERRORS": [], "WARNINGS": []}\n', id="No issue - json"
+            0,
+            0,
+            (0, 0),
+            NO_ERROR_NO_WARNING_JSON,
+            id="No issue - json",
         ),
         pytest.param(
             1,
             0,
             (1, 0),
-            '\n{"ERRORS": [{"id": "T0", "message": "test rule 0", '
-            '"filename": "dummy.j2", "line_number": 1, '
-            '"line": "dummy", "severity": "LOW"}], "WARNINGS": []}\n',
+            ONE_ERROR_JSON,
             id="one error - json",
         ),
         pytest.param(
             1,
             1,
             (1, 1),
-            '\n{"ERRORS": [{"id": "T0", "message": "test rule 0", '
-            '"filename": "dummy.j2", "line_number": 1, '
-            '"line": "dummy", "severity": "LOW"}], "WARNINGS": [{"id": "T0", "message": "test rule 0", '
-            '"filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]}\n',
-            id="one error and one warnings - json",
+            ONE_ERROR_ONE_WARNING_JSON,
+            id="one error and one warning - json",
         ),
     ],
 )
@@ -269,7 +272,7 @@ def test_print_json_output(
         ),
         pytest.param(
             ["--log", "tests/data/test.j2"],
-            "\nLinting complete. No problems found.\n",
+            "",
             "",
             0,
             does_not_raise(),
@@ -279,45 +282,23 @@ def test_print_json_output(
         ),
         pytest.param(
             ["-v", "tests/data/test.j2"],
-            """
-JINJA2 LINT ERRORS
-************ File tests/data/test.j2
-Linting rule: T0
-Rule description: test rule 0
-Error line: dummy.j2:1 dummy
-Error message: test rule 0
-
-
-JINJA2 LINT WARNINGS
-************ File tests/data/test.j2
-Linting rule: T0
-Rule description: test rule 0
-Error line: dummy.j2:1 dummy
-Error message: test rule 0
-
-
-Jinja2 linting finished with 1 error(s) and 1 warning(s)
-""",
+            ONE_ERROR_ONE_WARNING_VERBOSE,
             "",
             2,
             does_not_raise(),
             1,
             1,
-            id="verbose, one error, one warning",
+            id="one error and one warning - verbose",
         ),
         pytest.param(
             ["-j", "tests/data/test.j2"],
-            '\n{"ERRORS": '
-            '[{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}], '
-            '"WARNINGS": '
-            '[{"id": "T0", "message": "test rule 0", "filename": "dummy.j2", "line_number": 1, "line": "dummy", "severity": "LOW"}]'
-            "}\n",
+            ONE_ERROR_ONE_WARNING_JSON,
             "",
             2,
             does_not_raise(),
             1,
             1,
-            id="json, one error, one warning",
+            id="one error and one warning - json",
         ),
         pytest.param(
             ["-l"],
@@ -331,7 +312,7 @@ Jinja2 linting finished with 1 error(s) and 1 warning(s)
         ),
         pytest.param(
             ["--stdout", "--debug", "tests/data/test.j2"],
-            "Linting complete. No problems found.\n",
+            "",
             "",
             0,
             does_not_raise(),
@@ -341,7 +322,7 @@ Jinja2 linting finished with 1 error(s) and 1 warning(s)
         ),
         pytest.param(
             ["--stdout", "tests/data/test.j2"],
-            "Linting complete. No problems found.\n",
+            "",
             "",
             0,
             does_not_raise(),
@@ -396,6 +377,7 @@ def test_run(
             run_return_value = run(argv)
             captured = capsys.readouterr()
             if "-o" not in argv and "--stdout" not in argv:
+                assert str(captured.out) == expected_stdout
                 assert captured.out == expected_stdout
                 # Hmm - WHY - need to find why failing with stdout
                 assert captured.err == expected_stderr
@@ -428,12 +410,10 @@ def test_run_stdin(capsys):
         run_return_value = run(["--log", "--stdin"])
         patched_stdin.isatty.assert_called_once()
         captured = capsys.readouterr()
-        matches = re.match(
-            r"\nJINJA2 LINT ERRORS\n\*\*\*\*\*\*\*\*\*\*\*\* File \/.*\n(\/.*.j2):1 "
-            r"Jinja statement should have a single space before and after: '{% statement %}' "
-            r"\(jinja-statements-single-space\)\n\nJinja2 linting finished with 1 error\(s\) "
-            r"and 0 warning\(s\)\n",
-            captured.out,
+        normalized_string = " ".join(captured.out.split())
+        matches = re.search(
+            ONE_ERROR_REGEX,
+            normalized_string,
             re.MULTILINE,
         )
         assert matches is not None

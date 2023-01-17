@@ -134,9 +134,13 @@ class TestRulesCollection:
         """
         Test the RuleCollection.extend method
         """
-        assert str(test_collection) == "T0: test rule 0"
+        assert str(test_collection) == "Origin: BUILT-IN\nT0: test rule 0"
+        test_other_rule.origin = "DUMMY"
         test_collection.extend([test_other_rule])
-        assert str(test_collection) == "T0: test rule 0\nT1: test rule 1"
+        assert (
+            str(test_collection)
+            == "Origin: BUILT-IN\nT0: test rule 0\nOrigin: DUMMY\nT1: test rule 1"
+        )
 
     @pytest.mark.parametrize(
         "ignore_rules, warn_rules",

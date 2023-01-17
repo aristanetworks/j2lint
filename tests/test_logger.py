@@ -6,6 +6,7 @@ import sys
 from logging import handlers
 
 import pytest
+from rich.logging import RichHandler
 
 from j2lint.logger import add_handler
 
@@ -32,4 +33,4 @@ def test_add_handler(logger, stream_handler, log_level):
     if not stream_handler:
         assert isinstance(handler_arg, handlers.RotatingFileHandler)
     else:
-        assert isinstance(handler_arg, logging.StreamHandler)
+        assert isinstance(handler_arg, RichHandler)

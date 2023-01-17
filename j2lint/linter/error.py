@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
+from rich.text import Text
+
 from j2lint.logger import logger
 
 if TYPE_CHECKING:
@@ -29,25 +31,29 @@ class LinterError:
         self.rule = rule
         self.message = message or rule.description
 
-    def to_string(self, verbose: bool = False) -> str:
+    def to_rich(self, verbose: bool = False) -> Text:
         """setting string output format"""
+        text = Text()
         if not verbose:
-            format_str = "{2}:{3} {5} ({6})"
+            text.append(self.filename, "green")
+            text.append(":")
+            text.append(str(self.line_number), "red")
+            text.append(f" {self.message}")
+            text.append(f" ({self.rule.short_description})", "blue")
         else:
             logger.debug("Verbose mode enabled")
-            format_str = (
-                "Linting rule: {0}\nRule description: "
-                "{1}\nError line: {2}:{3} {4}\nError message: {5}\n"
-            )
-        return format_str.format(
-            self.rule.id,
-            self.rule.description,
-            self.filename,
-            self.line_number,
-            self.line,
-            self.message,
-            self.rule.short_description,
-        )
+            text.append("Linting rule: ")
+            text.append(f"{self.rule.id}\n", "blue")
+            text.append("Rule description: ")
+            text.append(f"{self.rule.description}\n", "blue")
+            text.append("Error line: ")
+            text.append(self.filename, "green")
+            text.append(":")
+            text.append(str(self.line_number), "red")
+            text.append(f" {self.line}\n")
+            text.append("Error message: ")
+            text.append(f"{self.message}\n")
+        return text
 
     def to_json(self) -> str:
         """setting json output format"""

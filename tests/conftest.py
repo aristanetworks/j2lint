@@ -8,8 +8,8 @@ from unittest.mock import create_autospec
 
 import pytest
 
-from j2lint.cli import RULES_DIR, create_parser
-from j2lint.linter.collection import RulesCollection
+from j2lint.cli import create_parser
+from j2lint.linter.collection import DEFAULT_RULE_DIR, RulesCollection
 from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule
 from j2lint.linter.runner import Runner
@@ -22,9 +22,6 @@ CONTENT = "content"
 
 # TODO - proper way to compare LinterError following:
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
-
-
-DEFAULT_RULE_DIR = pathlib.Path(__file__).parent.parent / "j2lint/rules"
 
 
 @pytest.fixture
@@ -129,7 +126,7 @@ def make_issues(make_rules):
     def __make_n_issues(count):
         issues = []
         rules = make_rules(count)
-        for i in range(0, count):
+        for i in range(count):
             issues.append(LinterError(i + 1, "dummy", "dummy.j2", rules[i]))
         return issues
 
@@ -240,7 +237,7 @@ def default_namespace():
         ignore=[],
         warn=[],
         list=False,
-        rules_dir=[RULES_DIR],
+        rules_dir=[DEFAULT_RULE_DIR],
         verbose=False,
         debug=False,
         json=False,
