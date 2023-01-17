@@ -81,7 +81,7 @@ depends = py310
 """
 
 [tool.pytest.ini_options]
-addopts = "-ra -q -s -vv --capture=tee-sys --basetemp ./tests/tmp --cov --cov-append"
+addopts = "-ra -q -s -vv --capture=tee-sys --cov --cov-append"
 log_level = "WARNING"
 log_cli = "True"
 

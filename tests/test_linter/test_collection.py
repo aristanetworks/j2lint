@@ -2,13 +2,17 @@
 Tests for j2lint.linter.collection.py
 """
 import logging
-import pytest
+import pathlib
 from unittest import mock
+
+import pytest
 
 from j2lint.linter.collection import RulesCollection
 from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
 from j2lint.rules.jinja_operator_has_spaces_rule import JinjaOperatorHasSpacesRule
 from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterRule
+
+TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 
 
 class TestRulesCollection:
@@ -52,7 +56,7 @@ class TestRulesCollection:
                 id="non existing file",
             ),
             pytest.param(
-                {"path": "tests/test_linter/data/disable-rule-3.j2"},
+                {"path": f"{TEST_DATA_DIR}/disable-rule-3.j2"},
                 (
                     [
                         ("T0", "test-rule-0"),
@@ -120,8 +124,7 @@ class TestRulesCollection:
 
         if verify_logs:
             # True for every test that goes beyond the file do not exist
-            assert any(
-                "Ignoring rule T2" in message for message in caplog.messages)
+            assert any("Ignoring rule T2" in message for message in caplog.messages)
             # True for the test file
             assert any(
                 "Skipping linting rule T3" in message for message in caplog.messages
@@ -144,8 +147,7 @@ class TestRulesCollection:
             pytest.param(
                 [], ["S0", "operator-enclosed-by-spaces"], id="warn_no_ignore"
             ),
-            pytest.param(["S0"], ["operator-enclosed-by-spaces"],
-                         id="ignore_no_warn"),
+            pytest.param(["S0"], ["operator-enclosed-by-spaces"], id="ignore_no_warn"),
             pytest.param([], ["S42"], id="ignore_absent_rule"),
             pytest.param(["S42"], [], id="warn_absent_rule"),
         ],
