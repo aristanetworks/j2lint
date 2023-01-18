@@ -1,10 +1,10 @@
 """node.py - Class node for creating a parse tree for jinja statements and
              checking jinja statement indentation.
 """
-from j2lint.linter.indenter.statement import JinjaStatement, JINJA_STATEMENT_TAG_NAMES
 from j2lint.linter.error import JinjaLinterError
-from j2lint.utils import flatten, get_tuple, delimit_jinja_statement
+from j2lint.linter.indenter.statement import JINJA_STATEMENT_TAG_NAMES, JinjaStatement
 from j2lint.logger import logger
+from j2lint.utils import delimit_jinja_statement, flatten, get_tuple
 
 BEGIN_TAGS = [item[0] for item in JINJA_STATEMENT_TAG_NAMES]
 END_TAGS = [item[-1] for item in JINJA_STATEMENT_TAG_NAMES]
@@ -12,15 +12,14 @@ MIDDLE_TAGS = list(flatten([[i[1:-1] for i in JINJA_STATEMENT_TAG_NAMES]]))
 
 INDENT_SHIFT = 4
 DEFAULT_WHITESPACES = 1
-JINJA_START_DELIMITERS = ['{%-', '{%+']
+JINJA_START_DELIMITERS = ["{%-", "{%+"]
 
 jinja_node_stack = []
 jinja_delimiter_stack = []
 
 
 class Node:
-    """Node class which represents a jinja file as a tree
-    """
+    """Node class which represents a jinja file as a tree"""
 
     # pylint: disable=too-many-instance-attributes
     # Eight arguments is reasonable in this case
@@ -66,11 +65,15 @@ class Node:
         Returns:
             tuple: tuple representing the indentation error
         """
-        return (node.statement.start_line_no,
-                delimit_jinja_statement(node.statement.line,
-                                        node.statement.start_delimiter,
-                                        node.statement.end_delimiter),
-                message)
+        return (
+            node.statement.start_line_no,
+            delimit_jinja_statement(
+                node.statement.line,
+                node.statement.start_delimiter,
+                node.statement.end_delimiter,
+            ),
+            message,
+        )
 
     def check_indent_level(self, result, node):
         """check if the actual and expected indent level for a line match
@@ -80,11 +83,15 @@ class Node:
             node (Node): Node object for which to check the level is correct
         """
         actual = node.statement.begin
-        if (jinja_node_stack and jinja_node_stack[0].statement.start_delimiter
-                in JINJA_START_DELIMITERS):
+        if (
+            jinja_node_stack
+            and jinja_node_stack[0].statement.start_delimiter in JINJA_START_DELIMITERS
+        ):
             self.block_start_indent = 1
-        elif (node.expected_indent == 0 and node.statement.start_delimiter
-                in JINJA_START_DELIMITERS):
+        elif (
+            node.expected_indent == 0
+            and node.statement.start_delimiter in JINJA_START_DELIMITERS
+        ):
             self.block_start_indent = 1
         else:
             self.block_start_indent = 0
@@ -92,7 +99,9 @@ class Node:
         if node.statement.start_delimiter in JINJA_START_DELIMITERS:
             expected = node.expected_indent + self.block_start_indent
         else:
-            expected = node.expected_indent + DEFAULT_WHITESPACES + self.block_start_indent
+            expected = (
+                node.expected_indent + DEFAULT_WHITESPACES + self.block_start_indent
+            )
         if actual != expected:
             message = f"Bad Indentation, expected {expected}, got {actual}"
             error = self.create_indentation_error(node, message)
@@ -124,11 +133,12 @@ class Node:
                 jinja_node_stack.append(node)
                 self.children.append(node)
                 line_no = node.check_indentation(
-                    result, lines, line_no + 1, indent_level + INDENT_SHIFT)
+                    result, lines, line_no + 1, indent_level + INDENT_SHIFT
+                )
                 self.check_indent_level(result, node)
                 continue
             if node.tag in END_TAGS:
-                if ('end' + jinja_node_stack[-1].tag) == node.tag:
+                if ("end" + jinja_node_stack[-1].tag) == node.tag:
                     if jinja_node_stack and jinja_node_stack[-1] != self:
                         del node
                         return line_no
@@ -145,11 +155,11 @@ class Node:
                 message = f"Tag is out of order '{node.tag}'"
                 error = self.create_indentation_error(node, message)
                 result.append(error)
-                raise JinjaLinterError(
-                    f"Tag is out of order '{node.tag}'")
+                raise JinjaLinterError(f"Tag is out of order '{node.tag}'")
             if node.tag in MIDDLE_TAGS:
                 begin_tag_tuple = get_tuple(
-                    JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag)
+                    JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag
+                )
                 if node.tag in begin_tag_tuple:
                     if jinja_node_stack[-1] != self:
                         del node
@@ -161,15 +171,15 @@ class Node:
                     matchnode.parent.children.append(node)
                     node.parent = matchnode.parent
                     line_no = node.check_indentation(
-                        result, lines, line_no + 1, indent_level + INDENT_SHIFT)
+                        result, lines, line_no + 1, indent_level + INDENT_SHIFT
+                    )
                     self.check_indent_level(result, node)
                     continue
 
                 message = f"Unsupported tag '{node.tag}' found"
                 error = self.create_indentation_error(node, message)
                 result.append(error)
-                raise JinjaLinterError(
-                    "Unsupported tag '{node.tag}' found")
+                raise JinjaLinterError("Unsupported tag '{node.tag}' found")
 
             self.children.append(node)
             line_no = line_no + 1

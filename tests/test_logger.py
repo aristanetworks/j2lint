@@ -2,9 +2,9 @@
 Tests for j2lint.logger.py
 """
 import logging
+import sys
 from logging import handlers
 from unittest.mock import create_autospec
-import sys
 
 import pytest
 
@@ -20,8 +20,7 @@ def logger():
 
 
 @pytest.mark.parametrize(
-    "stream_handler, log_level", [
-        (False, logging.DEBUG), (True, logging.ERROR)]
+    "stream_handler, log_level", [(False, logging.DEBUG), (True, logging.ERROR)]
 )
 def test_add_handler(logger, stream_handler, log_level):
     """

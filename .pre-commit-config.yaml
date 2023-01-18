@@ -10,11 +10,6 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
 
-  - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.6.0
-    hooks:
-      - id: autopep8
-
   - repo: https://github.com/pycqa/flake8
     rev: 4.0.1
     hooks:
@@ -23,9 +18,10 @@ repos:
         args:
           - --config=/dev/null
           - --max-line-length=160
+        types: [python]
 
   - repo: https://github.com/pycqa/pylint
-    rev: 'pylint-2.6.0'
+    rev: v2.15.9
     hooks:
       - id: pylint # Use pylintrc file in repository
         name: Check for Linting error on Python files
@@ -33,7 +29,19 @@ repos:
         types: [python]
         args:
           # Suppress duplicate code for modules header
-          - -d duplicate-code, no-self-use
+          - -d duplicate-code
         additional_dependencies:
           - jinja2
         exclude: ^tests/
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        name: Check for changes when running isort on all python files
+
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+      - id: black
+        name: Check for changes when running Black on all python files

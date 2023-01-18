@@ -1,8 +1,8 @@
 """runner.py - Class to run the rules collection for all the files.
 """
 
-from j2lint.utils import get_file_type
 from j2lint.logger import logger
+from j2lint.utils import get_file_type
 
 
 class Runner:
@@ -45,7 +45,7 @@ class Runner:
             logger.debug("Running linting rules for %s", file)
             file_path = file[0]
             file_type = file[1]
-            file_dict = {'path': file_path, 'type': file_type}
+            file_dict = {"path": file_path, "type": file_type}
             # pylint: disable = fixme
             # FIXME - as of now it seems that both next tests
             #         will never occurs as self.files is always
@@ -66,6 +66,6 @@ class Runner:
             errors, warnings = self.collection.run(file)
 
         # Update list of checked files
-        self.checked_files.update([file_dict['path'] for file_dict in files])
+        self.checked_files.update([file_dict["path"] for file_dict in files])
 
         return errors, warnings

@@ -4,14 +4,16 @@ content of conftest.py
 import pathlib
 
 import pytest
+
 from j2lint.cli import create_parser
-from j2lint.linter.rule import Rule
-from j2lint.linter.error import LinterError
 from j2lint.linter.collection import RulesCollection
+from j2lint.linter.error import LinterError
+from j2lint.linter.rule import Rule
 from j2lint.linter.runner import Runner
 
 CONTENT = "content"
 
+# pylint: disable=fixme
 # TODO - proper way to compare LinterError following:
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
 
@@ -21,6 +23,9 @@ DEFAULT_RULE_DIR = pathlib.Path(__file__).parent.parent / "j2lint/rules"
 
 @pytest.fixture
 def collection():
+    """
+    Return the collection with the default rules
+    """
     return RulesCollection.create_from_directory(DEFAULT_RULE_DIR, [], [])
 
 
@@ -189,6 +194,7 @@ def template_tmp_dir(tmp_path_factory):
     # +
     # https://docs.pytest.org/en/7.1.x/_modules/_pytest/tmpdir.html
     # Using _given_basetemp to trigger creation
+    # pylint: disable=protected-access
     tmp_path_factory._given_basetemp = tmp_dir
 
     rules = tmp_path_factory.mktemp("rules", numbered=False)

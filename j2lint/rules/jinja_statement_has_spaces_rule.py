@@ -3,17 +3,21 @@
                                         delimiter.
 """
 import re
+
 from j2lint.linter.rule import Rule
 
 
 class JinjaStatementHasSpacesRule(Rule):
     """Rule class to check if jinja statement has at least a single space
-       surrounding the delimiter.
+    surrounding the delimiter.
     """
-    id = 'S4'
-    short_description = 'jinja-statements-single-space'
-    description = "Jinja statement should have a single space before and after: '{% statement %}'"
-    severity = 'LOW'
+
+    id = "S4"
+    short_description = "jinja-statements-single-space"
+    description = (
+        "Jinja statement should have a single space before and after: '{% statement %}'"
+    )
+    severity = "LOW"
 
     regex = re.compile(r"{%[^ \-\+]|{%[\-\+][^ ]|[^ \-\+]%}|[^ ][\-\+]%}")
 

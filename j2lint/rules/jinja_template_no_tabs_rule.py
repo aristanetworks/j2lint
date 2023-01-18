@@ -2,16 +2,17 @@
                                 for indentation.
 """
 import re
+
 from j2lint.linter.rule import Rule
 
 
 class JinjaTemplateNoTabsRule(Rule):
-    """Rule class to check the file does not use tabs for indentation.
-    """
-    id = 'S5'
-    short_description = 'jinja-statements-no-tabs'
+    """Rule class to check the file does not use tabs for indentation."""
+
+    id = "S5"
+    short_description = "jinja-statements-no-tabs"
     description = "Indentation are 4 spaces and NOT tabulation"
-    severity = 'LOW'
+    severity = "LOW"
 
     regex = re.compile(r"\t+")
 
