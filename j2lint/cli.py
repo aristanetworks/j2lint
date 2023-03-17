@@ -54,17 +54,6 @@ def create_parser():
         help="files or directories to lint",
     )
     parser.add_argument(
-        "-i",
-        "--ignore",
-        nargs="*",
-        choices=IGNORE_RULES,
-        default=[],
-        help="rules to ignore",
-    )
-    parser.add_argument(
-        "-w", "--warn", nargs="*", choices=WARN_RULES, default=[], help="rules to warn"
-    )
-    parser.add_argument(
         "-l", "--list", default=False, action="store_true", help="list of lint rules"
     )
     parser.add_argument(
@@ -103,6 +92,22 @@ def create_parser():
     )
     parser.add_argument(
         "-o", "--stdout", default=False, action="store_true", help="stdout logging"
+    )
+    parser.add_argument(
+        "-i",
+        "--ignore",
+        nargs="*",
+        choices=IGNORE_RULES,
+        default=[],
+        help="rules to ignore, use `--` after this option to enter FILES",
+    )
+    parser.add_argument(
+        "-w",
+        "--warn",
+        nargs="*",
+        choices=WARN_RULES,
+        default=[],
+        help="rules to warn, use `--` after this option to enter FILES",
     )
 
     return parser
