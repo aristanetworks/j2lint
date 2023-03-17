@@ -111,8 +111,8 @@ j2lint <path-to-directory-of-templates> --json
 > * Be entered at the end of the CLI as in the example above
 > * Be entered as the last options before the `<path-to-directory-of-templates>`
 >   with `--` separator.  e.g.
->   ```
->   `j2lint --ignore <rule_description1> <rule_desc> -- <path-to-directory-of-templates>
+>   ```bash
+>   j2lint --ignore <rule_description1> <rule_desc> -- <path-to-directory-of-templates>
 >   ```
 
 3. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
