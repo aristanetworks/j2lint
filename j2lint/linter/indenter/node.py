@@ -108,6 +108,9 @@ class Node:
             result.append(error)
             logger.debug(error)
 
+    # pylint: disable=inconsistent-return-statements,fixme
+    # TODO - newer version of pylint (2.17.0) catches some error here
+    #        address in refactoring
     def check_indentation(self, result, lines, line_no=0, indent_level=0):
         """Checks indentation for a list of lines
 

@@ -105,6 +105,16 @@ j2lint <path-to-directory-of-templates> --json
     j2lint <path-to-directory-of-templates> --ignore <rule_description1> <rule_desc>
     ```
 
+> **Note**
+> This runs the custom linting rules in addition to the default linting rules.
+> When using the `-i/--ignore` or `-w/--warn` options, the arguments MUST either:
+> * Be entered at the end of the CLI as in the example above
+> * Be entered as the last options before the `<path-to-directory-of-templates>`
+>   with `--` separator.  e.g.
+>   ```bash
+>   j2lint --ignore <rule_description1> <rule_desc> -- <path-to-directory-of-templates>
+>   ```
+
 3. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
 
     ```jinja2
@@ -161,6 +171,20 @@ j2lint --stdin
     ```
 
 2. Run pre-commit -> `pre-commit run --all-files`
+
+> **Note**
+> When using `-i/--ignore` or `-w/--warn` argument in pre-commit, use the
+> following syntax
+>
+> ```bash
+> - repo: https://github.com/aristanetworks/j2lint.git
+>     rev: <release_tag/sha>
+>     hooks:
+>     - id: j2lint
+>     # Using -- to separate the end of ignore from the positional arguments
+>     # passed to j2lint
+>       args: [--ignore, S3, jinja-statements-single-space, --]
+> ```
 
 ## Acknowledgments
 
