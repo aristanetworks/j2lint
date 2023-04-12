@@ -2,6 +2,8 @@
                                     are wrong.
 """
 
+from __future__ import annotations
+
 from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_statements
 
@@ -14,7 +16,7 @@ class JinjaStatementDelimiterRule(Rule):
     description = "Jinja statements should not have {%- or {%+ or -%} as delimiters"
     severity = "LOW"
 
-    def check(self, line):
+    def check(self, line: str) -> bool:
         """Checks if the given line matches the wrong delimiters
 
         Args:
@@ -24,8 +26,7 @@ class JinjaStatementDelimiterRule(Rule):
             Object: Returns True if error is found else False
         """
         statements = get_jinja_statements(line)
-        for statement in statements:
-            if statement[3] in ["{%-", "{%+"] or statement[4] == "-%}":
-                return True
-
-        return False
+        return any(
+            statement[3] in ["{%-", "{%+"] or statement[4] == "-%}"
+            for statement in statements
+        )

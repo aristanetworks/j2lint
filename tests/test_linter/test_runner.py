@@ -12,9 +12,9 @@ class TestRunner:
     @pytest.mark.parametrize(
         "file_path, checked_files, expected",
         [
-            ("test.j2", set(), False),
-            ("test.j2", ("other.j2"), False),
-            ("test.j2", ("test.j2"), True),
+            ("test.j2", [], False),
+            ("test.j2", ["other.j2"], False),
+            ("test.j2", ["test.j2"], True),
         ],
     )
     def test_is_already_checked(self, test_runner, file_path, checked_files, expected):

@@ -1,6 +1,8 @@
 """jinja_template_no_tabs_rule.py - Rule class to check the file does not use tabs
                                 for indentation.
 """
+from __future__ import annotations
+
 import re
 
 from j2lint.linter.rule import Rule
@@ -16,7 +18,7 @@ class JinjaTemplateNoTabsRule(Rule):
 
     regex = re.compile(r"\t+")
 
-    def check(self, line):
+    def check(self, line: str) -> re.Match[str] | None:
         """Checks if the given line matches the error regex
 
         Args:

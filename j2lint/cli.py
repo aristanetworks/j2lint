@@ -1,5 +1,7 @@
 """cli.py - Command line argument parser.
 """
+from __future__ import annotations
+
 import argparse
 import json
 import logging
@@ -7,13 +9,15 @@ import os
 import sys
 import tempfile
 
-from j2lint import DESCRIPTION, NAME, VERSION
-from j2lint.linter.collection import RulesCollection
-from j2lint.linter.runner import Runner
-from j2lint.logger import add_handler, logger
-from j2lint.utils import get_files
+from . import DESCRIPTION, NAME, VERSION
+from .linter.collection import RulesCollection
+from .linter.error import LinterError
+from .linter.runner import Runner
+from .logger import add_handler, logger
+from .utils import get_files
 
-RULES_DIR = os.path.dirname(os.path.realpath(__file__)) + "/rules"
+RULES_DIR = f"{os.path.dirname(os.path.realpath(__file__))}/rules"
+
 IGNORE_RULES = WARN_RULES = [
     "jinja-syntax-error",
     "single-space-decorator",
@@ -38,11 +42,11 @@ IGNORE_RULES = WARN_RULES = [
 ]
 
 
-def create_parser():
+def create_parser() -> argparse.ArgumentParser:
     """Initializes a new argument parser object
 
     Returns:
-        Object: Argument parser object
+        ArgumentParser: Argument parser object
     """
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
 
@@ -113,7 +117,7 @@ def create_parser():
     return parser
 
 
-def sort_issues(issues):
+def sort_issues(issues: list[LinterError]) -> list[LinterError]:
     """Sorted list of issues
 
     Args:
@@ -126,10 +130,12 @@ def sort_issues(issues):
     return issues
 
 
-def get_linting_issues(file_or_dir_names, collection, checked_files):
+def get_linting_issues(
+    file_or_dir_names: list[str], collection: RulesCollection, checked_files: list[str]
+) -> tuple[dict[str, list[LinterError]], dict[str, list[LinterError]]]:
     """checking errors and warnings"""
-    lint_errors = {}
-    lint_warnings = {}
+    lint_errors: dict[str, list[LinterError]] = {}
+    lint_warnings: dict[str, list[LinterError]] = {}
     files = get_files(file_or_dir_names)
 
     # Get linting issues
@@ -145,9 +151,12 @@ def get_linting_issues(file_or_dir_names, collection, checked_files):
     return lint_errors, lint_warnings
 
 
-def print_json_output(lint_errors, lint_warnings):
+def print_json_output(
+    lint_errors: dict[str, list[LinterError]],
+    lint_warnings: dict[str, list[LinterError]],
+) -> tuple[int, int]:
     """printing json output"""
-    json_output = {"ERRORS": [], "WARNINGS": []}
+    json_output: dict[str, list[str]] = {"ERRORS": [], "WARNINGS": []}
     for _, errors in lint_errors.items():
         for error in errors:
             json_output["ERRORS"].append(json.loads(str(error.to_json())))
@@ -159,10 +168,16 @@ def print_json_output(lint_errors, lint_warnings):
     return len(json_output["ERRORS"]), len(json_output["WARNINGS"])
 
 
-def print_string_output(lint_errors, lint_warnings, verbose):
+def print_string_output(
+    lint_errors: dict[str, list[LinterError]],
+    lint_warnings: dict[str, list[LinterError]],
+    verbose: bool,
+) -> tuple[int, int]:
     """print non-json output"""
 
-    def print_issues(lint_issues, issue_type):
+    def print_issues(
+        lint_issues: dict[str, list[LinterError]], issue_type: str
+    ) -> None:
         print(f"\nJINJA2 LINT {issue_type}")
         for key, issues in lint_issues.items():
             if not issues:
@@ -190,13 +205,13 @@ def print_string_output(lint_errors, lint_warnings, verbose):
     return total_lint_errors, total_lint_warnings
 
 
-def remove_temporary_file(stdin_filename):
+def remove_temporary_file(stdin_filename: str) -> None:
     """Remove temporary file"""
     if stdin_filename:
         os.unlink(stdin_filename)
 
 
-def run(args=None):
+def run(args: list[str] | None = None) -> int:
     """Runs jinja2 linter
 
     Args:
@@ -217,9 +232,7 @@ def run(args=None):
         logging.disable(sys.maxsize)
 
     else:
-        log_level = logging.INFO
-        if options.debug:
-            log_level = logging.DEBUG
+        log_level = logging.DEBUG if options.debug else logging.INFO
         if options.log:
             add_handler(logger, False, log_level)
         if options.stdout:
@@ -228,8 +241,8 @@ def run(args=None):
     logger.debug("Lint options selected %s", options)
 
     stdin_filename = None
-    file_or_dir_names = set(options.files)
-    checked_files = set()
+    file_or_dir_names: list[str] = list(set(options.files))
+    checked_files: list[str] = []
 
     if options.stdin and not sys.stdin.isatty():
         with tempfile.NamedTemporaryFile(
@@ -237,7 +250,7 @@ def run(args=None):
         ) as stdin_tmpfile:
             stdin_tmpfile.write(sys.stdin.read())
             stdin_filename = stdin_tmpfile.name
-            file_or_dir_names.add(stdin_filename)
+            file_or_dir_names.append(stdin_filename)
 
     # Collect the rules from the configuration
     collection = RulesCollection(options.verbose)
@@ -245,7 +258,7 @@ def run(args=None):
         collection.extend(
             RulesCollection.create_from_directory(
                 rules_dir, options.ignore, options.warn
-            )
+            ).rules
         )
 
     # List lint rules
@@ -278,9 +291,7 @@ def run(args=None):
         )
 
     # Remove temporary file
-    remove_temporary_file(stdin_filename)
+    if stdin_filename is not None:
+        remove_temporary_file(stdin_filename)
 
-    if total_lint_errors:
-        return 2
-
-    return 0
+    return 2 if total_lint_errors else 0

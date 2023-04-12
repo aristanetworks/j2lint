@@ -2,6 +2,8 @@
                                   single space between curly brackets and
                                   variable name.
 """
+from __future__ import annotations
+
 import re
 
 from j2lint.linter.rule import Rule
@@ -25,7 +27,7 @@ class JinjaVariableHasSpaceRule(Rule):
         r"{{[^ \-\+\d]|{{[-\+][^ ]|[^ \-\+\d]}}|[^ {][-\+\d]}}|{{ \s+[^ \-\+]|[^ \-\+] \s+}}"
     )
 
-    def check(self, line):
+    def check(self, line: str) -> re.Match[str] | None:
         """Checks if the given line matches the error regex
 
         Args:

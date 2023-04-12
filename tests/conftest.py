@@ -1,11 +1,14 @@
 """
 content of conftest.py
 """
+import logging
 import pathlib
+from argparse import Namespace
+from unittest.mock import create_autospec
 
 import pytest
 
-from j2lint.cli import create_parser
+from j2lint.cli import RULES_DIR, create_parser
 from j2lint.linter.collection import RulesCollection
 from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule
@@ -13,7 +16,10 @@ from j2lint.linter.runner import Runner
 
 CONTENT = "content"
 
-# pylint: disable=fixme
+# Disabling redefined-outer-name as a solution for pylint
+# cf https://docs.pytest.org/en/stable/reference/reference.html#pytest-fixture
+# pylint: disable=fixme, redefined-outer-name
+
 # TODO - proper way to compare LinterError following:
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
 
@@ -171,7 +177,7 @@ def test_runner(test_collection):
     """
     Fixture to get a test runner using the test_collection
     """
-    yield Runner(test_collection, "test.j2", checked_files=None)
+    yield Runner(test_collection, "test.j2", checked_files=[])
 
 
 @pytest.fixture
@@ -222,3 +228,32 @@ def template_tmp_dir(tmp_path_factory):
     rules_hidden_subdir_txt.write_text(CONTENT)
 
     yield [str(rules)]
+
+
+@pytest.fixture
+def default_namespace():
+    """
+    Default ArgPase namespace for j2lint
+    """
+    return Namespace(
+        files=[],
+        ignore=[],
+        warn=[],
+        list=False,
+        rules_dir=[RULES_DIR],
+        verbose=False,
+        debug=False,
+        json=False,
+        stdin=False,
+        log=False,
+        version=False,
+        stdout=False,
+    )
+
+
+@pytest.fixture
+def logger():
+    """
+    Return a MagicMock object with the spec of logging.Logger
+    """
+    return create_autospec(logging.Logger)

@@ -6,31 +6,35 @@ import pytest
 TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 
 PARAMS = [
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_syntax_error_rule.j2",
         [("S0", 1)],
         [],
         [],
+        id="jinja_template_syntax_error_rule",
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_has_space_rule.j2",
         [("S1", 1), ("S1", 2), ("S1", 3)],
         [],
         [],
+        id="jinja_variable_has_space_rule",
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_operator_has_spaces_rule.j2",
         [("S2", 1), ("S2", 2), ("S2", 3), ("S2", 6), ("S2", 8), ("S2", 10)],
         [],
         [],
+        id="jinja_operator_has_space_rule",
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_indentation_rule.j2",
         [("S3", 2), ("S3", 6), ("S3", 5)],
         [],
         [],
+        id="jinja_template_indentation_rule",
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_indentation_rule.JinjaLinterError.j2",
         [("S0", 2), ("S3", 2)],
         [],
@@ -39,24 +43,25 @@ PARAMS = [
                 "root",
                 logging.ERROR,
                 f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.JinjaLinterError.j2: "
-                "Error: Tag is out of order 'endfor'",
+                "Error: Line 1 - Tag is out of order 'endfor'",
             )
         ],
+        id="jinja_template_indentation_rule JinjaLinterError",
     ),
-    (
-        f"{TEST_DATA_DIR}/jinja_template_indentation_rule.TypeError.j2",
+    pytest.param(
+        f"{TEST_DATA_DIR}/jinja_template_indentation_rule.missing_end_tag.j2",
         [("S0", 1)],
         [],
         [
             (
                 "root",
                 logging.ERROR,
-                f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.TypeError.j2: "
-                "Error: '<' not supported between instances of 'NoneType' and 'int'",
+                f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.missing_end_tag.j2: "
+                "Error: Recursive check_indentation returned None for an opening tag line 0 - missing closing tag",
             )
         ],
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_indentation_rule.IndexError.j2",
         [("S4", 2)],
         [],
@@ -72,37 +77,37 @@ PARAMS = [
             #             )
         ],
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_statement_has_spaces_rule.j2",
         [("S4", 1), ("S4", 2), ("S4", 3)],
         [],
         [],
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_no_tabs_rule.j2",
         [("S5", 1)],
         [],
         [],
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_statement_delimiter_rule.j2",
         [("S6", 1), ("S6", 3), ("S6", 5)],
         [],
         [],
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_single_statement_rule.j2",
         [("S7", 1)],
         [],
         [],
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_name_case_rule.j2",
         [("V1", 1), ("V1", 2), ("V1", 3)],
         [],
         [],
     ),
-    (
+    pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_name_format_rule.j2",
         [("V2", 1)],
         [],

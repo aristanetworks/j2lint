@@ -2,6 +2,8 @@
                                         at least a single space surrounding the
                                         delimiter.
 """
+from __future__ import annotations
+
 import re
 
 from j2lint.linter.rule import Rule
@@ -21,7 +23,7 @@ class JinjaStatementHasSpacesRule(Rule):
 
     regex = re.compile(r"{%[^ \-\+]|{%[\-\+][^ ]|[^ \-\+]%}|[^ ][\-\+]%}")
 
-    def check(self, line):
+    def check(self, line: str) -> re.Match[str] | None:
         """Checks if the given line matches the error regex
 
         Args:

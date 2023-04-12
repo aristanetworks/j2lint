@@ -1,6 +1,8 @@
 """jinja_operator_has_spaces_rule.py - Rule class to check if operator has
                                   surrounding spaces.
 """
+from __future__ import annotations
+
 import re
 
 from j2lint.linter.rule import Rule
@@ -34,7 +36,7 @@ class JinjaOperatorHasSpacesRule(Rule):
         )
         regexes.append(re.compile(regex))
 
-    def check(self, line):
+    def check(self, line: str) -> bool:
         """Checks if the given line matches the error regex
 
         Args:
@@ -43,13 +45,6 @@ class JinjaOperatorHasSpacesRule(Rule):
         Returns:
             Object: Returns error object if found else None
         """
-        issues = []
-
-        if "'" in line:
-            regx = re.findall("'([^']*)'", line)
-            for match in regx:
-                line = line.replace(("'" + match + "'"), "''")
-
         if '"' in line:
             regx = re.findall('"([^"]*)"', line)
             for match in regx:
@@ -57,10 +52,11 @@ class JinjaOperatorHasSpacesRule(Rule):
 
         # pylint: disable = fixme
         # FIXME - be able to detect multiple times the same operator
-        for (regex, operator) in zip(self.regexes, self.operators):
-            if regex.search(line):
-                issues.append(operator)
-        if issues:
+        if issues := [
+            operator
+            for regex, operator in zip(self.regexes, self.operators)
+            if regex.search(line)
+        ]:
             if len(issues) > 1:
                 self.description = (
                     f"The operators {(', '.join(issues))} need to be enclosed "

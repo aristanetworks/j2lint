@@ -10,7 +10,6 @@ from unittest.mock import patch
 import pytest
 
 from j2lint.cli import (
-    RULES_DIR,
     create_parser,
     print_json_output,
     print_string_output,
@@ -20,28 +19,7 @@ from j2lint.cli import (
 
 from .utils import does_not_raise, j2lint_default_rules_string
 
-# pylint: disable=too-many-locals,too-many-arguments,fixme
-
-
-@pytest.fixture
-def default_namespace():
-    """
-    Default ArgPase namespace for j2lint
-    """
-    return Namespace(
-        files=[],
-        ignore=[],
-        warn=[],
-        list=False,
-        rules_dir=[RULES_DIR],
-        verbose=False,
-        debug=False,
-        json=False,
-        stdin=False,
-        log=False,
-        version=False,
-        stdout=False,
-    )
+# pylint: disable=fixme, too-many-arguments
 
 
 @pytest.mark.parametrize(
@@ -411,9 +389,10 @@ def test_run(
         with patch("j2lint.cli.Runner.run") as mocked_runner_run, patch(
             "logging.disable"
         ):
-            errors = {"ERRORS": make_issues(number_errors)}
-            warnings = {"WARNINGS": make_issues(number_warnings)}
-            mocked_runner_run.return_value = (errors["ERRORS"], warnings["WARNINGS"])
+            mocked_runner_run.return_value = (
+                make_issues(number_errors),
+                make_issues(number_warnings),
+            )
             run_return_value = run(argv)
             captured = capsys.readouterr()
             if "-o" not in argv and "--stdout" not in argv:
