@@ -115,7 +115,7 @@ class RulesCollection:
 
         Each Tree contain the rule.to_rich() output
 
-        📄 Origin: BUILT-IN
+        Origin: BUILT-IN
         ├── S0 Jinja syntax should be correct (jinja-syntax-error)
         ├── S1 <description> (single-space-decorator)
         └── V2 <description> (jinja-variable-format)
@@ -126,7 +126,7 @@ class RulesCollection:
         for rule in sorted(self.rules, key=lambda x: (x.origin, x.id)):
             if rule.origin != current_origin:
                 current_origin = rule.origin
-                tree = Tree(f"📄 Origin: {rule.origin}")
+                tree = Tree(f"Origin: {rule.origin}")
                 res.append(tree)
             assert tree
             tree.add(rule.to_rich())

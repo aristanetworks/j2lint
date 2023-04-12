@@ -19,7 +19,7 @@ def j2lint_default_rules_string():
     """
     return (
         "─────────────────────────── Rules in the Collection ────────────────────────────\n"
-        "📄 Origin: BUILT-IN\n"
+        "Origin: BUILT-IN\n"
         "├── S0 Jinja syntax should be correct (jinja-syntax-error)\n"
         "├── S1 A single space shall be added between Jinja2 curly brackets and a \n"
         "│   variable name: {{ ethernet_interface }} (single-space-decorator)\n"
@@ -88,7 +88,7 @@ ONE_ERROR_ONE_WARNING_JSON = """{
 
 ONE_ERROR = (
     "────────────────────────────── JINJA2 LINT ERRORS ──────────────────────────────\n"
-    "📄 dummy.j2\n"
+    "dummy.j2\n"
     "└── dummy.j2:1 test rule 0 (test-rule-0)\n"
     "\n"
     "Jinja2 linting finished with 1 error(s) and 0 warning(s)\n"
@@ -97,7 +97,7 @@ ONE_ERROR = (
 # Cannot use """ because of the trailing whitspaces generated in rich Tree
 ONE_WARNING_VERBOSE = (
     "───────────────────────────── JINJA2 LINT WARNINGS ─────────────────────────────\n"
-    "📄 dummy.j2\n"
+    "dummy.j2\n"
     "└── Linting rule: T0\n"
     "    Rule description: test rule 0\n"
     "    Error line: dummy.j2:1 dummy\n"
@@ -110,14 +110,14 @@ ONE_WARNING_VERBOSE = (
 # Cannot use """ because of the trailing whitspaces generated in rich Tree
 ONE_ERROR_ONE_WARNING_VERBOSE = (
     "────────────────────────────── JINJA2 LINT ERRORS ──────────────────────────────\n"
-    "📄 tests/data/test.j2\n"
+    "tests/data/test.j2\n"
     "└── Linting rule: T0\n"
     "    Rule description: test rule 0\n"
     "    Error line: dummy.j2:1 dummy\n"
     "    Error message: test rule 0\n"
     "    \n"
     "───────────────────────────── JINJA2 LINT WARNINGS ─────────────────────────────\n"
-    "📄 tests/data/test.j2\n"
+    "tests/data/test.j2\n"
     "└── Linting rule: T0\n"
     "    Rule description: test rule 0\n"
     "    Error line: dummy.j2:1 dummy\n"
@@ -130,7 +130,7 @@ ONE_ERROR_ONE_WARNING_VERBOSE = (
 
 ONE_ERROR_REGEX = (
     r"────────────────────────────── JINJA2 LINT ERRORS ────────────────────────────── "
-    r"📄 .*.j2 "
+    r".*.j2 "
     r"└── (.*.j2):1 Jinja statement should have a single space before and "
     r"after: '{% statement %}' \(jinja-statements-single-space\) "
     r"Jinja2 linting finished with 1 error\(s\) and 0 warning\(s\)"

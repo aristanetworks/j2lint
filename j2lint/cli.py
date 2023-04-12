@@ -185,7 +185,7 @@ def print_string_output(
         for key, issues in lint_issues.items():
             if not issues:
                 continue
-            tree = Tree(f"📄 {key}")
+            tree = Tree(f"{key}")
 
             for j2_issue in issues:
                 tree.add(j2_issue.to_rich(verbose))
