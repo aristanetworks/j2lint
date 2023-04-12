@@ -95,7 +95,7 @@ class Rule:
             )
             return errors
 
-        for (index, line) in enumerate(text.split("\n")):
+        for index, line in enumerate(text.split("\n")):
             # pylint: disable = fixme
             # FIXME - parsing jinja2 templates .. lines starting with `#
             #         should probably still be parsed somewhow as these

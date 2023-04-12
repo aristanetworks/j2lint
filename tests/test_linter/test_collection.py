@@ -110,7 +110,6 @@ class TestRulesCollection:
             side_effect=checks_side_effect,
             autospec=True,
         ):
-
             errors, warnings = test_collection.run(file_dict)
             error_tuples = [
                 (error.rule.id, error.rule.short_description) for error in errors
