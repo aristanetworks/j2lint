@@ -69,7 +69,7 @@ class RulesCollection:
             if rule.ignore:
                 logger.debug(
                     "Ignoring rule %s:%s for file %s",
-                    rule.id,
+                    rule.rule_id,
                     rule.short_description,
                     file_dict["path"],
                 )
@@ -82,12 +82,10 @@ class RulesCollection:
 
             logger.debug("Running linting rule %s on file %s", rule, file_dict["path"])
             if rule in rule.warn:
-                warnings.extend(rule.checklines(file_dict, text))
-                warnings.extend(rule.checkfulltext(file_dict, text))
+                warnings.extend(rule.checkrule(file_dict, text))
 
             else:
-                errors.extend(rule.checklines(file_dict, text))
-                errors.extend(rule.checkfulltext(file_dict, text))
+                errors.extend(rule.checkrule(file_dict, text))
 
         for error in errors:
             logger.error(error.to_rich())
@@ -100,7 +98,7 @@ class RulesCollection:
     def __repr__(self) -> str:
         res = []
         current_origin = None
-        for rule in sorted(self.rules, key=lambda x: (x.origin, x.id)):
+        for rule in sorted(self.rules, key=lambda x: (x.origin, x.rule_id)):
             if rule.origin != current_origin:
                 current_origin = rule.origin
                 res.append(f"Origin: {rule.origin}")
@@ -123,7 +121,7 @@ class RulesCollection:
         res = []
         current_origin = None
         tree = None
-        for rule in sorted(self.rules, key=lambda x: (x.origin, x.id)):
+        for rule in sorted(self.rules, key=lambda x: (x.origin, x.rule_id)):
             if rule.origin != current_origin:
                 current_origin = rule.origin
                 tree = Tree(f"Origin: {rule.origin}")
@@ -137,7 +135,7 @@ class RulesCollection:
         return json.dumps(
             [
                 json.loads(rule.to_json())
-                for rule in sorted(self.rules, key=lambda x: (x.origin, x.id))
+                for rule in sorted(self.rules, key=lambda x: (x.origin, x.rule_id))
             ]
         )
 
@@ -159,9 +157,9 @@ class RulesCollection:
         result = cls()
         result.rules = load_plugins(os.path.expanduser(rules_dir))
         for rule in result.rules:
-            if rule.short_description in ignore_rules or rule.id in ignore_rules:
+            if rule.short_description in ignore_rules or rule.rule_id in ignore_rules:
                 rule.ignore = True
-            if rule.short_description in warn_rules or rule.id in warn_rules:
+            if rule.short_description in warn_rules or rule.rule_id in warn_rules:
                 rule.warn.append(rule)
         if rules_dir != DEFAULT_RULE_DIR:
             for rule in result.rules:

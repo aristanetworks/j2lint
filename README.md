@@ -21,15 +21,15 @@ Build a Jinja2 linter that will provide the following capabilities:
 | Code | Short Description | Description |
 |------|-------------------|-------------|
 | S0   | `jinja-syntax-error`            | Jinja2 syntax should be correct |
-| S1   | `single-space-decorator`        | A single space shall be added between Jinja2 curly brackets and a variable's name |
+| S1   | `single-space-decorator`        | A single space should be added between Jinja2 curly brackets and a variable's name |
 | S2   | `operator-enclosed-by-spaces`   | When variables are used in combination with an operator, the operator shall be enclosed by space |
-| S3   | `jinja-statements-indentation`  | Nested jinja code block shall follow next rules:<br>- All J2 statements must be enclosed by 1 space<br>- All J2 statements must be indented by 4 more spaces within jinja delimiter<br>- To close a control, end tag must have same indentation level |
-| S4   | `jinja-statements-single-space` | Jinja statement should have a single space before and after |
-| S5   | `jinja-statements-no-tabs`      | Indentation are 4 spaces and NOT tabulation |
+| S3   | `jinja-statements-indentation`  | Nested jinja code block should follow next rules:<br>- All J2 statements must be enclosed by 1 space<br>- All J2 statements must be indented by 4 more spaces within jinja delimiter<br>- To close a control, end tag must have same indentation level |
+| S4   | `jinja-statements-single-space` | Jinja statement should have at least a single space after '{%' and a single space before '%}' |
+| S5   | `jinja-statements-no-tabs`      | Indentation should not use tabulation but 4 spaces |
 | S6   | `jinja-statements-delimiter`    | Jinja statements should not have {%- or {%+ or -%} as delimiters |
 | S7   | `single-statement-per-line`     | Jinja statements should be on separate lines |
-| V1   | `jinja-variable-lower-case`     | All variables shall use lower case |
-| V2   | `jinja-variable-format`         | If variable is multi-words, underscore _ shall be used as a separator |
+| V1   | `jinja-variable-lower-case`     | All variables should use lower case |
+| V2   | `jinja-variable-format`         | If variable is multi-words, underscore `_` should be used as a separator |
 
 ## Getting Started
 
@@ -141,7 +141,7 @@ j2lint <path-to-directory-of-templates> --json
 3. Run the jinja2 linter using --rules-dir option
 
     ```bash
-    j2lint <path-to-directory-of-templates> --rules_dir <custom-rules-directory>
+    j2lint <path-to-directory-of-templates> --rules-dir <custom-rules-directory>
     ```
 
 > **Note**

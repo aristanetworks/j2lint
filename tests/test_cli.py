@@ -97,7 +97,7 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
         ),
         pytest.param(
             2,
-            {2: {"rule": {"id": "AA"}, "line_number": 1}},
+            {2: {"rule": {"rule_id": "AA"}, "line_number": 1}},
             [
                 ("dummy.j2", "AA", 1, "test-rule-1"),
                 ("dummy.j2", "T0", 1, "test-rule-0"),
@@ -136,7 +136,12 @@ def test_sort_issues(
                 setattr(issues[index - 1], key, value)
     sorted_issues = sort_issues(issues)
     sorted_issues_ids = [
-        (issue.filename, issue.rule.id, issue.line_number, issue.rule.short_description)
+        (
+            issue.filename,
+            issue.rule.rule_id,
+            issue.line_number,
+            issue.rule.short_description,
+        )
         for issue in sorted_issues
     ]
     assert sorted_issues_ids == expected_sorted_issues_ids

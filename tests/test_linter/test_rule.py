@@ -21,10 +21,11 @@ class TestRule:
         """ """
 
     @pytest.mark.parametrize(
-        "check, file_path, expected_errors_ids, expected_logs",
+        "checktext, checkline, file_path, expected_errors_ids, expected_logs",
         [
             pytest.param(
-                True,
+                None,
+                None,
                 {"path": f"{TEST_DATA_DIR}/test.txt"},
                 [],
                 [
@@ -37,83 +38,83 @@ class TestRule:
                 id="file is wrong type",
             ),
             pytest.param(
-                lambda x: None,
+                None,
+                0,
                 {"path": f"{TEST_DATA_DIR}/test.j2"},
                 [],
                 [],
                 id="no error",
             ),
             pytest.param(
-                lambda x: True,
+                None,
+                1,
                 {"path": f"{TEST_DATA_DIR}/test.j2"},
-                [("T0", 1)],
+                [("T0", 42)],
                 [],
-                id="rule error",
+                id="checkline rule error",
+            ),
+            pytest.param(
+                2,
+                None,
+                {"path": "tests/test_linter/data/test.j2"},
+                [("T0", 42), ("T0", 42)],
+                [],
+                id="checktext rule error",
             ),
         ],
     )
-    def test_checklines(
-        self, caplog, test_rule, check, file_path, expected_errors_ids, expected_logs
-    ):
-        """
-        Test the Rule.checklines method
-        """
-        caplog.set_level(logging.DEBUG)
-        test_rule.check = check
-        with open(file_path["path"], "r", encoding="utf-8") as file_d:
-            errors = test_rule.checklines(file_path, file_d.read())
-        errors_ids = [(error.rule.id, error.line_number) for error in errors]
-        assert errors_ids == expected_errors_ids
-        assert caplog.record_tuples == expected_logs
-
-    @pytest.mark.parametrize(
-        "checktext, file_path, expected_errors_ids, expected_logs",
-        [
-            pytest.param(
-                True,
-                {"path": f"{TEST_DATA_DIR}/test.txt"},
-                [],
-                [
-                    (
-                        "root",
-                        logging.DEBUG,
-                        f"Skipping file {{'path': '{TEST_DATA_DIR}/test.txt'}}. Linter does not support linting this file type",
-                    )
-                ],
-                id="file is wrong type",
-            ),
-            pytest.param(
-                lambda x, y: [],
-                {"path": f"{TEST_DATA_DIR}/test.j2"},
-                [],
-                [],
-                id="no error",
-            ),
-            pytest.param(
-                lambda x, y: [(1, "section1", "message1"), (2, "section2", "message2")],
-                {"path": f"{TEST_DATA_DIR}/test.j2"},
-                [("T0", 1), ("T0", 2)],
-                [],
-                id="rule error",
-            ),
-        ],
-    )
-    def test_checkfulltext(
+    def test_checkrule(
         self,
         caplog,
         test_rule,
+        make_issue_from_rule,
         checktext,
+        checkline,
         file_path,
         expected_errors_ids,
         expected_logs,
     ):
         """
-        Test the Rule.checkfulltext method
+        Test the Rule.checkrule method
         """
+
+        def raise_NotImplementedError(*args, **kwargs):
+            raise NotImplementedError
+
+        def return_empty_list(*args, **kwargs):
+            return []
+
         caplog.set_level(logging.DEBUG)
-        test_rule.checktext = checktext
+
+        # Build checktext and checkline
+        if checktext is None:
+            test_rule.checktext = raise_NotImplementedError
+        elif checktext == 0:
+            test_rule.checktext = return_empty_list
+        else:
+            # checktext > 0
+            test_rule.checktext = lambda x, y: [
+                issue
+                for i in range(checktext)
+                for issue in make_issue_from_rule(test_rule)
+            ]
+
+        if checkline is None:
+            test_rule.checkline = raise_NotImplementedError
+
+        elif checkline == 0:
+            test_rule.checkline = return_empty_list
+        else:
+            # checkline > 0
+            test_rule.checkline = lambda x, y, line_no=0: [
+                issue
+                for i in range(checkline)
+                for issue in make_issue_from_rule(test_rule)
+            ]
+
         with open(file_path["path"], "r", encoding="utf-8") as file_d:
-            errors = test_rule.checkfulltext(file_path, file_d.read())
-        errors_ids = [(error.rule.id, error.line_number) for error in errors]
+            errors = test_rule.checkrule(file_path, file_d.read())
+        print(errors)
+        errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]
         assert errors_ids == expected_errors_ids
         assert caplog.record_tuples == expected_logs

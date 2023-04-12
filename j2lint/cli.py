@@ -129,7 +129,9 @@ def sort_issues(issues: list[LinterError]) -> list[LinterError]:
     Returns:
         list: list of sorted issue dictionaries
     """
-    issues.sort(key=lambda issue: (issue.filename, issue.line_number, issue.rule.id))
+    issues.sort(
+        key=lambda issue: (issue.filename, issue.line_number, issue.rule.rule_id)
+    )
     return issues
 
 
