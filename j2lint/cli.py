@@ -9,14 +9,15 @@ import os
 import sys
 import tempfile
 
+from rich.console import Console
+from rich.tree import Tree
+
 from . import DESCRIPTION, NAME, VERSION
-from .linter.collection import RulesCollection
+from .linter.collection import DEFAULT_RULE_DIR, RulesCollection
 from .linter.error import LinterError
 from .linter.runner import Runner
 from .logger import add_handler, logger
 from .utils import get_files
-
-RULES_DIR = f"{os.path.dirname(os.path.realpath(__file__))}/rules"
 
 IGNORE_RULES = WARN_RULES = [
     "jinja-syntax-error",
@@ -40,6 +41,8 @@ IGNORE_RULES = WARN_RULES = [
     "V1",
     "V2",
 ]
+
+CONSOLE = Console()
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -65,7 +68,7 @@ def create_parser() -> argparse.ArgumentParser:
         "--rules_dir",
         dest="rules_dir",
         action="append",
-        default=[RULES_DIR],
+        default=[DEFAULT_RULE_DIR],
         help="rules directory",
     )
     parser.add_argument(
@@ -163,7 +166,7 @@ def print_json_output(
     for _, warnings in lint_warnings.items():
         for warning in warnings:
             json_output["WARNINGS"].append(json.loads(str(warning.to_json())))
-    print(f"\n{json.dumps(json_output)}")
+    CONSOLE.print_json(f"\n{json.dumps(json_output)}")
 
     return len(json_output["ERRORS"]), len(json_output["WARNINGS"])
 
@@ -178,13 +181,15 @@ def print_string_output(
     def print_issues(
         lint_issues: dict[str, list[LinterError]], issue_type: str
     ) -> None:
-        print(f"\nJINJA2 LINT {issue_type}")
+        CONSOLE.rule(f"[bold red]JINJA2 LINT {issue_type}")
         for key, issues in lint_issues.items():
             if not issues:
                 continue
-            print(f"************ File {key}")
+            tree = Tree(f"{key}")
+
             for j2_issue in issues:
-                print(f"{j2_issue.to_string(verbose)}")
+                tree.add(j2_issue.to_rich(verbose))
+            CONSOLE.print(tree)
 
     total_lint_errors = sum(len(issues) for _, issues in lint_errors.items())
     total_lint_warnings = sum(len(issues) for _, issues in lint_warnings.items())
@@ -195,9 +200,10 @@ def print_string_output(
         print_issues(lint_warnings, "WARNINGS")
 
     if not total_lint_errors and not total_lint_warnings:
-        print("\nLinting complete. No problems found.")
+        if verbose:
+            CONSOLE.print("Linting complete. No problems found!", style="green")
     else:
-        print(
+        CONSOLE.print(
             f"\nJinja2 linting finished with "
             f"{total_lint_errors} error(s) and {total_lint_warnings} warning(s)"
         )
@@ -209,6 +215,17 @@ def remove_temporary_file(stdin_filename: str) -> None:
     """Remove temporary file"""
     if stdin_filename:
         os.unlink(stdin_filename)
+
+
+def print_string_rules(collection: RulesCollection) -> None:
+    """Print active rules as string"""
+    CONSOLE.rule("[bold red]Rules in the Collection")
+    CONSOLE.print(collection.to_rich())
+
+
+def print_json_rules(collection: RulesCollection) -> None:
+    """Print active rules as json"""
+    CONSOLE.print_json(collection.to_json())
 
 
 def run(args: list[str] | None = None) -> int:
@@ -263,14 +280,15 @@ def run(args: list[str] | None = None) -> int:
 
     # List lint rules
     if options.list:
-        rules = f"Jinja2 lint rules\n{collection}\n"
-        print(rules)
-        logger.debug(rules)
+        if options.json:
+            print_json_rules(collection)
+        else:
+            print_string_rules(collection)
         return 0
 
     # Version of j2lint
     if options.version:
-        print(f"Jinja2-Linter Version {VERSION}")
+        CONSOLE.print(f"Jinja2-Linter Version [bold red]{VERSION}")
         return 0
 
     # Print help message

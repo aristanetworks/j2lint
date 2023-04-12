@@ -26,12 +26,12 @@ RULE_JSON_OUTPUT = (
         ),
     ],
 )
-def test_to_string(test_issue, verbose, expected):
+def test_to_rich(test_issue, verbose, expected):
     """
-    Test the string formats for LinterError
+    Test the Rich string formats for LinterError
     """
 
-    assert test_issue.to_string(verbose) == expected
+    assert str(test_issue.to_rich(verbose)) == expected
 
 
 def test_to_json(test_issue):

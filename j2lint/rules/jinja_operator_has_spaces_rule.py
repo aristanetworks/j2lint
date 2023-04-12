@@ -45,6 +45,17 @@ class JinjaOperatorHasSpacesRule(Rule):
         Returns:
             Object: Returns error object if found else None
         """
+        # pylint: disable = fixme
+        # TODO - refactor
+        # This code removes any single quoted string to avoid
+        # false positive on operators
+        if "'" in line:
+            regx = re.findall("'([^']*)'", line)
+            for match in regx:
+                line = line.replace(("'" + match + "'"), "''")
+
+        # This code removes any double quoted string to avoid
+        # false positive on operators
         if '"' in line:
             regx = re.findall('"([^"]*)"', line)
             for match in regx:

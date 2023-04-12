@@ -2,14 +2,21 @@
 """
 from __future__ import annotations
 
+import json
 import os
+import pathlib
 from collections.abc import Iterable
+
+from rich.console import Group
+from rich.tree import Tree
 
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
 from .error import LinterError
 from .rule import Rule
+
+DEFAULT_RULE_DIR = pathlib.Path(__file__).parent.parent / "rules"
 
 
 class RulesCollection:
@@ -83,16 +90,55 @@ class RulesCollection:
                 errors.extend(rule.checkfulltext(file_dict, text))
 
         for error in errors:
-            logger.error(error.to_string())
+            logger.error(error.to_rich())
 
         for warning in warnings:
-            logger.warning(warning.to_string())
+            logger.warning(warning.to_rich())
 
         return errors, warnings
 
     def __repr__(self) -> str:
-        return "\n".join(
-            [repr(rule) for rule in sorted(self.rules, key=lambda x: x.id)]
+        res = []
+        current_origin = None
+        for rule in sorted(self.rules, key=lambda x: (x.origin, x.id)):
+            if rule.origin != current_origin:
+                current_origin = rule.origin
+                res.append(f"Origin: {rule.origin}")
+            res.append(repr(rule))
+
+        return "\n".join(res)
+
+    def to_rich(self) -> Group:
+        """
+        Return a rich Group containing a rich Tree for each different origin
+        for the rules
+
+        Each Tree contain the rule.to_rich() output
+
+        Origin: BUILT-IN
+        ├── S0 Jinja syntax should be correct (jinja-syntax-error)
+        ├── S1 <description> (single-space-decorator)
+        └── V2 <description> (jinja-variable-format)
+        """
+        res = []
+        current_origin = None
+        tree = None
+        for rule in sorted(self.rules, key=lambda x: (x.origin, x.id)):
+            if rule.origin != current_origin:
+                current_origin = rule.origin
+                tree = Tree(f"Origin: {rule.origin}")
+                res.append(tree)
+            assert tree
+            tree.add(rule.to_rich())
+        return Group(*res)
+
+    def to_json(self) -> str:
+        """Return a json representation of the collection as a list of the rules"""
+        return json.dumps(
+            [
+                json.loads(rule.to_json())
+                for rule in sorted(self.rules, key=lambda x: (x.origin, x.id))
+            ]
         )
 
     @classmethod
@@ -117,5 +163,8 @@ class RulesCollection:
                 rule.ignore = True
             if rule.short_description in warn_rules or rule.id in warn_rules:
                 rule.warn.append(rule)
+        if rules_dir != DEFAULT_RULE_DIR:
+            for rule in result.rules:
+                rule.origin = rules_dir
         logger.info("Created collection from rules directory %s", rules_dir)
         return result

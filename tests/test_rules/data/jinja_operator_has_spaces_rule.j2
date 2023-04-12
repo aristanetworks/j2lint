@@ -8,3 +8,6 @@
 {{ "test" |list }}
 {# single quotes #}
 {{ 'test' |list }}
+{# the two next lines should not trigger #}
+{{ test | replace('|', '\|') }}
+{{ test | replace("|", "\|") }}

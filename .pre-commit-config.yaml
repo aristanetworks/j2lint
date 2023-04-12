@@ -32,6 +32,7 @@ repos:
           - -d duplicate-code
         additional_dependencies:
           - jinja2
+          - rich
         exclude: ^tests/
 
   - repo: https://github.com/pycqa/isort
@@ -41,7 +42,7 @@ repos:
         name: Check for changes when running isort on all python files
 
   - repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 23.3.0
     hooks:
       - id: black
         name: Check for changes when running Black on all python files
