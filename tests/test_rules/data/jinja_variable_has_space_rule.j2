@@ -1,3 +1,13 @@
 {{ethernet}}
 {{ ethernet}}
+# Too many spaces
+{{      ethernet}}
+{{ ethernet     }}
 {{ethernet }}
+{{+ethernet }}
+{{-ethernet }}
+{{ ethernet-}}
+# Next ones should not fail
+{{ ethernet }}
+# cf issue/62
+{% set row.line = row.line ~ "| {t:{t_width}} ".format(t=text, t_width=table.column_width[key]) %}

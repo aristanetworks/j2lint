@@ -15,7 +15,17 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_has_space_rule.j2",
-        [("S1", 1), ("S1", 2), ("S1", 3)],
+        [
+            ("S1", 1),
+            ("S1", 2),
+            ("S1", 4),
+            ("S1", 5),
+            ("S1", 6),
+            ("S1", 7),
+            ("S2", 7),  # the faulty {{+ethernet }} triggers S2 as well
+            ("S1", 8),
+            ("S1", 9),
+        ],
         [],
         [],
         id="jinja_variable_has_space_rule",

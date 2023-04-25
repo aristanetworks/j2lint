@@ -24,7 +24,7 @@ class JinjaVariableHasSpaceRule(Rule):
     severity = "LOW"
 
     regex = re.compile(
-        r"{{[^ \-\+\d]|{{[-\+][^ ]|[^ \-\+\d]}}|[^ {][-\+\d]}}|{{ \s+[^ \-\+]|[^ \-\+] \s+}}"
+        r"{{[^ \-\+\d][^}]+}}|{{[-\+][^ ][^}]+}}|{{[^}]+[^ \-\+\d]}}|{{[^}]+[^ {][-\+\d]}}|{{ \s+[^ \-\+]}}|{{[^}]+[^ \-\+] \s+}}"
     )
 
     def check(self, line: str) -> re.Match[str] | None:
