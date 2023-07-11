@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "j2lint"
-version = "v1.0.0"
+version = "v1.0.1"
 description = "Command-line utility that validates jinja2 syntax according to Arista's AVD style guide."
 readme = "README.md"
 authors = [{ name = "Arista Ansible Team", email = "ansible@arista.com" }]
@@ -55,7 +55,7 @@ Homepage = "https://github.com/aristanetworks/j2lint.git"
 j2lint = "j2lint.cli:run"
 
 [tool.bumpver]
-current_version = "v1.0.0"
+current_version = "v1.0.1"
 version_pattern = "vMAJOR.MINOR.PATCH"
 commit_message  = "Chore: Version {old_version} -> {new_version}"
 commit          = true
