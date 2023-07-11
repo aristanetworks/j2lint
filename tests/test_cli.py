@@ -267,7 +267,7 @@ def test_print_json_output(
         pytest.param(["-h"], "HELP", "", 0, pytest.raises(SystemExit), 0, 0, id="help"),
         pytest.param(
             ["--version"],
-            "Jinja2-Linter Version v1.0.1\n",
+            "Jinja2-Linter Version v1.1.0\n",
             "",
             0,
             does_not_raise(),
