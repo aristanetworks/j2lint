@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "j2lint"
-version = "v1.0.0"
+version = "v1.0.1"
 description = "Command-line utility that validates jinja2 syntax according to Arista's AVD style guide."
 readme = "README.md"
 authors = [{ name = "Arista Ansible Team", email = "ansible@arista.com" }]
@@ -55,16 +55,18 @@ Homepage = "https://github.com/aristanetworks/j2lint.git"
 j2lint = "j2lint.cli:run"
 
 [tool.bumpver]
-current_version = "v1.0.0"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message  = "Chore: version {old_version} -> {new_version}"
+current_version = "v1.0.1"
+version_pattern = "vMAJOR.MINOR.PATCH"
+commit_message  = "Chore: Version {old_version} -> {new_version}"
 commit          = true
-tag             = true
+# No Tag
+tag             = false
 push            = false
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "j2lint/__init__.py" = ["{version}"]
+"tests/test_cli.py" = ["{version}"]
 
 [tool.pylint.'MESSAGES CONTROL']
 max-line-length = 160
