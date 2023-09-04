@@ -1,5 +1,5 @@
-# Copyright (c) 2023 Arista Networks, Inc.
-# Use of this source code is governed by the Apache License 2.0
+# Copyright (c) 2021-2023 Arista Networks, Inc.
+# Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_operator_has_spaces_rule.py - Rule class to check if operator has
                                   surrounding spaces.
