@@ -1,3 +1,6 @@
+# Copyright (c) 2023 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 """
 Tests for j2lint.linter.rule.py
 """
@@ -49,7 +52,7 @@ class TestRule:
                 None,
                 1,
                 {"path": f"{TEST_DATA_DIR}/test.j2"},
-                [("T0", 42)],
+                [("T0", 42), ("T0", 42), ("T0", 42), ("T0", 42), ("T0", 42)],
                 [],
                 id="checkline rule error",
             ),

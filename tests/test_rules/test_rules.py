@@ -1,3 +1,6 @@
+# Copyright (c) 2023 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 import logging
 import pathlib
 
@@ -8,7 +11,7 @@ TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 PARAMS = [
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_syntax_error_rule.j2",
-        [("S0", 1)],
+        [("S0", 6)],
         [],
         [],
         id="jinja_template_syntax_error_rule",
@@ -16,15 +19,15 @@ PARAMS = [
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_has_space_rule.j2",
         [
-            ("S1", 1),
-            ("S1", 2),
-            ("S1", 4),
-            ("S1", 5),
             ("S1", 6),
             ("S1", 7),
-            ("S2", 7),  # the faulty {{+ethernet }} triggers S2 as well
-            ("S1", 8),
             ("S1", 9),
+            ("S1", 10),
+            ("S1", 11),
+            ("S1", 12),
+            ("S2", 12),  # the faulty {{+ethernet }} triggers S2 as well
+            ("S1", 13),
+            ("S1", 14),
         ],
         [],
         [],
@@ -32,21 +35,29 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_operator_has_spaces_rule.j2",
-        [("S2", 1), ("S2", 2), ("S2", 3), ("S2", 6), ("S2", 6), ("S2", 8), ("S2", 10)],
+        [
+            ("S2", 6),
+            ("S2", 7),
+            ("S2", 8),
+            ("S2", 11),
+            ("S2", 11),
+            ("S2", 13),
+            ("S2", 15),
+        ],
         [],
         [],
         id="jinja_operator_has_space_rule",
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_indentation_rule.j2",
-        [("S3", 2), ("S3", 6), ("S3", 5)],
+        [("S3", 7), ("S3", 11), ("S3", 10)],
         [],
         [],
         id="jinja_template_indentation_rule",
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_indentation_rule.JinjaLinterError.j2",
-        [("S0", 2), ("S3", 2)],
+        [("S0", 7), ("S3", 7)],
         [],
         [
             (
@@ -60,7 +71,7 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_indentation_rule.missing_end_tag.j2",
-        [("S0", 1)],
+        [("S0", 6)],
         [],
         [
             (
@@ -73,7 +84,7 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_indentation_rule.IndexError.j2",
-        [("S4", 2)],
+        [("S4", 7)],
         [],
         [
             # somehow this is not picked up when we should expect this log message (which can be seen in CLI)
@@ -89,37 +100,37 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_statement_has_spaces_rule.j2",
-        [("S4", 1), ("S4", 2), ("S4", 3)],
+        [("S4", 6), ("S4", 7), ("S4", 8)],
         [],
         [],
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_no_tabs_rule.j2",
-        [("S5", 1)],
+        [("S5", 6)],
         [],
         [],
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_statement_delimiter_rule.j2",
-        [("S6", 1), ("S6", 3), ("S6", 5)],
+        [("S6", 6), ("S6", 8), ("S6", 10)],
         [],
         [],
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_template_single_statement_rule.j2",
-        [("S7", 1)],
+        [("S7", 6)],
         [],
         [],
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_name_case_rule.j2",
-        [("V1", 1), ("V1", 2), ("V1", 3)],
+        [("V1", 6), ("V1", 7), ("V1", 8)],
         [],
         [],
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_name_format_rule.j2",
-        [("V2", 1)],
+        [("V2", 6)],
         [],
         [],
     ),

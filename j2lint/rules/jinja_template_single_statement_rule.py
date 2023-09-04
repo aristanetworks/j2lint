@@ -1,3 +1,6 @@
+# Copyright (c) 2023 Arista Networks, Inc.
+# Use of this source code is governed by the Apache License 2.0
+# that can be found in the LICENSE file.
 """jinja_template_single_statement_rule.py - Rule class to check if only a single
                                          jinja statement is present on each
                                          line.
