@@ -11,7 +11,6 @@ import pytest
 from j2lint.utils import (
     delimit_jinja_statement,
     flatten,
-    get_file_type,
     get_files,
     get_tuple,
     is_rule_disabled,
@@ -34,62 +33,77 @@ def test_load_plugins():
 
 
 @pytest.mark.parametrize(
-    "file_name, expected",
+    "file_name, extensions, expected",
     [
-        ("test.j2", True),
-        ("test.jinja", True),
-        ("test.jinja2", True),
-        ("test.blah", False),
-        ("test_dir/test.j2", True),
-        ("test", False),
+        ("test.j2", [".j2", ".jinja2", ".jinja"], True),
+        ("test.jinja", [".j2", ".jinja2", ".jinja"], True),
+        ("test.jinja2", [".j2", ".jinja2", ".jinja"], True),
+        ("test.blah", [".j2", ".jinja2", ".jinja"], False),
+        ("test_dir/test.j2", [".j2", ".jinja2", ".jinja"], True),
+        ("test", [".j2", ".jinja2", ".jinja"], False),
+        ("test.toto", [".toto"], True),
+        ("test.j2", [".toto"], False),
     ],
 )
-def test_is_valid_file_type(file_name, expected):
+def test_is_valid_file_type(file_name, extensions, expected):
     """
     Test the utils.is_valid_file_type function
     """
-    assert is_valid_file_type(file_name) == expected
+    assert is_valid_file_type(file_name, extensions) == expected
 
 
 @pytest.mark.parametrize(
-    "file_name, expected",
+    "file_or_dir_names, extensions, expected_value, expectation",
     [
-        ("test.j2", "jinja"),
-        ("test.jinja", "jinja"),
-        ("test.jinja2", "jinja"),
-        ("test.blah", None),
-        ("test_dir/test.j2", "jinja"),
-        ("test", None),
-    ],
-)
-def test_get_file_type(file_name, expected):
-    """
-    Test the utils.get_file_type function
-    """
-    assert get_file_type(file_name) == expected
-
-
-@pytest.mark.parametrize(
-    "file_or_dir_names, expected_value, expectation",
-    [
-        (["test.j2"], ["test.j2"], does_not_raise()),
-        (["test.jinja"], ["test.jinja"], does_not_raise()),
-        (["test.jinja2"], ["test.jinja2"], does_not_raise()),
-        (["test.jinja", "test.j2"], ["test.jinja", "test.j2"], does_not_raise()),
-        (["test.blah"], [], does_not_raise()),
-        (["test_dir/test.j2"], ["test_dir/test.j2"], does_not_raise()),
-        (["test"], [], does_not_raise()),
+        (["test.j2"], [".j2", ".jinja2", ".jinja"], ["test.j2"], does_not_raise()),
+        (
+            ["test.jinja"],
+            [".j2", ".jinja2", ".jinja"],
+            ["test.jinja"],
+            does_not_raise(),
+        ),
+        (
+            ["test.jinja2"],
+            [".j2", ".jinja2", ".jinja"],
+            ["test.jinja2"],
+            does_not_raise(),
+        ),
+        (
+            ["test.jinja", "test.j2"],
+            [".j2", ".jinja2", ".jinja"],
+            ["test.jinja", "test.j2"],
+            does_not_raise(),
+        ),
+        (
+            ["test.blah"],
+            [".j2", ".jinja2", ".jinja"],
+            [],
+            does_not_raise(),
+        ),
+        (
+            ["test.html"],
+            [".html"],
+            ["test.html"],
+            does_not_raise(),
+        ),
+        (
+            ["test_dir/test.j2"],
+            [".j2", ".jinja2", ".jinja"],
+            ["test_dir/test.j2"],
+            does_not_raise(),
+        ),
+        (["test"], [".j2", ".jinja2", ".jinja"], [], does_not_raise()),
         pytest.param(
-            "not_a_list", None, pytest.raises(TypeError), id="Invalid input type"
+            "not_a_list", None, None, pytest.raises(TypeError), id="Invalid input type"
         ),
     ],
 )
-def test_get_files(file_or_dir_names, expected_value, expectation):
+def test_get_files(file_or_dir_names, extensions, expected_value, expectation):
     """
     Test the utils.get_files function
     """
     with expectation:
-        assert get_files(file_or_dir_names) == expected_value
+        assert get_files(file_or_dir_names, extensions) == expected_value
 
 
 def test_get_files_dir(template_tmp_dir):
@@ -108,7 +122,7 @@ def test_get_files_dir(template_tmp_dir):
         ]
     )
     with does_not_raise():
-        assert sorted(get_files(template_tmp_dir)) == expected
+        assert sorted(get_files(template_tmp_dir, [".j2"])) == expected
 
 
 @pytest.mark.parametrize(

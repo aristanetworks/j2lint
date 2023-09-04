@@ -13,8 +13,6 @@ from typing import Any, ClassVar, Literal
 from rich.text import Text
 
 from j2lint.linter.error import JinjaLinterError, LinterError
-from j2lint.logger import logger
-from j2lint.utils import is_valid_file_type
 
 
 class Rule(ABC):
@@ -106,12 +104,6 @@ class Rule(ABC):
             list: list of LinterError from issues in the given file
         """
         errors: list[LinterError] = []
-
-        if not is_valid_file_type(file["path"]):
-            logger.debug(
-                "Skipping file %s. Linter does not support linting this file type", file
-            )
-            return errors
 
         try:
             # First try with checktext

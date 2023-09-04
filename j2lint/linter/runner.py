@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 from j2lint.logger import logger
-from j2lint.utils import get_file_type
 
 from .collection import RulesCollection
 from .error import LinterError
@@ -21,16 +20,11 @@ class Runner:
     """
 
     def __init__(
-        self,
-        collection: RulesCollection,
-        file_name: str,
-        checked_files: list[str],
+        self, collection: RulesCollection, file_name: str, checked_files: list[str]
     ) -> None:
         self.collection = collection
-        self.files: set[tuple[str, str]] = set()
-        if (file_type := get_file_type(file_name)) is not None:
-            self.files.add((file_name, file_type))
-
+        # For now hardcoding this for first change - but this is useless so will simplify the structure
+        self.files: set[tuple[str, str]] = {(file_name, "jinja")}
         self.checked_files = checked_files
 
     def is_already_checked(self, file_path: str) -> bool:

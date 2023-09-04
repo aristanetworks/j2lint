@@ -82,6 +82,13 @@ def create_parser() -> argparse.ArgumentParser:
         help="verbose output for lint issues",
     )
     parser.add_argument(
+        "-e",
+        "--extensions",
+        default="j2,jinja,jinja2",
+        help="comma delimited list of file extensions, default is 'j2,jinja,jinja2'",
+        type=lambda s: [f".{item}" for item in s.split(",")],
+    )
+    parser.add_argument(
         "-d", "--debug", default=False, action="store_true", help="enable debug logs"
     )
     parser.add_argument(
@@ -139,12 +146,11 @@ def sort_issues(issues: list[LinterError]) -> list[LinterError]:
 
 
 def get_linting_issues(
-    file_or_dir_names: list[str], collection: RulesCollection, checked_files: list[str]
+    files: list[str], collection: RulesCollection, checked_files: list[str]
 ) -> tuple[dict[str, list[LinterError]], dict[str, list[LinterError]]]:
     """checking errors and warnings"""
     lint_errors: dict[str, list[LinterError]] = {}
     lint_warnings: dict[str, list[LinterError]] = {}
-    files = get_files(file_or_dir_names)
 
     # Get linting issues
     for file_name in files:
@@ -301,9 +307,9 @@ def run(args: list[str] | None = None) -> int:
         parser.print_help(file=sys.stderr)
         return 1
 
-    lint_errors, lint_warnings = get_linting_issues(
-        file_or_dir_names, collection, checked_files
-    )
+    files = get_files(file_or_dir_names, options.extensions)
+
+    lint_errors, lint_warnings = get_linting_issues(files, collection, checked_files)
 
     if options.json:
         logger.debug("JSON output enabled")

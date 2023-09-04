@@ -8,8 +8,6 @@ from unittest import mock
 
 import pytest
 
-from j2lint.utils import get_file_type
-
 
 class TestRunner:
     @pytest.mark.parametrize(
@@ -49,7 +47,7 @@ class TestRunner:
 
         This test is "bad" for now.
         """
-        test_runner.files = {(file, get_file_type(file)) for file in runner_files}
+        test_runner.files = {(file, "jinja") for file in runner_files}
         # Fake return
         with mock.patch(
             "j2lint.linter.collection.RulesCollection.run"

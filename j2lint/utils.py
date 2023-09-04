@@ -58,38 +58,26 @@ def load_plugins(directory: str) -> list[Rule]:
     return result
 
 
-def is_valid_file_type(file_name: str) -> bool:
-    """Checks if the file is a valid Jinja file
+def is_valid_file_type(file_name: str, extensions: list[str]) -> bool:
+    """Checks if the file extension is in the list of accepted extensions
 
     Args:
         file_name (string): file path with extension
+        extensions (list): list of file extensions to look for
 
     Returns:
         boolean: True if file type is correct
     """
     extension = os.path.splitext(file_name)[1].lower()
-    return extension in [".jinja", ".jinja2", ".j2"]
+    return extension in extensions
 
 
-def get_file_type(file_name: str) -> str | None:
-    """Returns file type as Jinja or None
-
-    Args:
-        file_name (string): file path with extension
-
-    Returns:
-        string: jinja or None
-
-    TODO: this method and the previous one are redundant
-    """
-    return LANGUAGE_JINJA if is_valid_file_type(file_name) else None
-
-
-def get_files(file_or_dir_names: list[str]) -> list[str]:
+def get_files(file_or_dir_names: list[str], extensions: list[str]) -> list[str]:
     """Get files from a directory recursively
 
     Args:
         file_or_dir_names (list): list of directories and files
+        extensions (list): list of file extensions to look for
 
     Returns:
         list: list of file paths
@@ -106,9 +94,9 @@ def get_files(file_or_dir_names: list[str]) -> list[str]:
             for root, _, files in os.walk(file_or_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    if get_file_type(file_path) == LANGUAGE_JINJA:
+                    if is_valid_file_type(file_path, extensions):
                         file_paths.append(file_path)
-        elif get_file_type(file_or_dir) == LANGUAGE_JINJA:
+        elif is_valid_file_type(file_or_dir, extensions):
             file_paths.append(file_or_dir)
     logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
     return file_paths
