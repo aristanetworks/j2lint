@@ -9,7 +9,6 @@ from __future__ import annotations
 import json
 from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Literal
-from typing import Any, ClassVar
 
 from rich.text import Text
 
