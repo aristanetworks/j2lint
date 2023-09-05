@@ -1,5 +1,7 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+files: ^(j2lint|tests)/
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
@@ -9,6 +11,33 @@ repos:
         #exclude_types: [jinja, text]
       - id: check-added-large-files
       - id: check-merge-conflict
+
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.4
+    hooks:
+      - name: Check and insert license on Python files
+        id: insert-license
+        files: .*\.py$
+        args:
+          - --license-filepath
+          - .github/license-short.txt
+          - --use-current-year
+          - --allow-past-years
+          - --fuzzy-match-generates-todo
+          - --no-extra-eol
+
+      - name: Check and insert license on Jinja2 files
+        id: insert-license
+        files: .*\.j2$
+        args:
+          - --license-filepath
+          - .github/license-short.txt
+          - --use-current-year
+          - --allow-past-years
+          - --fuzzy-match-generates-todo
+          - --comment-style
+          - '{#||#}'
+          - --no-extra-eol
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0

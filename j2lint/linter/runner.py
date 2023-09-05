@@ -1,3 +1,6 @@
+# Copyright (c) 2021-2023 Arista Networks, Inc.
+# Use of this source code is governed by the MIT license
+# that can be found in the LICENSE file.
 """runner.py - Class to run the rules collection for all the files.
 """
 from __future__ import annotations
