@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 import json
-from abc import ABC, abstractclassmethod, abstractmethod
-from typing import Any
+from abc import ABC, abstractmethod
+from typing import Any, ClassVar, Literal
 
 from rich.text import Text
 
@@ -19,6 +19,11 @@ class Rule(ABC):
     functions.
     """
 
+    rule_id: ClassVar[str]
+    short_description: ClassVar[str]
+    description: ClassVar[str]
+    severity: ClassVar[Literal[None, "LOW", "MEDIUM", "HIGH"]]
+
     def __init__(
         self,
         ignore: bool = False,
@@ -29,44 +34,24 @@ class Rule(ABC):
         self.warn = warn if warn is not None else []
         self.origin = origin
 
-    # Mandatory class attributes
-
-    # ignoring mypy issue as the BDFL said
-    # https://github.com/python/mypy/issues/1362
-    @property  # type: ignore
-    @abstractclassmethod
-    def rule_id(cls) -> str:  # sourcery skip: instance-method-first-arg-name
-        """
-        The rule id like S0
-        """
-
-    @property  # type: ignore
-    @abstractclassmethod
-    def description(cls) -> str:  # sourcery skip: instance-method-first-arg-name
-        """
-        The rule description
-        """
-
-    @property  # type: ignore
-    @abstractclassmethod
-    def short_description(cls) -> str:
-        # sourcery skip: instance-method-first-arg-name
-        """
-        The rule short_description
-        """
-
-    @property  # type: ignore
-    @abstractclassmethod
-    def severity(cls) -> str:  # sourcery skip: instance-method-first-arg-name
-        """
-        The rule severity
-        """
-
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
-        if cls.severity not in [None, "LOW", "MEDIUM", "HIGH"]:
+        # Mandatory class attributes
+        mandatory_attributes = [
+            "rule_id",  # Like S0
+            "description",
+            "short_description",
+            "severity",
+        ]
+        for attr in mandatory_attributes:
+            if not hasattr(cls, attr):
+                raise NotImplementedError(
+                    f"Class {cls} is missing required class attribute {attr}"
+                )
+
+        if cls.severity not in ["LOW", "MEDIUM", "HIGH"]:
             raise JinjaLinterError(
-                f"Rule {cls.rule_id}: severity must be in [None, 'LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided"
+                f"Rule {cls.rule_id}: severity must be in ['LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided"
             )
 
     def __repr__(self) -> str:
