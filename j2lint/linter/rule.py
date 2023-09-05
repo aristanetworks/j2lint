@@ -92,13 +92,13 @@ class Rule(ABC):
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
         """This method is expected to be overriden by child classes"""
 
-    def checkrule(self, file: dict[str, Any], text: str) -> list[LinterError]:
+    def checkrule(self, filename: str, text: str) -> list[LinterError]:
         """
         Checks the string text against the current rule by calling
         either the checkline or checktext method depending on which one is implemented
 
         Args:
-            file (string): file path of the file to be checked
+            filename (string): file path of the file to be checked
             text (string): file text of the same file
 
         Returns:
@@ -108,7 +108,7 @@ class Rule(ABC):
 
         try:
             # First try with checktext
-            results = self.checktext(file["path"], text)
+            results = self.checktext(filename, text)
             errors.extend(results)
 
         except NotImplementedError:
@@ -121,7 +121,7 @@ class Rule(ABC):
                 if line.lstrip().startswith("#"):
                     continue
 
-                results = self.checkline(file["path"], line, line_no=index + 1)
+                results = self.checkline(filename, line, line_no=index + 1)
                 errors.extend(results)
                 # errors.append(LinterError(index + 1, line, file["path"], self))
         return errors

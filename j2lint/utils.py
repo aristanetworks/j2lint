@@ -17,8 +17,6 @@ from j2lint.logger import logger
 if TYPE_CHECKING:
     from .linter.rule import Rule
 
-LANGUAGE_JINJA = "jinja"
-
 # Using Tuple from typing for 3.8 support
 # Statement type is a tuple
 # (line_without_delimiter, start_line, end_line, start_delimiter, end_delimiter)

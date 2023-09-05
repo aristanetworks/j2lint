@@ -50,16 +50,16 @@ class TestRulesCollection:
         assert collection.rules == fake_rules + fake_rules
 
     @pytest.mark.parametrize(
-        "file_dict, expected_results, verify_logs",
+        "file_path, expected_results, verify_logs",
         [
             pytest.param(
-                {"path": "dummy.j2"},
+                "dummy.j2",
                 ([], []),
                 False,
                 id="non existing file",
             ),
             pytest.param(
-                {"path": f"{TEST_DATA_DIR}/disable-rule-3.j2"},
+                f"{TEST_DATA_DIR}/disable-rule-3.j2",
                 (
                     [
                         ("T0", "test-rule-0"),
@@ -80,7 +80,7 @@ class TestRulesCollection:
         test_collection,
         make_rules,
         make_issue_from_rule,
-        file_dict,
+        file_path,
         expected_results,
         verify_logs,
     ):
@@ -98,7 +98,7 @@ class TestRulesCollection:
         rules[2].ignore = True
         test_collection.rules = rules
 
-        def checks_side_effect(self, file_dict, text):
+        def checks_side_effect(self, file_path, text):
             return make_issue_from_rule(self)
 
         with mock.patch(
@@ -106,7 +106,7 @@ class TestRulesCollection:
             side_effect=checks_side_effect,
             autospec=True,
         ):
-            errors, warnings = test_collection.run(file_dict)
+            errors, warnings = test_collection.run(file_path)
             error_tuples = [
                 (error.rule.rule_id, error.rule.short_description) for error in errors
             ]
