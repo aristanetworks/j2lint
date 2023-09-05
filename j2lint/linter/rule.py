@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Literal
+from typing import Any, ClassVar
 
 from rich.text import Text
 
@@ -50,9 +51,9 @@ class Rule(ABC):
                     f"Class {cls} is missing required class attribute {attr}"
                 )
 
-        if cls.severity not in ["LOW", "MEDIUM", "HIGH"]:
+        if cls.severity not in [None, "LOW", "MEDIUM", "HIGH"]:
             raise JinjaLinterError(
-                f"Rule {cls.rule_id}: severity must be in ['LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided"
+                f"Rule {cls.rule_id}: severity must be in [None, 'LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided"
             )
 
     def __repr__(self) -> str:
