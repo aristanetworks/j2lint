@@ -43,7 +43,7 @@ CONSOLE.size = ConsoleDimensions(width=80, height=74)
 @pytest.mark.parametrize(
     "argv, namespace_modifications",
     [
-        (pytest.param([], {}, id="default")),
+        (pytest.param([], {"extensions": [".j2", ".jinja", ".jinja2"]}, id="default")),
         pytest.param(
             ["--log", "--stdout", "-j", "-d", "-v", "--stdin", "--version"],
             {
@@ -54,6 +54,7 @@ CONSOLE.size = ConsoleDimensions(width=80, height=74)
                 "log": True,
                 "json": True,
                 "verbose": True,
+                "extensions": [".j2", ".jinja", ".jinja2"],
             },
             id="set all debug flags",
         ),

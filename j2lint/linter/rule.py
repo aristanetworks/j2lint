@@ -13,8 +13,6 @@ from typing import Any, ClassVar, Literal
 from rich.text import Text
 
 from j2lint.linter.error import JinjaLinterError, LinterError
-from j2lint.logger import logger
-from j2lint.utils import is_valid_file_type
 
 
 class Rule(ABC):
@@ -52,9 +50,9 @@ class Rule(ABC):
                     f"Class {cls} is missing required class attribute {attr}"
                 )
 
-        if cls.severity not in ["LOW", "MEDIUM", "HIGH"]:
+        if cls.severity not in [None, "LOW", "MEDIUM", "HIGH"]:
             raise JinjaLinterError(
-                f"Rule {cls.rule_id}: severity must be in ['LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided"
+                f"Rule {cls.rule_id}: severity must be in [None, 'LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided"
             )
 
     def __repr__(self) -> str:
@@ -93,13 +91,13 @@ class Rule(ABC):
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
         """This method is expected to be overriden by child classes"""
 
-    def checkrule(self, file: dict[str, Any], text: str) -> list[LinterError]:
+    def checkrule(self, filename: str, text: str) -> list[LinterError]:
         """
         Checks the string text against the current rule by calling
         either the checkline or checktext method depending on which one is implemented
 
         Args:
-            file (string): file path of the file to be checked
+            filename (string): file path of the file to be checked
             text (string): file text of the same file
 
         Returns:
@@ -107,15 +105,9 @@ class Rule(ABC):
         """
         errors: list[LinterError] = []
 
-        if not is_valid_file_type(file["path"]):
-            logger.debug(
-                "Skipping file %s. Linter does not support linting this file type", file
-            )
-            return errors
-
         try:
             # First try with checktext
-            results = self.checktext(file["path"], text)
+            results = self.checktext(filename, text)
             errors.extend(results)
 
         except NotImplementedError:
@@ -128,7 +120,7 @@ class Rule(ABC):
                 if line.lstrip().startswith("#"):
                     continue
 
-                results = self.checkline(file["path"], line, line_no=index + 1)
+                results = self.checkline(filename, line, line_no=index + 1)
                 errors.extend(results)
                 # errors.append(LinterError(index + 1, line, file["path"], self))
         return errors

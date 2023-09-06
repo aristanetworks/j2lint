@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 from j2lint.logger import logger
-from j2lint.utils import get_file_type
 
 from .collection import RulesCollection
 from .error import LinterError
@@ -21,16 +20,10 @@ class Runner:
     """
 
     def __init__(
-        self,
-        collection: RulesCollection,
-        file_name: str,
-        checked_files: list[str],
+        self, collection: RulesCollection, file_name: str, checked_files: list[str]
     ) -> None:
         self.collection = collection
-        self.files: set[tuple[str, str]] = set()
-        if (file_type := get_file_type(file_name)) is not None:
-            self.files.add((file_name, file_type))
-
+        self.files: set[str] = {file_name}
         self.checked_files = checked_files
 
     def is_already_checked(self, file_path: str) -> bool:
@@ -54,32 +47,30 @@ class Runner:
                                from tuple to dict here
                                maybe simply init with the dict
         """
-        file_dicts: list[dict[str, str]] = []
+        files: list[str] = []
         for index, file in enumerate(self.files):
-            logger.debug("Running linting rules for %s", file)
-            file_path = file[0]
-            file_type = file[1]
-            file_dict = {"path": file_path, "type": file_type}
             # pylint: disable = fixme
             # FIXME - as of now it seems that both next tests
             #         will never occurs as self.files is always
             #         a single file.
             # Skip already checked files
-            if self.is_already_checked(file_path):
+            if self.is_already_checked(file):
                 continue
             # Skip duplicate files
-            if file_dict in file_dicts[:index]:
+            if file in files[:index]:
                 continue
-            file_dicts.append(file_dict)
+            files.append(file)
 
         errors: list[LinterError] = []
         warnings: list[LinterError] = []
         # pylint: disable = fixme
         # FIXME - if there are multiple files, errors and warnings are overwritten..
-        for file_dict in file_dicts:
-            errors, warnings = self.collection.run(file_dict)
+        #         fortunately there is only one file currently
+        for file in files:
+            logger.debug("Running linting rules for %s", file)
+            errors, warnings = self.collection.run(file)
 
         # Update list of checked files
-        self.checked_files.extend([file_dict["path"] for file_dict in file_dicts])
+        self.checked_files.extend(files)
 
         return errors, warnings

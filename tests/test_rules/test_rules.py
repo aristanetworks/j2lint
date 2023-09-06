@@ -156,7 +156,7 @@ def test_rules(
     with open(filename, "r") as f:
         print(f.read())
     caplog.set_level(logging.INFO)
-    errors, warnings = collection.run({"path": filename, "type": "jinja"})
+    errors, warnings = collection.run(filename)
 
     errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]
 

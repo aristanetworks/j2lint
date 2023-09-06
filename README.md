@@ -77,6 +77,12 @@ j2lint --list
 j2lint <path-to-directory-of-templates> --verbose
 ```
 
+### Running the linter with custom file extensions
+
+```bash
+j2lint <path-to-directory-of-templates> --extensions j2,html,yml
+```
+
 ### Running the linter with logs enabled. Logs saved in jinja2-linter.log in the current directory
 
 ```bash

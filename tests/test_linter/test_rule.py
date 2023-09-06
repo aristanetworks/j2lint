@@ -28,20 +28,6 @@ class TestRule:
         [
             pytest.param(
                 None,
-                None,
-                {"path": f"{TEST_DATA_DIR}/test.txt"},
-                [],
-                [
-                    (
-                        "root",
-                        logging.DEBUG,
-                        f"Skipping file {{'path': '{TEST_DATA_DIR}/test.txt'}}. Linter does not support linting this file type",
-                    )
-                ],
-                id="file is wrong type",
-            ),
-            pytest.param(
-                None,
                 0,
                 {"path": f"{TEST_DATA_DIR}/test.j2"},
                 [],

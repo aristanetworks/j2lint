@@ -45,9 +45,7 @@ class RulesCollection:
         """
         self.rules.extend(more)
 
-    def run(
-        self, file_dict: dict[str, str]
-    ) -> tuple[list[LinterError], list[LinterError]]:
+    def run(self, file_path: str) -> tuple[list[LinterError], list[LinterError]]:
         """Runs the linting rules for given file
 
         Args:
@@ -62,10 +60,10 @@ class RulesCollection:
         warnings: list[LinterError] = []
 
         try:
-            with open(file_dict["path"], mode="r", encoding="utf-8") as file:
+            with open(file_path, mode="r", encoding="utf-8") as file:
                 text = file.read()
         except IOError as err:
-            logger.warning("Could not open %s - %s", file_dict["path"], err.strerror)
+            logger.warning("Could not open %s - %s", file_path, err.strerror)
             return errors, warnings
 
         for rule in self.rules:
@@ -74,21 +72,19 @@ class RulesCollection:
                     "Ignoring rule %s:%s for file %s",
                     rule.rule_id,
                     rule.short_description,
-                    file_dict["path"],
+                    file_path,
                 )
                 continue
             if is_rule_disabled(text, rule):
-                logger.debug(
-                    "Skipping linting rule %s on file %s", rule, file_dict["path"]
-                )
+                logger.debug("Skipping linting rule %s on file %s", rule, file_path)
                 continue
 
-            logger.debug("Running linting rule %s on file %s", rule, file_dict["path"])
+            logger.debug("Running linting rule %s on file %s", rule, file_path)
             if rule in rule.warn:
-                warnings.extend(rule.checkrule(file_dict, text))
+                warnings.extend(rule.checkrule(file_path, text))
 
             else:
-                errors.extend(rule.checkrule(file_dict, text))
+                errors.extend(rule.checkrule(file_path, text))
 
         for error in errors:
             logger.error(error.to_rich())
