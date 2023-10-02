@@ -24,7 +24,7 @@ classifiers = [
 keywords = ["j2lint", "linter", "jinja", "lint"]
 dependencies = [
     "jinja2>=3.0",
-    "rich~=13.5.2",
+    "rich>=13.5.2,<13.7.0",
 ]
 requires-python = ">=3.8"
 
