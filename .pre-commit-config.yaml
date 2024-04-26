@@ -4,7 +4,7 @@ files: ^(j2lint|tests)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -13,7 +13,7 @@ repos:
       - id: check-merge-conflict
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.4
+    rev: v1.5.5
     hooks:
       - name: Check and insert license on Python files
         id: insert-license
@@ -50,7 +50,7 @@ repos:
         types: [python]
 
   - repo: https://github.com/pycqa/pylint
-    rev: v2.17.0
+    rev: v3.1.0
     hooks:
       - id: pylint # Use pylintrc file in repository
         name: Check for Linting error on Python files
@@ -65,13 +65,13 @@ repos:
         exclude: ^tests/
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
         name: Check for changes when running isort on all python files
 
   - repo: https://github.com/psf/black
-    rev: 23.10.1
+    rev: 24.4.2
     hooks:
       - id: black
         name: Check for changes when running Black on all python files
