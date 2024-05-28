@@ -28,6 +28,7 @@ def test_add_handler(logger, stream_handler, log_level):
     logger.addHandler.assert_called_once()
 
     # call_args.args was introduced in Python 3.8
+    handler_arg = None
     if sys.version_info >= (3, 8):
         handler_arg = logger.addHandler.call_args.args[0]
     elif sys.version_info >= (3, 6):
