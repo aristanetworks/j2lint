@@ -211,7 +211,7 @@ class Node:
             self.check_indent_level(result, node)
             return line_no
 
-        def _handle_end_tag(node: Node, line_no: int) -> int:  # type: ignore
+        def _handle_end_tag(node: Node, line_no: int) -> int:
             if f"end{jinja_node_stack[-1].tag}" == node.tag:
                 if jinja_node_stack[-1] != self:
                     return line_no
@@ -228,8 +228,6 @@ class Node:
             # End Tag not matching the begin tag - raise an error
             message = f"Line {line_no} - Tag is out of order '{node.tag}'"
             _append_error_to_result_and_raise(message)
-            # Never reached
-            return line_no
 
         while line_no < len(lines):
             line = lines[line_no]
