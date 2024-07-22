@@ -50,7 +50,7 @@ lint = [
   "flake8==7.1.0",
 ]
 type = [
-  "mypy==1.10.1",
+  "mypy==1.11.0",
 ]
 
 [project.urls]
