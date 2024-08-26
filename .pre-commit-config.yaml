@@ -40,7 +40,7 @@ repos:
           - --no-extra-eol
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.0
+    rev: 7.1.1
     hooks:
       - id: flake8
         name: Check for PEP8 error on Python files
@@ -71,13 +71,13 @@ repos:
         name: Check for changes when running isort on all python files
 
   - repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 24.8.0
     hooks:
       - id: black
         name: Check for changes when running Black on all python files
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.0
+    rev: v1.11.2
     hooks:
       - id: mypy
         args:
