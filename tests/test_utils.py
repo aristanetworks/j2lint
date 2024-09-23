@@ -1,9 +1,7 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-Tests for j2lint.utils.py
-"""
+"""Tests for j2lint.utils.py"""
 
 import pathlib
 
@@ -24,17 +22,16 @@ from .utils import does_not_raise
 
 
 @pytest.mark.skip
-def test_load_plugins():
+def test_load_plugins() -> None:
     """
-    Test the utils.load_plugins function
+    Test the utils.load_plugins function.
 
     For now this is being tested via other calling methods
     """
-    # TODO
 
 
 @pytest.mark.parametrize(
-    "file_name, extensions, expected",
+    ("file_name", "extensions", "expected"),
     [
         ("test.j2", [".j2", ".jinja2", ".jinja"], True),
         ("test.jinja", [".j2", ".jinja2", ".jinja"], True),
@@ -46,10 +43,8 @@ def test_load_plugins():
         ("test.j2", [".toto"], False),
     ],
 )
-def test_is_valid_file_type(file_name, extensions, expected):
-    """
-    Test the utils.is_valid_file_type function
-    """
+def test_is_valid_file_type(file_name: str, extensions: list[str], expected: bool) -> None:
+    """Test the utils.is_valid_file_type function."""
     assert is_valid_file_type(file_name, extensions) == expected
 
 

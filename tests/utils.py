@@ -1,26 +1,20 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-utils.py - functions to assist with tests
-"""
+"""utils.py - functions to assist with tests."""
 
+from collections.abc import Generator
 from contextlib import contextmanager
 
 
 @contextmanager
-def does_not_raise():
-    """
-    Provides a context manager that does not raise anything
-    for pytest tests
-    """
+def does_not_raise() -> Generator:
+    """Provide a context manager that does not raise anything for pytest tests."""
     yield
 
 
-def j2lint_default_rules_string():
-    """
-    The description of the default rules
-    """
+def j2lint_default_rules_string() -> str:
+    """The description of the default rules."""
     return (
         "─────────────────────────── Rules in the Collection ────────────────────────────\n"
         "Origin: BUILT-IN\n"
