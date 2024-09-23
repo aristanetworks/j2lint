@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, ClassVar
 
 from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule

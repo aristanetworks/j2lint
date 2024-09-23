@@ -39,7 +39,7 @@ def load_plugins(directory: str) -> list[Rule]:
     result = []
     file_handle = None
     directory_path = Path(directory)
-    for plugin_file in path.glob(directory_path / "[A-Za-z_]*.py"):
+    for plugin_file in directory_path.glob(pattern="[A-Za-z_]*.py"):
         plugin_name = plugin_file.name.replace(".py", "")
         try:
             logger.debug("Loading plugin %s", plugin_name)
