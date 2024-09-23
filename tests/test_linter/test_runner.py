@@ -4,6 +4,7 @@
 """
 Tests for j2lint.linter.runner.py
 """
+
 from unittest import mock
 
 import pytest
@@ -49,9 +50,7 @@ class TestRunner:
         """
         test_runner.files = runner_files
         # Fake return
-        with mock.patch(
-            "j2lint.linter.collection.RulesCollection.run"
-        ) as patched_collection_run:
+        with mock.patch("j2lint.linter.collection.RulesCollection.run") as patched_collection_run:
             patched_collection_run.return_value = ([], [])
             result = test_runner.run()
 

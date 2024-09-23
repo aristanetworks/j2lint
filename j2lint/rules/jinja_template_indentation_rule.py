@@ -2,8 +2,9 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_template_indentation_rule.py - Rule class to check the jinja statement
-                                     indentation is correct.
+indentation is correct.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -20,10 +21,7 @@ class JinjaTemplateIndentationRule(Rule):
 
     short_description = "jinja-statements-indentation"
     rule_id = "S3"
-    description = (
-        "All J2 statements must be indented by 4 more spaces within jinja delimiter. "
-        "To close a control, end tag must have same indentation level."
-    )
+    description = "All J2 statements must be indented by 4 more spaces within jinja delimiter. " "To close a control, end tag must have same indentation level."
     severity = "HIGH"
 
     def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
@@ -36,7 +34,8 @@ class JinjaTemplateIndentationRule(Rule):
             file (string): file path
             text (string): entire text content of the file
 
-        Returns:
+        Returns
+        -------
             list: Returns list of error objects
         """
         # Collect only Jinja Statements within delimiters {% and %}
@@ -59,10 +58,7 @@ class JinjaTemplateIndentationRule(Rule):
                 str(exc),
             )
 
-        return [
-            LinterError(line_no, section, filename, self, message)
-            for line_no, section, message in node_errors
-        ]
+        return [LinterError(line_no, section, filename, self, message) for line_no, section, message in node_errors]
 
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
         raise NotImplementedError

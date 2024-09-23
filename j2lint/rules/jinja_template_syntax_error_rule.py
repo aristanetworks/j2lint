@@ -2,8 +2,9 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_template_syntax_error_rule.py - Rule class to check that file does not
-                                     have jinja syntax errors.
+have jinja syntax errors.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -32,14 +33,13 @@ class JinjaTemplateSyntaxErrorRule(Rule):
             file (string): file path
             text (string): entire text content of the file
 
-        Returns:
+        Returns
+        -------
             list: Returns list of error objects
         """
         result = []
 
-        env = jinja2.Environment(
-            extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"]
-        )
+        env = jinja2.Environment(extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"])
         try:
             env.parse(text)
         except jinja2.TemplateSyntaxError as error:

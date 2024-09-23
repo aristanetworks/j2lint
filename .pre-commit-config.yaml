@@ -39,24 +39,26 @@ repos:
           - '{#||#}'
           - --no-extra-eol
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.7
     hooks:
-      - id: flake8
-        name: Check for PEP8 error on Python files
-        args:
-          - --config=/dev/null
-          - --max-line-length=160
-        types: [python]
+    - id: ruff
+      name: Run Ruff linter
+      args: [ --fix ]
+    - id: ruff-format
+      name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: v3.2.7
+    rev: "v3.3.0"
     hooks:
-      - id: pylint # Use pylintrc file in repository
+      - id: pylint
         name: Check for Linting error on Python files
         description: This hook runs pylint.
         types: [python]
         args:
+          - -rn                      # Only display messages
+          - -sn                      # Don't display the score
+          - --rcfile=pyproject.toml  # Link to config file
           # Suppress duplicate code for modules header
           - -d duplicate-code
         additional_dependencies:
@@ -64,24 +66,20 @@ repos:
           - rich
         exclude: ^tests/
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        name: Check for changes when running isort on all python files
-
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
-    hooks:
-      - id: black
-        name: Check for changes when running Black on all python files
-
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.11.2
     hooks:
       - id: mypy
         args:
           - --config-file=pyproject.toml
-        # additional_dependencies:
         # Do not run on test
         files: ^(j2lint)/
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        name: Checks for common misspellings in text files.
+        entry: codespell
+        language: python
+        types: [text]

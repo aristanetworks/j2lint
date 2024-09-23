@@ -1,8 +1,8 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""error.py - Error classes to format the lint errors.
-"""
+"""error.py - Error classes to format the lint errors."""
+
 from __future__ import annotations
 
 import json
@@ -35,7 +35,7 @@ class LinterError:
         self.message = message or rule.description
 
     def to_rich(self, verbose: bool = False) -> Text:
-        """setting string output format"""
+        """Setting string output format"""
         text = Text()
         if not verbose:
             text.append(self.filename, "green")
@@ -59,7 +59,7 @@ class LinterError:
         return text
 
     def to_json(self) -> str:
-        """setting json output format"""
+        """Setting json output format"""
         return json.dumps(
             {
                 "id": self.rule.rule_id,

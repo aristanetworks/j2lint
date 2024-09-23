@@ -1,8 +1,8 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""runner.py - Class to run the rules collection for all the files.
-"""
+"""runner.py - Class to run the rules collection for all the files."""
+
 from __future__ import annotations
 
 from j2lint.logger import logger
@@ -19,9 +19,7 @@ class Runner:
           for each file in cli.py
     """
 
-    def __init__(
-        self, collection: RulesCollection, file_name: str, checked_files: list[str]
-    ) -> None:
+    def __init__(self, collection: RulesCollection, file_name: str, checked_files: list[str]) -> None:
         self.collection = collection
         self.files: set[str] = {file_name}
         self.checked_files = checked_files
@@ -32,7 +30,8 @@ class Runner:
         Args:
             file_path (string): file path
 
-        Returns:
+        Returns
+        -------
             bool: True if file is already checked once
         """
         return file_path in self.checked_files
@@ -40,7 +39,8 @@ class Runner:
     def run(self) -> tuple[list[LinterError], list[LinterError]]:
         """Runs the lint rules collection on all the files
 
-        Returns:
+        Returns
+        -------
             tuple(list, list): a tuple containing the list of linting errors
                                and the list of linting warnings found
         TODO - refactor this - it is quite weird to do the conversion

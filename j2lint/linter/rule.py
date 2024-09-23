@@ -2,8 +2,9 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """rule.py - Base class for all the lint rules with functions for mathching
-             line and text based rule.
+line and text based rule.
 """
+
 from __future__ import annotations
 
 import json
@@ -46,14 +47,10 @@ class Rule(ABC):
         ]
         for attr in mandatory_attributes:
             if not hasattr(cls, attr):
-                raise NotImplementedError(
-                    f"Class {cls} is missing required class attribute {attr}"
-                )
+                raise NotImplementedError(f"Class {cls} is missing required class attribute {attr}")
 
         if cls.severity not in [None, "LOW", "MEDIUM", "HIGH"]:
-            raise JinjaLinterError(
-                f"Rule {cls.rule_id}: severity must be in [None, 'LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided"
-            )
+            raise JinjaLinterError(f"Rule {cls.rule_id}: severity must be in [None, 'LOW', 'MEDIUM', 'HIGH'], {cls.severity} was provided")
 
     def __repr__(self) -> str:
         return f"{self.rule_id}: {self.description}"
@@ -100,7 +97,8 @@ class Rule(ABC):
             filename (string): file path of the file to be checked
             text (string): file text of the same file
 
-        Returns:
+        Returns
+        -------
             list: list of LinterError from issues in the given file
         """
         errors: list[LinterError] = []

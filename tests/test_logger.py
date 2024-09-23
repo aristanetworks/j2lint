@@ -4,6 +4,7 @@
 """
 Tests for j2lint.logger.py
 """
+
 import logging
 import sys
 from logging import handlers
@@ -14,9 +15,7 @@ from rich.logging import RichHandler
 from j2lint.logger import add_handler
 
 
-@pytest.mark.parametrize(
-    "stream_handler, log_level", [(False, logging.DEBUG), (True, logging.ERROR)]
-)
+@pytest.mark.parametrize("stream_handler, log_level", [(False, logging.DEBUG), (True, logging.ERROR)])
 def test_add_handler(logger, stream_handler, log_level):
     """
     Test j2lint.logger.add_handler

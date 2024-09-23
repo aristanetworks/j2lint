@@ -4,6 +4,7 @@
 """
 Tests for j2lint.linter.rule.py
 """
+
 import logging
 import pathlib
 
@@ -82,11 +83,7 @@ class TestRule:
             test_rule.checktext = return_empty_list
         else:
             # checktext > 0
-            test_rule.checktext = lambda x, y: [
-                issue
-                for i in range(checktext)
-                for issue in make_issue_from_rule(test_rule)
-            ]
+            test_rule.checktext = lambda x, y: [issue for i in range(checktext) for issue in make_issue_from_rule(test_rule)]
 
         if checkline is None:
             test_rule.checkline = raise_NotImplementedError
@@ -95,13 +92,9 @@ class TestRule:
             test_rule.checkline = return_empty_list
         else:
             # checkline > 0
-            test_rule.checkline = lambda x, y, line_no=0: [
-                issue
-                for i in range(checkline)
-                for issue in make_issue_from_rule(test_rule)
-            ]
+            test_rule.checkline = lambda x, y, line_no=0: [issue for i in range(checkline) for issue in make_issue_from_rule(test_rule)]
 
-        with open(file_path["path"], "r", encoding="utf-8") as file_d:
+        with open(file_path["path"], encoding="utf-8") as file_d:
             errors = test_rule.checkrule(file_path, file_d.read())
         print(errors)
         errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]

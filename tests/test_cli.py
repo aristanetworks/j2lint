@@ -4,6 +4,7 @@
 """
 Tests for j2lint.cli.py
 """
+
 import logging
 import os
 import re
@@ -110,9 +111,7 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
         ),
     ],
 )
-def test_sort_issues(
-    make_issues, number_issues, issues_modifications, expected_sorted_issues_ids
-):
+def test_sort_issues(make_issues, number_issues, issues_modifications, expected_sorted_issues_ids):
     """
     Test j2lint.cli.sort_issues
 
@@ -125,7 +124,6 @@ def test_sort_issues(
     appropriate issues, apply the sort_issues method and verifies the
     ordering is correct
     """
-
     issues = make_issues(number_issues)
 
     # In the next step we apply modifications on the generated LinterErrors
@@ -200,12 +198,9 @@ def test_print_string_output(
     """
     Test j2lint.cli.print_string_output
     """
-
     errors = {"dummy.j2": make_issues(number_errors)}
     warnings = {"dummy.j2": make_issues(number_warnings)}
-    total_errors, total_warnings = print_string_output(
-        errors, warnings, options.verbose
-    )
+    total_errors, total_warnings = print_string_output(errors, warnings, options.verbose)
 
     assert total_errors == expected_output[0]
     assert total_warnings == expected_output[1]
@@ -251,7 +246,6 @@ def test_print_json_output(
     """
     Test j2lint.cli.print_json_output
     """
-
     errors = {"ERRORS": make_issues(number_errors)}
     warnings = {"WARNINGS": make_issues(number_warnings)}
     total_errors, total_warnings = print_json_output(errors, warnings)
@@ -376,9 +370,7 @@ def test_run(
     if expected_stderr == "HELP":
         expected_stderr = j2lint_usage_string
     with expected_raise:
-        with patch("j2lint.cli.Runner.run") as mocked_runner_run, patch(
-            "logging.disable"
-        ):
+        with patch("j2lint.cli.Runner.run") as mocked_runner_run, patch("logging.disable"):
             mocked_runner_run.return_value = (
                 make_issues(number_errors),
                 make_issues(number_warnings),
@@ -393,9 +385,7 @@ def test_run(
             else:
                 assert expected_stdout in captured.out
             assert run_return_value == expected_exit_code
-            if ("-o" in argv or "--stdout" in argv) and (
-                "-d" in argv or "--debug" in argv
-            ):
+            if ("-o" in argv or "--stdout" in argv) and ("-d" in argv or "--debug" in argv):
                 assert "DEBUG" in [record.levelname for record in caplog.records]
 
 
@@ -411,9 +401,7 @@ def test_run_stdin(capsys):
 
     In this test, the isatty answer is mocked.
     """
-    with patch("sys.stdin") as patched_stdin, patch(
-        "os.unlink", side_effect=os.unlink
-    ) as mocked_os_unlink, patch("logging.disable"):
+    with patch("sys.stdin") as patched_stdin, patch("os.unlink", side_effect=os.unlink) as mocked_os_unlink, patch("logging.disable"):
         patched_stdin.isatty.return_value = False
         patched_stdin.read.return_value = "{%set test=42 %}"
         run_return_value = run(["--log", "--stdin"])

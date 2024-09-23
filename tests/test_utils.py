@@ -4,6 +4,7 @@
 """
 Tests for j2lint.utils.py
 """
+
 import pathlib
 
 import pytest
@@ -93,9 +94,7 @@ def test_is_valid_file_type(file_name, extensions, expected):
             does_not_raise(),
         ),
         (["test"], [".j2", ".jinja2", ".jinja"], [], does_not_raise()),
-        pytest.param(
-            "not_a_list", None, None, pytest.raises(TypeError), id="Invalid input type"
-        ),
+        pytest.param("not_a_list", None, None, pytest.raises(TypeError), id="Invalid input type"),
     ],
 )
 def test_get_files(file_or_dir_names, extensions, expected_value, expectation):
@@ -204,9 +203,7 @@ def test_get_jinja_variables():
 @pytest.mark.parametrize(
     "comments, expected_value",
     [
-        pytest.param(
-            ["{# j2lint: disable=test-rule-0 #}"], True, id="found_short_description"
-        ),
+        pytest.param(["{# j2lint: disable=test-rule-0 #}"], True, id="found_short_description"),
         pytest.param(["{# j2lint: disable=T0 #}"], True, id="found_id"),
         pytest.param(
             ["{# j2lint: disable=test-rule-1 #}"],

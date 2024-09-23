@@ -1,8 +1,8 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""cli.py - Command line argument parser.
-"""
+"""cli.py - Command line argument parser."""
+
 from __future__ import annotations
 
 import argparse
@@ -51,7 +51,8 @@ CONSOLE = Console()
 def create_parser() -> argparse.ArgumentParser:
     """Initializes a new argument parser object
 
-    Returns:
+    Returns
+    -------
         ArgumentParser: Argument parser object
     """
     parser = argparse.ArgumentParser(prog=NAME, description=DESCRIPTION)
@@ -63,9 +64,7 @@ def create_parser() -> argparse.ArgumentParser:
         default=[],
         help="files or directories to lint",
     )
-    parser.add_argument(
-        "-l", "--list", default=False, action="store_true", help="list of lint rules"
-    )
+    parser.add_argument("-l", "--list", default=False, action="store_true", help="list of lint rules")
     parser.add_argument(
         "-r",
         "--rules_dir",
@@ -88,12 +87,8 @@ def create_parser() -> argparse.ArgumentParser:
         help="comma delimited list of file extensions, default is 'j2,jinja,jinja2'",
         type=lambda s: [f".{item}" for item in s.split(",")],
     )
-    parser.add_argument(
-        "-d", "--debug", default=False, action="store_true", help="enable debug logs"
-    )
-    parser.add_argument(
-        "-j", "--json", default=False, action="store_true", help="enable JSON output"
-    )
+    parser.add_argument("-d", "--debug", default=False, action="store_true", help="enable debug logs")
+    parser.add_argument("-j", "--json", default=False, action="store_true", help="enable JSON output")
     parser.add_argument(
         "-s",
         "--stdin",
@@ -101,15 +96,9 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="accept template from STDIN",
     )
-    parser.add_argument(
-        "--log", default=False, action="store_true", help="enable logging"
-    )
-    parser.add_argument(
-        "--version", default=False, action="store_true", help="Version of j2lint"
-    )
-    parser.add_argument(
-        "-o", "--stdout", default=False, action="store_true", help="stdout logging"
-    )
+    parser.add_argument("--log", default=False, action="store_true", help="enable logging")
+    parser.add_argument("--version", default=False, action="store_true", help="Version of j2lint")
+    parser.add_argument("-o", "--stdout", default=False, action="store_true", help="stdout logging")
     parser.add_argument(
         "-i",
         "--ignore",
@@ -136,19 +125,16 @@ def sort_issues(issues: list[LinterError]) -> list[LinterError]:
     Args:
         issues (list): list of issue dictionaries
 
-    Returns:
+    Returns
+    -------
         list: list of sorted issue dictionaries
     """
-    issues.sort(
-        key=lambda issue: (issue.filename, issue.line_number, issue.rule.rule_id)
-    )
+    issues.sort(key=lambda issue: (issue.filename, issue.line_number, issue.rule.rule_id))
     return issues
 
 
-def get_linting_issues(
-    files: list[str], collection: RulesCollection, checked_files: list[str]
-) -> tuple[dict[str, list[LinterError]], dict[str, list[LinterError]]]:
-    """checking errors and warnings"""
+def get_linting_issues(files: list[str], collection: RulesCollection, checked_files: list[str]) -> tuple[dict[str, list[LinterError]], dict[str, list[LinterError]]]:
+    """Checking errors and warnings"""
     lint_errors: dict[str, list[LinterError]] = {}
     lint_warnings: dict[str, list[LinterError]] = {}
 
@@ -169,7 +155,7 @@ def print_json_output(
     lint_errors: dict[str, list[LinterError]],
     lint_warnings: dict[str, list[LinterError]],
 ) -> tuple[int, int]:
-    """printing json output"""
+    """Printing json output"""
     json_output: dict[str, list[str]] = {"ERRORS": [], "WARNINGS": []}
     for _, errors in lint_errors.items():
         for error in errors:
@@ -187,11 +173,9 @@ def print_string_output(
     lint_warnings: dict[str, list[LinterError]],
     verbose: bool,
 ) -> tuple[int, int]:
-    """print non-json output"""
+    """Print non-json output"""
 
-    def print_issues(
-        lint_issues: dict[str, list[LinterError]], issue_type: str
-    ) -> None:
+    def print_issues(lint_issues: dict[str, list[LinterError]], issue_type: str) -> None:
         CONSOLE.rule(f"[bold red]JINJA2 LINT {issue_type}")
         for key, issues in lint_issues.items():
             if not issues:
@@ -214,10 +198,7 @@ def print_string_output(
         if verbose:
             CONSOLE.print("Linting complete. No problems found!", style="green")
     else:
-        CONSOLE.print(
-            f"\nJinja2 linting finished with "
-            f"{total_lint_errors} error(s) and {total_lint_warnings} warning(s)"
-        )
+        CONSOLE.print(f"\nJinja2 linting finished with " f"{total_lint_errors} error(s) and {total_lint_warnings} warning(s)")
 
     return total_lint_errors, total_lint_warnings
 
@@ -245,7 +226,8 @@ def run(args: list[str] | None = None) -> int:
     Args:
         args ([string], optional): Command line arguments. Defaults to None.
 
-    Returns:
+    Returns
+    -------
         int: 0 on success
     """
     # pylint: disable=too-many-branches
@@ -273,9 +255,7 @@ def run(args: list[str] | None = None) -> int:
     checked_files: list[str] = []
 
     if options.stdin and not sys.stdin.isatty():
-        with tempfile.NamedTemporaryFile(
-            "w", suffix=".j2", delete=False
-        ) as stdin_tmpfile:
+        with tempfile.NamedTemporaryFile("w", suffix=".j2", delete=False) as stdin_tmpfile:
             stdin_tmpfile.write(sys.stdin.read())
             stdin_filename = stdin_tmpfile.name
             file_or_dir_names.append(stdin_filename)
@@ -283,11 +263,7 @@ def run(args: list[str] | None = None) -> int:
     # Collect the rules from the configuration
     collection = RulesCollection(options.verbose)
     for rules_dir in options.rules_dir:
-        collection.extend(
-            RulesCollection.create_from_directory(
-                rules_dir, options.ignore, options.warn
-            ).rules
-        )
+        collection.extend(RulesCollection.create_from_directory(rules_dir, options.ignore, options.warn).rules)
 
     # List lint rules
     if options.list:
@@ -315,9 +291,7 @@ def run(args: list[str] | None = None) -> int:
         logger.debug("JSON output enabled")
         total_lint_errors, _ = print_json_output(lint_errors, lint_warnings)
     else:
-        total_lint_errors, _ = print_string_output(
-            lint_errors, lint_warnings, options.verbose
-        )
+        total_lint_errors, _ = print_string_output(lint_errors, lint_warnings, options.verbose)
 
     # Remove temporary file
     if stdin_filename is not None:

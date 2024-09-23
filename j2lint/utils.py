@@ -1,8 +1,8 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""utils.py - Utility functions for jinja2 linter.
-"""
+"""utils.py - Utility functions for jinja2 linter."""
+
 from __future__ import annotations
 
 import glob
@@ -29,7 +29,8 @@ def load_plugins(directory: str) -> list[Rule]:
     Args:
         directory (string): Loads the modules a directory
 
-    Returns:
+    Returns
+    -------
         list: List of rule classes
     """
     result = []
@@ -40,9 +41,7 @@ def load_plugins(directory: str) -> list[Rule]:
             logger.debug("Loading plugin %s", plugin_name)
             spec = importlib.util.spec_from_file_location(plugin_name, plugin_file)
             if plugin_name != "__init__" and spec is not None:
-                class_name = "".join(
-                    str(name).capitalize() for name in plugin_name.split("_")
-                )
+                class_name = "".join(str(name).capitalize() for name in plugin_name.split("_"))
                 module = importlib.util.module_from_spec(spec)
                 if spec.loader is not None:
                     spec.loader.exec_module(module)
@@ -63,7 +62,8 @@ def is_valid_file_type(file_name: str, extensions: list[str]) -> bool:
         file_name (string): file path with extension
         extensions (list): list of file extensions to look for
 
-    Returns:
+    Returns
+    -------
         boolean: True if file type is correct
     """
     extension = os.path.splitext(file_name)[1].lower()
@@ -77,15 +77,14 @@ def get_files(file_or_dir_names: list[str], extensions: list[str]) -> list[str]:
         file_or_dir_names (list): list of directories and files
         extensions (list): list of file extensions to look for
 
-    Returns:
+    Returns
+    -------
         list: list of file paths
     """
     file_paths: list[str] = []
 
     if not isinstance(file_or_dir_names, (list, set)):
-        raise TypeError(
-            f"get_files expects a list or a set and got {file_or_dir_names}"
-        )
+        raise TypeError(f"get_files expects a list or a set and got {file_or_dir_names}")
 
     for file_or_dir in file_or_dir_names:
         if os.path.isdir(file_or_dir):
@@ -106,13 +105,12 @@ def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
     Args:
         nested_list (list): Nested list
 
-    Returns:
+    Returns
+    -------
         a generator that yields the elements of each object in the nested_list
     """
     if not isinstance(nested_list, (list, tuple)):
-        raise TypeError(
-            f"flatten is expecting a list or tuple and received {nested_list}"
-        )
+        raise TypeError(f"flatten is expecting a list or tuple and received {nested_list}")
     for element in nested_list:
         if isinstance(element, Iterable) and not isinstance(element, (str, bytes)):
             yield from flatten(element)
@@ -120,16 +118,15 @@ def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
             yield element
 
 
-def get_tuple(
-    list_of_tuples: list[tuple[Any, ...]], item: Any
-) -> tuple[Any, ...] | None:
+def get_tuple(list_of_tuples: list[tuple[Any, ...]], item: Any) -> tuple[Any, ...] | None:
     """Checks if an item is present in any of the tuples
 
     Args:
         list_of_tuples (list): list of tuples
         item (object): single object which can be in a tuple
 
-    Returns:
+    Returns
+    -------
         [tuple]: tuple if the item exists in any of the tuples
     """
     return next((entry for entry in list_of_tuples if item in entry), None)
@@ -170,7 +167,8 @@ def get_jinja_statements(text: str, indentation: bool = False) -> list[Statement
         Found jinja statements [(' endif ', 1, 1, '{%', '%}')]
         Found jinja statements []
 
-    Returns:
+    Returns
+    -------
         [list]: list of jinja statements
 
     # TODO - should probably return a JinjaStatement object..
@@ -206,7 +204,8 @@ def delimit_jinja_statement(line: str, start: str = "{%", end: str = "%}") -> st
     Args:
         line (string): text line
 
-    Returns:
+    Returns
+    -------
         [string]: jinja statement with jinja start and end delimiters
     """
     return start + line + end
@@ -218,7 +217,8 @@ def get_jinja_comments(text: str) -> list[str]:
     Args:
         line (string): text to get jinja comments
 
-    Returns:
+    Returns
+    -------
         [list]: returns list of jinja comments
     """
     regex_pattern = re.compile("(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
@@ -232,7 +232,8 @@ def get_jinja_variables(text: str) -> list[str]:
     Args:
         line (string): text to get jinja variables
 
-    Returns:
+    Returns
+    -------
         [list]: returns list of jinja variables
     """
     regex_pattern = regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
@@ -246,7 +247,8 @@ def is_rule_disabled(text: str, rule: Rule) -> bool:
         text (string): text to check
         rule (Rule): Rule object
 
-    Returns:
+    Returns
+    -------
         [boolean]: True if rule is disabled
     """
     comments = get_jinja_comments(text)

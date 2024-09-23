@@ -8,6 +8,7 @@ To understand the values given to this class it is paramount to read
 j2lint.utils.get_jinja_statement as this is the path in the code
 that will parse a file content and return a list of statements - abusively called lines
 """
+
 import pytest
 
 from j2lint.linter.indenter.statement import JinjaStatement

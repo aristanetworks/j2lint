@@ -1,8 +1,8 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""collection.py - Class to create a collection of linting rules.
-"""
+"""collection.py - Class to create a collection of linting rules."""
+
 from __future__ import annotations
 
 import json
@@ -51,7 +51,8 @@ class RulesCollection:
         Args:
             file_dict (dict): file path and file type
 
-        Returns:
+        Returns
+        -------
             tuple(list, list): a tuple containing the list of linting errors
                                and the list of linting warnings found
         """
@@ -60,9 +61,9 @@ class RulesCollection:
         warnings: list[LinterError] = []
 
         try:
-            with open(file_path, mode="r", encoding="utf-8") as file:
+            with open(file_path, encoding="utf-8") as file:
                 text = file.read()
-        except IOError as err:
+        except OSError as err:
             logger.warning("Could not open %s - %s", file_path, err.strerror)
             return errors, warnings
 
@@ -131,17 +132,10 @@ class RulesCollection:
 
     def to_json(self) -> str:
         """Return a json representation of the collection as a list of the rules"""
-        return json.dumps(
-            [
-                json.loads(rule.to_json())
-                for rule in sorted(self.rules, key=lambda x: (x.origin, x.rule_id))
-            ]
-        )
+        return json.dumps([json.loads(rule.to_json()) for rule in sorted(self.rules, key=lambda x: (x.origin, x.rule_id))])
 
     @classmethod
-    def create_from_directory(
-        cls, rules_dir: str, ignore_rules: list[str], warn_rules: list[str]
-    ) -> RulesCollection:
+    def create_from_directory(cls, rules_dir: str, ignore_rules: list[str], warn_rules: list[str]) -> RulesCollection:
         """Creates a collection from all rule modules
 
         Args:
@@ -150,7 +144,8 @@ class RulesCollection:
             warn_rules (list): list of rule short_descriptions or ids to consider as
                                warnings rather than errors
 
-        Returns:
+        Returns
+        -------
             list: a collection of rule objects
         """
         result = cls()

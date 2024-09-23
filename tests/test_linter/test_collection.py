@@ -4,6 +4,7 @@
 """
 Tests for j2lint.linter.collection.py
 """
+
 import logging
 import pathlib
 from unittest import mock
@@ -107,13 +108,8 @@ class TestRulesCollection:
             autospec=True,
         ):
             errors, warnings = test_collection.run(file_path)
-            error_tuples = [
-                (error.rule.rule_id, error.rule.short_description) for error in errors
-            ]
-            warning_tuples = [
-                (warning.rule.rule_id, warning.rule.short_description)
-                for warning in warnings
-            ]
+            error_tuples = [(error.rule.rule_id, error.rule.short_description) for error in errors]
+            warning_tuples = [(warning.rule.rule_id, warning.rule.short_description) for warning in warnings]
             assert error_tuples == expected_results[0]
             assert warning_tuples == expected_results[1]
 
@@ -121,9 +117,7 @@ class TestRulesCollection:
             # True for every test that goes beyond the file do not exist
             assert any("Ignoring rule T2" in message for message in caplog.messages)
             # True for the test file
-            assert any(
-                "Skipping linting rule T3" in message for message in caplog.messages
-            )
+            assert any("Skipping linting rule T3" in message for message in caplog.messages)
 
     def test__repr__(self, test_collection, test_other_rule):
         """
@@ -132,20 +126,13 @@ class TestRulesCollection:
         assert str(test_collection) == "Origin: BUILT-IN\nT0: test rule 0"
         test_other_rule.origin = "DUMMY"
         test_collection.extend([test_other_rule])
-        assert (
-            str(test_collection)
-            == "Origin: BUILT-IN\nT0: test rule 0\nOrigin: DUMMY\nT1: test rule 1"
-        )
+        assert str(test_collection) == "Origin: BUILT-IN\nT0: test rule 0\nOrigin: DUMMY\nT1: test rule 1"
 
     @pytest.mark.parametrize(
         "ignore_rules, warn_rules",
         [
-            pytest.param(
-                ["S0", "operator-enclosed-by-spaces"], [], id="no_warn_no_ignore"
-            ),
-            pytest.param(
-                [], ["S0", "operator-enclosed-by-spaces"], id="warn_no_ignore"
-            ),
+            pytest.param(["S0", "operator-enclosed-by-spaces"], [], id="no_warn_no_ignore"),
+            pytest.param([], ["S0", "operator-enclosed-by-spaces"], id="warn_no_ignore"),
             pytest.param(["S0"], ["operator-enclosed-by-spaces"], id="ignore_no_warn"),
             pytest.param([], ["S42"], id="ignore_absent_rule"),
             pytest.param(["S42"], [], id="warn_absent_rule"),
@@ -167,16 +154,11 @@ class TestRulesCollection:
                 JinjaOperatorHasSpacesRule(),
                 JinjaTemplateSyntaxErrorRule(),
             ]
-            collection = RulesCollection.create_from_directory(
-                "dummy", ignore_rules, warn_rules
-            )
+            collection = RulesCollection.create_from_directory("dummy", ignore_rules, warn_rules)
             mocked_load_plugins.assert_called_once_with("dummy")
             assert collection.rules == mocked_load_plugins.return_value
             for rule in collection.rules:
-                if (
-                    rule.rule_id in ignore_rules
-                    or rule.short_description in ignore_rules
-                ):
+                if rule.rule_id in ignore_rules or rule.short_description in ignore_rules:
                     assert rule.ignore is True
                 if rule.rule_id in warn_rules or rule.short_description in warn_rules:
                     assert rule in rule.warn

@@ -141,9 +141,7 @@ PARAMS = [
     "filename, j2_errors_ids, j2_warnings_ids, expected_log",
     PARAMS,
 )
-def test_rules(
-    caplog, collection, filename, j2_errors_ids, j2_warnings_ids, expected_log
-):
+def test_rules(caplog, collection, filename, j2_errors_ids, j2_warnings_ids, expected_log):
     """
     caplog: fixture to capture logs
     collection: a collection from the j2lint default rules
@@ -152,8 +150,7 @@ def test_rules(
     j2_warnings_ids: the ids of the expected warnings (<ID>, <Line Number>)
     expected_log: a list of expected log tuples as defined per caplog.record_tuples
     """
-
-    with open(filename, "r") as f:
+    with open(filename) as f:
         print(f.read())
     caplog.set_level(logging.INFO)
     errors, warnings = collection.run(filename)

@@ -2,8 +2,9 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """node.py - Class node for creating a parse tree for jinja statements and
-             checking jinja statement indentation.
+checking jinja statement indentation.
 """
+
 from __future__ import annotations
 
 from typing import NoReturn, Tuple
@@ -53,7 +54,8 @@ class Node:
             line_no (int): line number
             indent_level (int, optional): expected indentation level. Defaults to 0.
 
-        Returns:
+        Returns
+        -------
             Node: new Node class object
         """
         node = Node()
@@ -67,16 +69,15 @@ class Node:
         return node
 
     @staticmethod
-    def create_indentation_error(
-        node: Node, message: str
-    ) -> NodeIndentationError | None:
+    def create_indentation_error(node: Node, message: str) -> NodeIndentationError | None:
         """Creates indentation error tuple
 
         Args:
             node (Node): Node class object to create error for
             message (string): error message for the line
 
-        Returns:
+        Returns
+        -------
             tuple: tuple representing the indentation error
         """
         if node.statement is None:
@@ -92,10 +93,8 @@ class Node:
             message,
         )
 
-    def check_indent_level(
-        self, result: list[NodeIndentationError], node: Node
-    ) -> None:
-        """check if the actual and expected indent level for a line match
+    def check_indent_level(self, result: list[NodeIndentationError], node: Node) -> None:
+        """Check if the actual and expected indent level for a line match
 
         Args:
             result (list): list of tuples of indentation errors
@@ -104,15 +103,8 @@ class Node:
         if node.statement is None:
             return
         actual = node.statement.begin
-        if (
-            jinja_node_stack
-            and jinja_node_stack[0].statement is not None
-            and jinja_node_stack[0].statement.start_delimiter in JINJA_START_DELIMITERS
-        ):
-            self.block_start_indent = 1
-        elif (
-            node.expected_indent == 0
-            and node.statement.start_delimiter in JINJA_START_DELIMITERS
+        if (jinja_node_stack and jinja_node_stack[0].statement is not None and jinja_node_stack[0].statement.start_delimiter in JINJA_START_DELIMITERS) or (
+            node.expected_indent == 0 and node.statement.start_delimiter in JINJA_START_DELIMITERS
         ):
             self.block_start_indent = 1
         else:
@@ -121,9 +113,7 @@ class Node:
         if node.statement.start_delimiter in JINJA_START_DELIMITERS:
             expected = node.expected_indent + self.block_start_indent
         else:
-            expected = (
-                node.expected_indent + DEFAULT_WHITESPACES + self.block_start_indent
-            )
+            expected = node.expected_indent + DEFAULT_WHITESPACES + self.block_start_indent
         if actual != expected:
             message = f"Bad Indentation, expected {expected}, got {actual}"
             if (error := self.create_indentation_error(node, message)) is not None:
@@ -137,8 +127,7 @@ class Node:
         """
         if new_line_no is None:
             raise JinjaLinterError(
-                "Recursive check_indentation returned None for an opening tag "
-                f"line {current_line_no} - missing closing tag",
+                "Recursive check_indentation returned None for an opening tag " f"line {current_line_no} - missing closing tag",
             )
         return new_line_no
 
@@ -163,12 +152,14 @@ class Node:
             indent_level (int, optional): the expected indent level for the
                                           current line. Defaults to 0.
 
-        Raises:
+        Raises
+        ------
             JinjaLinterError: Raises error if the text file has jinja tags
                               which are not supported by this indenter
             ValueError: Raised when no begin_tag_tuple can be found in a node in the stack
 
-        Returns:
+        Returns
+        -------
             line_no (int) or None
         """
 
@@ -185,9 +176,7 @@ class Node:
             self.children.append(node)
             line_no = self._assert_not_none(
                 line_no,
-                node.check_indentation(
-                    result, lines, line_no + 1, indent_level + INDENT_SHIFT
-                ),
+                node.check_indentation(result, lines, line_no + 1, indent_level + INDENT_SHIFT),
             )
 
             self.check_indent_level(result, node)
@@ -203,9 +192,7 @@ class Node:
 
             line_no = self._assert_not_none(
                 line_no,
-                node.check_indentation(
-                    result, lines, line_no + 1, indent_level + INDENT_SHIFT
-                ),
+                node.check_indentation(result, lines, line_no + 1, indent_level + INDENT_SHIFT),
             )
 
             self.check_indent_level(result, node)
@@ -240,13 +227,9 @@ class Node:
                 return _handle_end_tag(node, line_no)
 
             if node.tag in MIDDLE_TAGS:
-                begin_tag_tuple = get_tuple(
-                    JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag
-                )
+                begin_tag_tuple = get_tuple(JINJA_STATEMENT_TAG_NAMES, jinja_node_stack[-1].tag)
                 if begin_tag_tuple is None:
-                    _append_error_to_result_and_raise(
-                        f"Node {jinja_node_stack[-1]} should have been a begin_tag"
-                    )
+                    _append_error_to_result_and_raise(f"Node {jinja_node_stack[-1]} should have been a begin_tag")
 
                 if node.tag in begin_tag_tuple:  # type: ignore
                     if jinja_node_stack[-1] != self:

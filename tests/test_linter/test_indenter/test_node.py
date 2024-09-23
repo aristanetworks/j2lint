@@ -4,6 +4,7 @@
 """
 Tests for j2lint.linter.node.py
 """
+
 import pytest
 
 from j2lint.linter.indenter.node import Node
@@ -14,7 +15,6 @@ class TestNode:
     def test_create_node(self):
         """ """
         # TODO - why is it not an __init__ method???
-        pass
 
     def test_create_indentation_error(self):
         """
