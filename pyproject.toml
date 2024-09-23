@@ -73,9 +73,6 @@ push            = false
 "j2lint/__init__.py" = ["{version}"]
 "tests/test_cli.py" = ["{version}"]
 
-[tool.pylint.'MESSAGES CONTROL']
-max-line-length = 165
-
 [tool.tox]
 legacy_tox_ini = """
 [tox]
@@ -337,3 +334,28 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
   "S105",   # Possible hardcoded password
   "INP001", # Implicit packages
 ]
+
+################################
+# Pylint
+################################
+[tool.pylint]
+disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh/ruff/issues/970
+    "invalid-name",
+    "fixme",
+    "unused-import",
+    "unused-argument",
+    "keyword-arg-before-vararg",
+    "protected-access",
+    "too-many-arguments",
+    "too-many-positional-arguments",  # New in pylint 3.3.0
+    "wrong-import-position",
+    "pointless-statement",
+    "broad-exception-caught",
+    "line-too-long",
+    "unused-variable",
+    "redefined-builtin",
+    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
+    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
+    "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+]
+max-line-length=165
