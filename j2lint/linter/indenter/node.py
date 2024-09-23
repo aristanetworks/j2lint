@@ -1,9 +1,7 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""node.py - Class node for creating a parse tree for jinja statements and
-checking jinja statement indentation.
-"""
+"""node.py - Class node for creating a parse tree for jinja statements and checking jinja statement indentation."""
 
 from __future__ import annotations
 
@@ -30,7 +28,7 @@ NodeIndentationError = Tuple[int, str, str]
 
 
 class Node:
-    """Node class which represents a jinja file as a tree"""
+    """Node class which represents a jinja file as a tree."""
 
     # pylint: disable=too-many-instance-attributes
     # Eight arguments is reasonable in this case
@@ -44,19 +42,24 @@ class Node:
         self.block_start_indent: int = 0
         self.expected_indent: int = 0
 
-    # pylint: disable=fixme
-    # TODO - This should be called create_child_node
+    # TODO: This should be called create_child_node
     def create_node(self, line: Statement, line_no: int, indent_level: int = 0) -> Node:
-        """Initializes a Node class object
+        """
+        Initialize a Node class object.
 
-        Args:
-            line (Statement): Parsed line of the template using get_jinja_statement
-            line_no (int): line number
-            indent_level (int, optional): expected indentation level. Defaults to 0.
+        Parameters
+        ----------
+        line
+            Parsed line of the template using get_jinja_statement.
+        line_no
+            Line number.
+        indent_level
+            Expected indentation level. Defaults to 0.
 
         Returns
         -------
-            Node: new Node class object
+        Node
+            A new Node class object.
         """
         node = Node()
         statement = JinjaStatement(line)
@@ -70,15 +73,20 @@ class Node:
 
     @staticmethod
     def create_indentation_error(node: Node, message: str) -> NodeIndentationError | None:
-        """Creates indentation error tuple
+        """
+        Create indentation error tuple.
 
-        Args:
-            node (Node): Node class object to create error for
-            message (string): error message for the line
+        Parameters
+        ----------
+        node
+            Node object to create error for.
+        message
+            Error message for the line.
 
         Returns
         -------
-            tuple: tuple representing the indentation error
+        NodeIndentationError | None
+            A tuple representing the indentation error.
         """
         if node.statement is None:
             return None
@@ -94,11 +102,15 @@ class Node:
         )
 
     def check_indent_level(self, result: list[NodeIndentationError], node: Node) -> None:
-        """Check if the actual and expected indent level for a line match
+        """
+        Check if the actual and expected indent level for a line match.
 
-        Args:
-            result (list): list of tuples of indentation errors
-            node (Node): Node object for which to check the level is correct
+        Parameters
+        ----------
+        result
+            List of tuples of indentation errors
+        node
+            Node object for which to check the level is correct
         """
         if node.statement is None:
             return
@@ -122,18 +134,34 @@ class Node:
 
     def _assert_not_none(self, current_line_no: int, new_line_no: int | None) -> int:
         """
-        Helper function to verify that the new_line_no is not None
+        Verify that the new_line_no is not None.
+
+        Parameters
+        ----------
+        current_line_no
+            The current line number with the opening Jinja tag.
+        new_line_no
+            The new line number
+
+        Returns
+        -------
+        int
+            The new line number if not None.
+
+        Raises
+        ------
+        JinjaLinterError
+            If new line number is None.
+
         TODO: Probably should never return None and instead raise in check_indentation
         """
         if new_line_no is None:
-            raise JinjaLinterError(
-                "Recursive check_indentation returned None for an opening tag " f"line {current_line_no} - missing closing tag",
-            )
+            msg = ("Recursive check_indentation returned None for an opening tag " f"line {current_line_no} - missing closing tag",)
+            raise JinjaLinterError(msg)
         return new_line_no
 
     # pylint: disable=inconsistent-return-statements,fixme
-    # TODO - newer version of pylint (2.17.0) catches some error here
-    #        address in refactoring
+    # TODO: newer version of pylint (2.17.0) catches some error here address in refactoring
     def check_indentation(
         self,
         result: list[NodeIndentationError],
@@ -141,32 +169,35 @@ class Node:
         line_no: int = 0,
         indent_level: int = 0,
     ) -> int | None:
-        """Checks indentation for a list of lines
-        Updates the 'result' list argument with indentation errors
+        """
+        Check indentation for a list of lines and update the 'result' list argument with indentation errors.
 
-        Args:
-            result (list): list of indentation error tuples
-            lines (list): lines which are to be checked for indentation
-            line_no (int, optional):  the current lines number being evaluated.
-                                      Defaults to 0.
-            indent_level (int, optional): the expected indent level for the
-                                          current line. Defaults to 0.
+        Parameters
+        ----------
+        result
+            List of indentation error tuples.
+        lines
+            Lines which are to be checked for indentation.
+        line_no
+            The current lines number being evaluated.  Defaults to 0.
+        indent_level
+            The expected indent level for the current line. Defaults to 0.
 
         Raises
         ------
-            JinjaLinterError: Raises error if the text file has jinja tags
-                              which are not supported by this indenter
-            ValueError: Raised when no begin_tag_tuple can be found in a node in the stack
+        JinjaLinterError
+            Raised when the text file has jinja tags which are not supported by this indenter.
+        ValueError
+            Raised when no begin_tag_tuple can be found in a node in the stack.
 
         Returns
         -------
-            line_no (int) or None
+        int | None
+            line_no or None
         """
 
         def _append_error_to_result_and_raise(message: str) -> NoReturn:
-            """
-            Helper function to append error to result and raise a JinjaLinterError
-            """
+            """Append error to result and raise a JinjaLinterError."""
             if (error := self.create_indentation_error(node, message)) is not None:
                 result.append(error)
             raise JinjaLinterError(message)
@@ -206,7 +237,7 @@ class Node:
                 matchnode.node_end = line_no
                 node.node_end = line_no
                 node.expected_indent = matchnode.expected_indent
-                self.parent.children.append(node)  # type: ignore
+                self.parent.children.append(node)
                 if matchnode == self:
                     line_no += 1
                     self.check_indent_level(result, node)
@@ -231,7 +262,7 @@ class Node:
                 if begin_tag_tuple is None:
                     _append_error_to_result_and_raise(f"Node {jinja_node_stack[-1]} should have been a begin_tag")
 
-                if node.tag in begin_tag_tuple:  # type: ignore
+                if node.tag in begin_tag_tuple:
                     if jinja_node_stack[-1] != self:
                         del node
                         return line_no

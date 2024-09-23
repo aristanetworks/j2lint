@@ -65,7 +65,7 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
     """
     Test j2lint.cli.create_parser
 
-    the namespace_modifications is a dictionnary where key
+    the namespace_modifications is a dictionary where key
     is one of the keys in the namespace and value is the value
     it should be overwritten to.
 
@@ -351,7 +351,7 @@ def test_run(
     """
     Test the j2lint.cli.run method
 
-    This test is a bit too complex and should probably be splitted out to test various
+    This test is a bit too complex and should probably be split out to test various
     functionalities
 
     the call is to test the various options of the main entry point, patching away inner

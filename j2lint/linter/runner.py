@@ -5,14 +5,18 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from j2lint.logger import logger
 
-from .collection import RulesCollection
-from .error import LinterError
+if TYPE_CHECKING:
+    from .collection import RulesCollection
+    from .error import LinterError
 
 
 class Runner:
-    """Class to run the rules collection for all the files
+    """
+    Class to run the rules collection for all the files.
 
     TODO: refactor - with this code it seems that files will always
           be a set of 1 file - indeed, a different Runner is created
@@ -25,34 +29,35 @@ class Runner:
         self.checked_files = checked_files
 
     def is_already_checked(self, file_path: str) -> bool:
-        """Returns true if the file is already checked once
+        """
+        Return True if the file is already checked once.
 
-        Args:
-            file_path (string): file path
+        Parameters
+        ----------
+        file_path
+            File path
 
         Returns
         -------
-            bool: True if file is already checked once
+        bool
+            True if file is already checked once
         """
         return file_path in self.checked_files
 
     def run(self) -> tuple[list[LinterError], list[LinterError]]:
-        """Runs the lint rules collection on all the files
+        """
+        Run the lint rules collection on all the files.
 
         Returns
         -------
-            tuple(list, list): a tuple containing the list of linting errors
-                               and the list of linting warnings found
-        TODO - refactor this - it is quite weird to do the conversion
-                               from tuple to dict here
-                               maybe simply init with the dict
+        tuple[list, list]
+            A tuple containing the list of linting errors and the list of linting warnings found.
+
+        TODO: refactor this - it is quite weird to do the conversion from tuple to dict here maybe simply init with the dict
         """
         files: list[str] = []
         for index, file in enumerate(self.files):
-            # pylint: disable = fixme
-            # FIXME - as of now it seems that both next tests
-            #         will never occurs as self.files is always
-            #         a single file.
+            # TODO: as of now it seems that both next tests will never occurs as self.files is always a single file.
             # Skip already checked files
             if self.is_already_checked(file):
                 continue
@@ -63,9 +68,7 @@ class Runner:
 
         errors: list[LinterError] = []
         warnings: list[LinterError] = []
-        # pylint: disable = fixme
-        # FIXME - if there are multiple files, errors and warnings are overwritten..
-        #         fortunately there is only one file currently
+        # TODO: if there are multiple files, errors and warnings are overwritten.. fortunately there is only one file currently
         for file in files:
             logger.debug("Running linting rules for %s", file)
             errors, warnings = self.collection.run(file)

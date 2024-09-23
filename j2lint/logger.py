@@ -13,8 +13,19 @@ JINJA2_LOG_FILE = "jinja2-linter.log"
 logger = logging.getLogger("")
 
 
-def add_handler(log: logging.Logger, stream_handler: bool, log_level: int) -> None:
-    """Defined logging handlers"""
+def add_handler(log: logging.Logger, log_level: int, *, stream_handler: bool) -> None:
+    """
+    Define logging handlers.
+
+    Parameters
+    ----------
+    log:
+        The logger to manipulate.
+    log_level:
+        The level to set on `log` as an integer.
+    stream_handler:
+        When True add a RotatingFileHandler to the logger, otherwise add a RichHandler.
+    """
     log_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     log.setLevel(log_level)
     if not stream_handler:

@@ -74,7 +74,7 @@ push            = false
 "tests/test_cli.py" = ["{version}"]
 
 [tool.pylint.'MESSAGES CONTROL']
-max-line-length = 160
+max-line-length = 165
 
 [tool.tox]
 legacy_tox_ini = """

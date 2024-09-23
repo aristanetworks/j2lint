@@ -99,7 +99,7 @@ ONE_ERROR = (
     "Jinja2 linting finished with 1 error(s) and 0 warning(s)\n"
 )
 
-# Cannot use """ because of the trailing whitspaces generated in rich Tree
+# Cannot use """ because of the trailing whitespaces generated in rich Tree
 ONE_WARNING_VERBOSE = (
     "───────────────────────────── JINJA2 LINT WARNINGS ─────────────────────────────\n"
     "dummy.j2\n"
@@ -112,7 +112,7 @@ ONE_WARNING_VERBOSE = (
     "Jinja2 linting finished with 0 error(s) and 1 warning(s)\n"
 )
 
-# Cannot use """ because of the trailing whitspaces generated in rich Tree
+# Cannot use """ because of the trailing whitespaces generated in rich Tree
 ONE_ERROR_ONE_WARNING_VERBOSE = (
     "────────────────────────────── JINJA2 LINT ERRORS ──────────────────────────────\n"
     "tests/data/test.j2\n"
