@@ -3,20 +3,21 @@
 # that can be found in the LICENSE file.
 """Tests for j2lint.cli.py."""
 
+from __future__ import annotations
+
 import logging
 import os
 import re
 from argparse import Namespace
-from collections.abc import Generator
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
 import pytest
 from rich.console import ConsoleDimensions
 
+from j2lint import CONSOLE
 from j2lint.cli import (
-    CONSOLE,
     create_parser,
     print_json_output,
     print_string_output,
@@ -36,7 +37,11 @@ from .utils import (
     j2lint_default_rules_string,
 )
 
-# pylint: disable=fixme, too-many-arguments
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from j2lint.linter.error import LinterError
+
 
 # Fixed size console for tests output
 CONSOLE.size = ConsoleDimensions(width=80, height=74)
@@ -112,7 +117,10 @@ def test_create_parser(default_namespace: Namespace, argv: list[str], namespace_
     ],
 )
 def test_sort_issues(
-    make_issues: pytest.Fixture, number_issues: int, issues_modifications: dict[int, dict[str, Any]], expected_sorted_issues_ids: list[tuple[Any]]
+    make_issues: Callable[[int], list[LinterError]],
+    number_issues: int,
+    issues_modifications: dict[int, dict[str, Any]],
+    expected_sorted_issues_ids: list[tuple[Any]],
 ) -> None:
     """Test j2lint.cli.sort_issues.
 
@@ -151,7 +159,7 @@ def test_sort_issues(
 
 
 @pytest.mark.parametrize(
-    ("options", "number_errors", "number_warnings", "expected_output, expected_stdout"),
+    ("options", "number_errors", "number_warnings", "expected_output", "expected_stdout"),
     [
         pytest.param(
             Namespace(verbose=False),
@@ -188,8 +196,8 @@ def test_sort_issues(
     ],
 )
 def test_print_string_output(
-    capsys: pytest.Fixture,
-    make_issues: pytest.Fixture,
+    capsys: pytest.LogCaptureFixture,
+    make_issues: Callable[[int], list[LinterError]],
     options: Namespace,
     number_errors: int,
     number_warnings: int,
