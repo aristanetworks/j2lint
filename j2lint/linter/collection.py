@@ -16,7 +16,7 @@ from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterator
 
     from .error import LinterError
     from .rule import Rule
@@ -31,9 +31,8 @@ class RulesCollection:
         self.rules: list[Rule] = []
         self.verbose = verbose
 
-    def __iter__(self) -> Iterable[Rule]:
-        """
-        Return iterable of Rules in the collection.
+    def __iter__(self) -> Iterator[Rule]:
+        """Return iterable of Rules in the collection.
 
         Returns
         -------
@@ -42,8 +41,7 @@ class RulesCollection:
         return iter(self.rules)
 
     def __len__(self) -> int:
-        """
-        Return the number of rules in the collection.
+        """Return the number of rules in the collection.
 
         Returns
         -------
@@ -53,8 +51,7 @@ class RulesCollection:
         return len(self.rules)
 
     def extend(self, more: list[Rule]) -> None:
-        """
-        Extend list of rules.
+        """Extend list of rules.
 
         TODO: This does not protect against duplicate rules
 
@@ -66,8 +63,7 @@ class RulesCollection:
         self.rules.extend(more)
 
     def run(self, file_path: Path) -> tuple[list[LinterError], list[LinterError]]:
-        """
-        Run the linting rules for given file.
+        """Run the linting rules for given file.
 
         Parameters
         ----------
@@ -105,10 +101,10 @@ class RulesCollection:
 
             logger.debug("Running linting rule %s on file %s", rule, file_path)
             if rule in rule.warn:
-                warnings.extend(rule.checkrule(file_path, text))
+                warnings.extend(rule.checkrule(str(file_path), text))
 
             else:
-                errors.extend(rule.checkrule(file_path, text))
+                errors.extend(rule.checkrule(str(file_path), text))
 
         for error in errors:
             logger.error(error.to_rich())
@@ -119,8 +115,7 @@ class RulesCollection:
         return errors, warnings
 
     def __repr__(self) -> str:
-        """
-        Return a representation of a RulesCollection object.
+        """Return a representation of a RulesCollection object.
 
         Returns
         -------
@@ -137,8 +132,7 @@ class RulesCollection:
         return "\n".join(res)
 
     def to_rich(self) -> Group:
-        """
-        Return a rich Group containing a rich Tree for each different origin for the rules.
+        """Return a rich Group containing a rich Tree for each different origin for the rules.
 
         Each Tree contain the rule.to_rich() output
 
@@ -164,8 +158,7 @@ class RulesCollection:
         return Group(*res)
 
     def to_json(self) -> str:
-        """
-        Return a json representation of the collection as a list of the rules.
+        """Return a json representation of the collection as a list of the rules.
 
         Returns
         -------
@@ -175,8 +168,7 @@ class RulesCollection:
 
     @classmethod
     def create_from_directory(cls, rules_dir: Path, ignore_rules: list[str], warn_rules: list[str]) -> RulesCollection:
-        """
-        Create a collection from all rule modules.
+        """Create a collection from all rule modules.
 
         Parameters
         ----------
@@ -193,7 +185,7 @@ class RulesCollection:
             A RulesColleciton object containing the rules from rules_dir except for the ignored ones.
         """
         result = cls()
-        result.rules = load_plugins(rules_dir.expanduser())
+        result.rules = load_plugins(str(rules_dir.expanduser()))
         for rule in result.rules:
             if rule.short_description in ignore_rules or rule.rule_id in ignore_rules:
                 rule.ignore = True
@@ -201,6 +193,6 @@ class RulesCollection:
                 rule.warn.append(rule)
         if rules_dir != DEFAULT_RULE_DIR:
             for rule in result.rules:
-                rule.origin = rules_dir
+                rule.origin = str(rules_dir)
         logger.info("Created collection from rules directory %s", rules_dir)
         return result

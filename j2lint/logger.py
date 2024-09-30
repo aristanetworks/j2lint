@@ -14,8 +14,7 @@ logger = logging.getLogger("")
 
 
 def add_handler(log: logging.Logger, log_level: int, *, stream_handler: bool) -> None:
-    """
-    Define logging handlers.
+    """Define logging handlers.
 
     Parameters
     ----------

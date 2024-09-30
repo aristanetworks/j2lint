@@ -24,9 +24,10 @@ class Rule(ABC):
 
     def __init__(
         self,
-        ignore: bool = False,
         warn: list[Any] | None = None,
         origin: str = "BUILT-IN",
+        *,
+        ignore: bool = False,
     ) -> None:
         self.ignore = ignore
         self.warn = warn if warn is not None else []
@@ -56,8 +57,7 @@ class Rule(ABC):
         return f"{self.rule_id}: {self.description}"
 
     def to_rich(self) -> Text:
-        """
-        Return a rich representation of the rule.
+        """Return a rich representation of the rule.
 
         Examples
         --------
@@ -87,8 +87,7 @@ class Rule(ABC):
 
     @abstractmethod
     def checktext(self, filename: str, text: str) -> list[LinterError]:
-        """
-        Check the rule against a full file content.
+        """Check the rule against a full file content.
 
         This method is expected to be overrididen by child classes.
 
@@ -107,8 +106,7 @@ class Rule(ABC):
 
     @abstractmethod
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
-        """
-        Check the rule against a full file content.
+        """Check the rule against a full file content.
 
         This method is expected to be overrididen by child classes.
 
@@ -128,8 +126,7 @@ class Rule(ABC):
         """
 
     def checkrule(self, filename: str, text: str) -> list[LinterError]:
-        """
-        Check the string text against the current rule by calling either the checkline or checktext method depending on which one is implemented.
+        """Check the string text against the current rule by calling either the checkline or checktext method depending on which one is implemented.
 
         Parameters
         ----------

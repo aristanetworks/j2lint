@@ -31,8 +31,7 @@ class JinjaVariableHasSpaceRule(Rule):
         raise NotImplementedError
 
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
-        """
-        Check if the given line matches the error regex.
+        """Check if the given line matches the error regex.
 
         Parameters
         ----------

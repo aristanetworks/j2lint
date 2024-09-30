@@ -1,9 +1,7 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-Tests for j2lint.linter.node.py
-"""
+"""Tests for j2lint.linter.node.py"""
 
 import pytest
 
@@ -17,9 +15,7 @@ class TestNode:
         # TODO - why is it not an __init__ method???
 
     def test_create_indentation_error(self):
-        """
-        Test the Node.create_indentation_error method
-        """
+        """Test the Node.create_indentation_error method"""
         line = (
             " if switch.platform_settings.tcam_profile is arista.avd.defined ",
             2,

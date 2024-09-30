@@ -1,8 +1,7 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-Tests for j2lint.linter.indenter.statement.py
+"""Tests for j2lint.linter.indenter.statement.py
 
 To understand the values given to this class it is paramount to read
 j2lint.utils.get_jinja_statement as this is the path in the code

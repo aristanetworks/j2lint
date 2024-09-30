@@ -23,8 +23,7 @@ Statement = Tuple[str, int, int, str, str]
 
 
 def load_plugins(directory: str) -> list[Rule]:
-    """
-    Load and execute all the Rule modules from the specified directory.
+    """Load and execute all the Rule modules from the specified directory.
 
     Parameters
     ----------
@@ -60,8 +59,7 @@ def load_plugins(directory: str) -> list[Rule]:
 
 
 def is_valid_file_type(filename: Path, extensions: list[str]) -> bool:
-    """
-    Check if the file extension is in the list of accepted extensions.
+    """Check if the file extension is in the list of accepted extensions.
 
     Parameters
     ----------
@@ -80,8 +78,7 @@ def is_valid_file_type(filename: Path, extensions: list[str]) -> bool:
 
 
 def get_files(file_or_dir_names: list[str], extensions: list[str]) -> list[Path]:
-    """
-    Get files from a directory recursively.
+    """Get files from a directory recursively.
 
     Parameters
     ----------
@@ -117,8 +114,7 @@ def get_files(file_or_dir_names: list[str], extensions: list[str]) -> list[Path]
 
 
 def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
-    """
-    Flatten an iterable.
+    """Flatten an iterable.
 
     Parameters
     ----------
@@ -141,8 +137,7 @@ def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
 
 
 def get_tuple(list_of_tuples: list[tuple[Any, ...]], item: Any) -> tuple[Any, ...] | None:
-    """
-    Check if an item is present in any of the tuples.
+    """Check if an item is present in any of the tuples.
 
     Parameters
     ----------
@@ -160,8 +155,7 @@ def get_tuple(list_of_tuples: list[tuple[Any, ...]], item: Any) -> tuple[Any, ..
 
 
 def get_jinja_statements(text: str, *, indentation: bool = False) -> list[Statement]:
-    """
-    Get jinja statements with {%[-/+] [-]%} delimiters.
+    """Get jinja statements with {%[-/+] [-]%} delimiters.
 
     The regex `regex_pattern` will return multiple groups when it matches
     Note that this is a multiline regex
@@ -237,8 +231,7 @@ def get_jinja_statements(text: str, *, indentation: bool = False) -> list[Statem
 
 
 def delimit_jinja_statement(line: str, start: str = "{%", end: str = "%}") -> str:
-    """
-    Add start and end delimiters for a jinja statement.
+    """Add start and end delimiters for a jinja statement.
 
     Parameters
     ----------
@@ -258,8 +251,7 @@ def delimit_jinja_statement(line: str, start: str = "{%", end: str = "%}") -> st
 
 
 def get_jinja_comments(text: str) -> list[str]:
-    """
-    Get jinja comments.
+    """Get jinja comments.
 
     Parameters
     ----------
@@ -277,8 +269,7 @@ def get_jinja_comments(text: str) -> list[str]:
 
 
 def get_jinja_variables(text: str) -> list[str]:
-    """
-    Get jinja variables.
+    """Get jinja variables.
 
     Parameters
     ----------
@@ -295,8 +286,7 @@ def get_jinja_variables(text: str) -> list[str]:
 
 
 def is_rule_disabled(text: str, rule: Rule) -> bool:
-    """
-    Check if rule is disabled.
+    """Check if rule is disabled.
 
     Parameters
     ----------

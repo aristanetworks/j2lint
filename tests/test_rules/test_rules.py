@@ -1,12 +1,20 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
+"""Tests for rules."""
+
+from __future__ import annotations
+
 import logging
-import pathlib
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
-TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
+if TYPE_CHECKING:
+    from j2lint.linter.collection import RulesCollection
+
+TEST_DATA_DIR = Path(__file__).parent / "data"
 
 PARAMS = [
     pytest.param(
@@ -89,13 +97,14 @@ PARAMS = [
         [
             # somehow this is not picked up when we should expect this log message (which can be seen in CLI)
             # probably some caplog issue here so commenting for now
-            # FIXME
-            #              (
-            #                 "root",
-            #                 logging.ERROR,
-            #                 f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.IndexError.j2: "
-            #                 "Error: list index out of range",
-            #             )
+            # ruff: noqa: ERA001
+            # TODO:
+            #  (
+            #    "root",
+            #    logging.ERROR,
+            #    f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.IndexError.j2: "
+            #    "Error: list index out of range",
+            #
         ],
     ),
     pytest.param(
@@ -138,20 +147,36 @@ PARAMS = [
 
 
 @pytest.mark.parametrize(
-    "filename, j2_errors_ids, j2_warnings_ids, expected_log",
+    ("filename", "j2_errors_ids", "j2_warnings_ids", "expected_log"),
     PARAMS,
 )
-def test_rules(caplog, collection, filename, j2_errors_ids, j2_warnings_ids, expected_log):
+def test_rules(
+    caplog: pytest.LogCaptureFixture,
+    collection: RulesCollection,
+    filename: str,
+    j2_errors_ids: list[tuple[str, int]],
+    j2_warnings_ids: list[tuple[str, int]],
+    expected_log: list[str],
+) -> None:
+    """Test all the rules.
+
+    Parameters
+    ----------
+    caplog
+        fixture to capture logs
+    collection
+        a collection from the j2lint default rules
+    filename
+        the name of the file to parse
+    j2_errors_ids
+        the ids of the expected errors (<ID>, <Line Number>)
+    j2_warnings_ids
+        the ids of the expected warnings (<ID>, <Line Number>)
+    expected_log
+        a list of expected log tuples as defined per caplog.record_tuples
     """
-    caplog: fixture to capture logs
-    collection: a collection from the j2lint default rules
-    filename: the name of the file to parse
-    j2_errors_ids: the ids of the expected errors (<ID>, <Line Number>)
-    j2_warnings_ids: the ids of the expected warnings (<ID>, <Line Number>)
-    expected_log: a list of expected log tuples as defined per caplog.record_tuples
-    """
-    with open(filename) as f:
-        print(f.read())
+    # with Path(filename).open() as f:
+    #    print(f.read())
     caplog.set_level(logging.INFO)
     errors, warnings = collection.run(filename)
 
@@ -159,7 +184,6 @@ def test_rules(caplog, collection, filename, j2_errors_ids, j2_warnings_ids, exp
 
     warnings_ids = [(warning.rule.rule_id, warning.line_number) for warning in warnings]
 
-    print(caplog.record_tuples)
     for record_tuple in expected_log:
         assert record_tuple in caplog.record_tuples
 

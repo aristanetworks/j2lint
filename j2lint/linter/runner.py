@@ -10,27 +10,27 @@ from typing import TYPE_CHECKING
 from j2lint.logger import logger
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from .collection import RulesCollection
     from .error import LinterError
 
 
 class Runner:
-    """
-    Class to run the rules collection for all the files.
+    """Class to run the rules collection for all the files.
 
     TODO: refactor - with this code it seems that files will always
           be a set of 1 file - indeed, a different Runner is created
           for each file in cli.py
     """
 
-    def __init__(self, collection: RulesCollection, file_name: str, checked_files: list[str]) -> None:
+    def __init__(self, collection: RulesCollection, file_name: Path, checked_files: list[Path]) -> None:
         self.collection = collection
-        self.files: set[str] = {file_name}
+        self.files: set[Path] = {file_name}
         self.checked_files = checked_files
 
-    def is_already_checked(self, file_path: str) -> bool:
-        """
-        Return True if the file is already checked once.
+    def is_already_checked(self, file_path: Path) -> bool:
+        """Return True if the file is already checked once.
 
         Parameters
         ----------
@@ -45,8 +45,7 @@ class Runner:
         return file_path in self.checked_files
 
     def run(self) -> tuple[list[LinterError], list[LinterError]]:
-        """
-        Run the lint rules collection on all the files.
+        """Run the lint rules collection on all the files.
 
         Returns
         -------
@@ -55,7 +54,7 @@ class Runner:
 
         TODO: refactor this - it is quite weird to do the conversion from tuple to dict here maybe simply init with the dict
         """
-        files: list[str] = []
+        files: list[Path] = []
         for index, file in enumerate(self.files):
             # TODO: as of now it seems that both next tests will never occurs as self.files is always a single file.
             # Skip already checked files

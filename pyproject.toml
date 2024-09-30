@@ -18,7 +18,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -31,7 +30,7 @@ dependencies = [
     "jinja2>=3.0",
     "rich>=13.5.2,<13.9.0",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 [project.optional-dependencies]
 dev = [
@@ -73,6 +72,9 @@ push            = false
 "j2lint/__init__.py" = ["{version}"]
 "tests/test_cli.py" = ["{version}"]
 
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 165
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
@@ -91,7 +93,6 @@ isolated_build = True
 
 [gh-actions]
 python =
-  3.8: py38
   3.9: py39
   3.10: py310
   3.11: py311, coverage, report
@@ -221,7 +222,7 @@ exclude = [
 
 line-length = 165
 
-# Assume Python 3.9 as this is the lowest supported version for ANTA
+# Assume Python 3.9 as this is the lowest supported version for j2lint
 target-version = "py39"
 
 [tool.ruff.lint]
@@ -230,10 +231,9 @@ select = ["ALL",
     # By enabling a convention for docstrings, ruff automatically ignore some rules that need to be
     # added back if we want them.
     # https://docs.astral.sh/ruff/faq/#does-ruff-support-numpy-or-google-style-docstrings
-    # TODO: Augment the numpy convention rules to make sure we add all the params
-    #       Uncomment below D417
     "D415",
     "D417",
+    "D212",
 ]
 ignore = [
   "COM812",  # Ignoring conflicting rules that may cause conflicts when used with the formatter
@@ -266,73 +266,25 @@ max-complexity = 10
 
 [tool.ruff.lint.pep8-naming]
 "ignore-names" = [
-  "RICH_COLOR_PALETTE"
+#  "RICH_COLOR_PALETTE"
 ]
-
-[tool.ruff.lint.flake8-type-checking]
-# These classes require that type annotations be available at runtime
-runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.Input"]
-
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
   "S101",    # Complains about asserts in units and libs.
   "SLF001",  # Lots of private member accessed for test purposes
-]
-"tests/units/*" = [
-  "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used but declared in @pytest.mark.parametrize
-  "FBT001",  # Boolean-typed positional argument in function definition
   "PLR0913", # Too many arguments to function call
   "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
-  "S105",    # Passwords are indeed hardcoded in tests
-  "S106",    # Passwords are indeed hardcoded in tests
-  "S108",    # Probable insecure usage of temporary file or directory
+#  "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used but declared in @pytest.mark.parametrize
+#  "FBT001",  # Boolean-typed positional argument in function definition
+#  "S105",    # Passwords are indeed hardcoded in tests
+#  "S106",    # Passwords are indeed hardcoded in tests
+#  "S108",    # Probable insecure usage of temporary file or directory
+  "TD005",    # TODOs in tests
+  "ANN401",   # Using Any in tests signature
 ]
-"tests/units/anta_tests/test_interfaces.py" = [
-  "S104",  # False positive for 0.0.0.0 bindings in test inputs
-]
-"tests/units/anta_tests/*" = [
-  "F401",  # In this module, we import tests.units.anta_tests.test without using it to auto-generate tests
-]
-"anta/*" = [
-  "TRY400",  # Use `logging.exception` instead of `logging.error` - we know what we are doing
-]
-"anta/cli/exec/utils.py" = [
-  "SLF001",  # TODO: some private members, lets try to fix
-]
-"anta/cli/__init__.py" = [
-  "T201",  # Allow print statements
-]
-"anta/cli/*" = [
-  "PLR0913",  # Allow more than 5 input arguments in CLI functions
-  "ANN401",   # TODO: Check if we can update the Any type hints in the CLI
-]
-"anta/tests/field_notices.py" = [
-  "PLR2004",  # Magic value used in comparison, consider replacing 2131 with a constant variable - Field notice IDs are magic values
-  "C901",     # TODO: test function is too complex, needs a refactor
-  "PLR0911",  # TODO: Too many return statements, same as above needs a refactor
-]
-"anta/tests/routing/isis.py" = [
-  "C901",     # TODO: test function is too complex, needs a refactor
-  "PLR0912"   # Too many branches (15/12) (too-many-branches), needs a refactor
-]
-"anta/decorators.py" = [
-  "ANN401",  # Ok to use Any type hint in our decorators
-]
-"anta/tools.py" = [
-  "ANN401",   # Ok to use Any type hint in our custom get functions
-  "PLR0913",  # Ok to have more than 5 arguments in our custom get functions
-]
-"anta/device.py" = [
-  "PLR0913",     # Ok to have more than 5 arguments in the AntaDevice classes
-]
-"anta/inventory/__init__.py" = [
-  "PLR0913",     # Ok to have more than 5 arguments in the AntaInventory class
-]
-"examples/anta_runner.py" = [  # This is an example script and linked in  snippets
-  "S108",   # Probable insecure usage of temporary file or directory
-  "S105",   # Possible hardcoded password
-  "INP001", # Implicit packages
+"tests/conftest.py" = [
+  "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used when mocking
 ]
 
 ################################
@@ -340,22 +292,29 @@ runtime-evaluated-base-classes = ["pydantic.BaseModel", "anta.models.AntaTest.In
 ################################
 [tool.pylint]
 disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh/ruff/issues/970
-    "invalid-name",
-    "fixme",
-    "unused-import",
-    "unused-argument",
-    "keyword-arg-before-vararg",
-    "protected-access",
-    "too-many-arguments",
-    "too-many-positional-arguments",  # New in pylint 3.3.0
-    "wrong-import-position",
-    "pointless-statement",
-    "broad-exception-caught",
-    "line-too-long",
-    "unused-variable",
-    "redefined-builtin",
-    "abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
-    "unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-    "no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
+	"invalid-name",
+	"fixme",
+	"unused-import",
+	"unused-argument",
+	"keyword-arg-before-vararg",
+	"protected-access",
+	"too-many-arguments",
+	"too-many-branches",
+	"too-many-positional-arguments",
+	"wrong-import-position",
+	"pointless-statement",
+	"broad-exception-caught",
+	"line-too-long",
+	"unused-variable",
+	"redefined-builtin",
+	"global-statement",
+	"reimported",
+	"wrong-import-order",
+	"wrong-import-position",
+	"abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
+	"unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
+	"no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
 ]
 max-line-length=165
+# making similarity lines limit a bit higher than default 4
+min-similarity-lines=10

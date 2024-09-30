@@ -33,8 +33,7 @@ class JinjaVariableNameCaseRule(Rule):
         raise NotImplementedError
 
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
-        """
-        Check if the given line matches the error regex, which matches variables with non lower case characters.
+        """Check if the given line matches the error regex, which matches variables with non lower case characters.
 
         Parameters
         ----------

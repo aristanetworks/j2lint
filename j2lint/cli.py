@@ -52,8 +52,7 @@ CONSOLE = Console()
 
 
 def create_parser() -> argparse.ArgumentParser:
-    """
-    Initialize a new argument parser object.
+    """Initialize a new argument parser object.
 
     Returns
     -------
@@ -125,8 +124,7 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def sort_issues(issues: list[LinterError]) -> list[LinterError]:
-    """
-    Sorted list of issues.
+    """Sorted list of issues.
 
     Parameters
     ----------
@@ -142,9 +140,10 @@ def sort_issues(issues: list[LinterError]) -> list[LinterError]:
     return issues
 
 
-def get_linting_issues(files: list[str], collection: RulesCollection, checked_files: list[str]) -> tuple[dict[str, list[LinterError]], dict[str, list[LinterError]]]:
-    """
-    Check errors and warnings.
+def get_linting_issues(
+    files: list[Path], collection: RulesCollection, checked_files: list[Path]
+) -> tuple[dict[Path, list[LinterError]], dict[Path, list[LinterError]]]:
+    """Check errors and warnings.
 
     Parameters
     ----------
@@ -157,11 +156,11 @@ def get_linting_issues(files: list[str], collection: RulesCollection, checked_fi
 
     Returns
     -------
-    tuple[dict[str, list[LinterError]], dict[str, list[LinterError]]]
+    tuple[dict[Path, list[LinterError]], dict[Path, list[LinterError]]]
         A two tuple containing two dictionaries. The first dictionary contains the errors and the second dictionary the warnings.
     """
-    lint_errors: dict[str, list[LinterError]] = {}
-    lint_warnings: dict[str, list[LinterError]] = {}
+    lint_errors: dict[Path, list[LinterError]] = {}
+    lint_warnings: dict[Path, list[LinterError]] = {}
 
     # Get linting issues
     for file_name in files:
@@ -177,11 +176,10 @@ def get_linting_issues(files: list[str], collection: RulesCollection, checked_fi
 
 
 def print_json_output(
-    lint_errors: dict[str, list[LinterError]],
-    lint_warnings: dict[str, list[LinterError]],
+    lint_errors: dict[Path, list[LinterError]],
+    lint_warnings: dict[Path, list[LinterError]],
 ) -> tuple[int, int]:
-    """
-    Print json output.
+    """Print json output.
 
     Parameters
     ----------
@@ -208,13 +206,12 @@ def print_json_output(
 
 
 def print_string_output(
-    lint_errors: dict[str, list[LinterError]],
-    lint_warnings: dict[str, list[LinterError]],
+    lint_errors: dict[Path, list[LinterError]],
+    lint_warnings: dict[Path, list[LinterError]],
     *,
     verbose: bool,
 ) -> tuple[int, int]:
-    """
-    Print string output.
+    """Print string output.
 
     Parameters
     ----------
@@ -231,7 +228,7 @@ def print_string_output(
         A two tuple containing the total number of errors and the total number of warnings.
     """
 
-    def print_issues(lint_issues: dict[str, list[LinterError]], issue_type: str) -> None:
+    def print_issues(lint_issues: dict[Path, list[LinterError]], issue_type: str) -> None:
         CONSOLE.rule(f"[bold red]JINJA2 LINT {issue_type}")
         for key, issues in lint_issues.items():
             if not issues:
@@ -260,8 +257,7 @@ def print_string_output(
 
 
 def remove_temporary_file(stdin_filename: Path) -> None:
-    """
-    Remove temporary file.
+    """Remove temporary file.
 
     Parameters
     ----------
@@ -273,8 +269,7 @@ def remove_temporary_file(stdin_filename: Path) -> None:
 
 
 def print_string_rules(collection: RulesCollection) -> None:
-    """
-    Print active rules as string.
+    """Print active rules as string.
 
     Parameters
     ----------
@@ -286,8 +281,7 @@ def print_string_rules(collection: RulesCollection) -> None:
 
 
 def print_json_rules(collection: RulesCollection) -> None:
-    """
-    Print active rules as json.
+    """Print active rules as json.
 
     Parameters
     ----------
@@ -298,8 +292,7 @@ def print_json_rules(collection: RulesCollection) -> None:
 
 
 def run(args: list[str] | None = None) -> int:
-    """
-    Run jinja2 linter.
+    """Run jinja2 linter.
 
     Parameters
     ----------
@@ -333,7 +326,7 @@ def run(args: list[str] | None = None) -> int:
 
     stdin_filename = None
     file_or_dir_names: list[Path] = list(set(options.files))
-    checked_files: list[str] = []
+    checked_files: list[Path] = []
 
     if options.stdin and not sys.stdin.isatty():
         with tempfile.NamedTemporaryFile("w", suffix=".j2", delete=False) as stdin_tmpfile:
@@ -342,7 +335,7 @@ def run(args: list[str] | None = None) -> int:
             file_or_dir_names.append(stdin_filename)
 
     # Collect the rules from the configuration
-    collection = RulesCollection(options.verbose)
+    collection = RulesCollection(verbose=options.verbose)
     for rules_dir in options.rules_dir:
         collection.extend(RulesCollection.create_from_directory(rules_dir, options.ignore, options.warn).rules)
 

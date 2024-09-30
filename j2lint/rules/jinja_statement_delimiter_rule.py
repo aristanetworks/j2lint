@@ -28,8 +28,7 @@ class JinjaStatementDelimiterRule(Rule):
         raise NotImplementedError
 
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
-        """
-        Check if the given line matches the wrong delimiters.
+        """Check if the given line matches the wrong delimiters.
 
         Parameters
         ----------

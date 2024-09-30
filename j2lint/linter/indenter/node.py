@@ -44,8 +44,7 @@ class Node:
 
     # TODO: This should be called create_child_node
     def create_node(self, line: Statement, line_no: int, indent_level: int = 0) -> Node:
-        """
-        Initialize a Node class object.
+        """Initialize a Node class object.
 
         Parameters
         ----------
@@ -73,8 +72,7 @@ class Node:
 
     @staticmethod
     def create_indentation_error(node: Node, message: str) -> NodeIndentationError | None:
-        """
-        Create indentation error tuple.
+        """Create indentation error tuple.
 
         Parameters
         ----------
@@ -102,8 +100,7 @@ class Node:
         )
 
     def check_indent_level(self, result: list[NodeIndentationError], node: Node) -> None:
-        """
-        Check if the actual and expected indent level for a line match.
+        """Check if the actual and expected indent level for a line match.
 
         Parameters
         ----------
@@ -133,8 +130,7 @@ class Node:
                 logger.debug(error)
 
     def _assert_not_none(self, current_line_no: int, new_line_no: int | None) -> int:
-        """
-        Verify that the new_line_no is not None.
+        """Verify that the new_line_no is not None.
 
         Parameters
         ----------
@@ -169,8 +165,7 @@ class Node:
         line_no: int = 0,
         indent_level: int = 0,
     ) -> int | None:
-        """
-        Check indentation for a list of lines and update the 'result' list argument with indentation errors.
+        """Check indentation for a list of lines and update the 'result' list argument with indentation errors.
 
         Parameters
         ----------

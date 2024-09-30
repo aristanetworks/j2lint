@@ -26,8 +26,7 @@ class JinjaTemplateIndentationRule(Rule):
         super().__init__()
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:
-        """
-        Check if the given text has the error.
+        """Check if the given text has the error.
 
         Parameters
         ----------

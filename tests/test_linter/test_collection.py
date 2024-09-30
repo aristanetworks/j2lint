@@ -1,9 +1,7 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-Tests for j2lint.linter.collection.py
-"""
+"""Tests for j2lint.linter.collection.py"""
 
 import logging
 import pathlib
@@ -21,15 +19,11 @@ TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
 
 class TestRulesCollection:
     def test__len__(self, test_collection):
-        """
-        Test the RuleCollection __len__ method
-        """
+        """Test the RuleCollection __len__ method"""
         assert len(test_collection) == 1
 
     def test__iter__(self):
-        """
-        Test the RuleCollection __iter__ method
-        """
+        """Test the RuleCollection __iter__ method"""
         fake_rules = [1, 2, 3]
         collection = RulesCollection()
         assert len(collection) == 0
@@ -38,9 +32,7 @@ class TestRulesCollection:
             assert rule == fake_rules[index]
 
     def test_extend(self):
-        """
-        Test the RuleCollection.extend method
-        """
+        """Test the RuleCollection.extend method"""
         fake_rules = [1, 2, 3]
         collection = RulesCollection()
         assert len(collection) == 0
@@ -85,8 +77,7 @@ class TestRulesCollection:
         expected_results,
         verify_logs,
     ):
-        """
-        Generate a collection with 5 rules with:
+        """Generate a collection with 5 rules with:
         * rule number 1 being a warning
         * rule number 2 being ignored
         * rule number 3 being disabled in the test file for test number 2
@@ -120,9 +111,7 @@ class TestRulesCollection:
             assert any("Skipping linting rule T3" in message for message in caplog.messages)
 
     def test__repr__(self, test_collection, test_other_rule):
-        """
-        Test the RuleCollection.extend method
-        """
+        """Test the RuleCollection.extend method"""
         assert str(test_collection) == "Origin: BUILT-IN\nT0: test rule 0"
         test_other_rule.origin = "DUMMY"
         test_collection.extend([test_other_rule])
@@ -139,8 +128,7 @@ class TestRulesCollection:
         ],
     )
     def test_create_from_directory(self, ignore_rules, warn_rules):
-        """
-        Test the RuleCollection.create_from_directory class method
+        """Test the RuleCollection.create_from_directory class method
 
         In this tests, the return of load_plugins are mocked.
         consequently, a dummy path can be used for rules_dir

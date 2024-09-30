@@ -33,8 +33,7 @@ class JinjaVariableNameFormatRule(Rule):
         raise NotImplementedError
 
     def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
-        """
-        Check if the given line matches the error regex, which matches variables using `-` in their name.
+        """Check if the given line matches the error regex, which matches variables using `-` in their name.
 
         Parameters
         ----------
