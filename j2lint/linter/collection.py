@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from rich.console import Group
 from rich.tree import Tree
 
+from j2lint.linter.error import JinjaLinterError
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
@@ -153,7 +154,9 @@ class RulesCollection:
                 current_origin = rule.origin
                 tree = Tree(f"Origin: {rule.origin}")
                 res.append(tree)
-            assert tree
+            if not tree:
+                msg = "Something went wrong while converting to rich output. Please raise an issue on Github."
+                raise JinjaLinterError(msg)
             tree.add(rule.to_rich())
         return Group(*res)
 

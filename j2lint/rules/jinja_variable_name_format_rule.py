@@ -12,8 +12,6 @@ from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_variables
 
-# pylint: disable=duplicate-code
-
 
 class JinjaVariableNameFormatRule(Rule):
     """Rule class to check that variable names only use underscores."""
@@ -26,7 +24,7 @@ class JinjaVariableNameFormatRule(Rule):
     regex = re.compile(r"[a-zA-Z0-9-_\"']+[-][a-zA-Z0-9-_\"']+")
 
     def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
-        super().__init__()
+        super().__init__(ignore=ignore, warn=warn)
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:
         """Not Implemented for this rule."""

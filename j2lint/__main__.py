@@ -4,13 +4,13 @@
 """__main__.py - A command-line utility that checks for best practices in Jinja2."""
 
 import sys
-import traceback
 
+from j2lint import CONSOLE
 from j2lint.cli import run
 
 if __name__ == "__main__":
     try:
         sys.exit(run())
     except Exception:  # noqa: BLE001
-        print(traceback.format_exc())
+        CONSOLE.print_exception(show_locals=True)
         raise SystemExit from BaseException

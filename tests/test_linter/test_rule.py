@@ -95,7 +95,7 @@ class TestRule:
             test_rule.checkline = return_empty_list
         else:
             # checkline > 0
-            test_rule.checkline = lambda *_, line_no=0: [issue for i in range(checkline) for issue in make_issue_from_rule(test_rule)] # noqa: ARG005
+            test_rule.checkline = lambda *_, line_no=0: [issue for i in range(checkline) for issue in make_issue_from_rule(test_rule)]  # noqa: ARG005
 
         with Path(file_path["path"]).open(encoding="utf-8") as file_d:
             errors = test_rule.checkrule(file_path, file_d.read())

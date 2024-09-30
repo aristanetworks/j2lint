@@ -3,6 +3,8 @@
 # that can be found in the LICENSE file.
 """__init__.py - A command-line utility that checks for best practices in Jinja2."""
 
+from rich.console import Console
+
 NAME = "j2lint"
 VERSION = "v1.1.0"
 DESCRIPTION = __doc__
@@ -10,3 +12,5 @@ DESCRIPTION = __doc__
 __author__ = "Arista Networks"
 __license__ = "MIT"
 __version__ = VERSION
+
+CONSOLE = Console()

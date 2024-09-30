@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import NoReturn, Tuple
+from typing import NoReturn
 
 from j2lint.linter.error import JinjaLinterError
 from j2lint.linter.indenter.statement import JINJA_STATEMENT_TAG_NAMES, JinjaStatement
@@ -23,8 +23,7 @@ JINJA_START_DELIMITERS = ["{%-", "{%+"]
 jinja_node_stack: list[Node] = []
 jinja_delimiter_stack: list[str] = []
 
-# Using Tuple from typing for 3.8 support
-NodeIndentationError = Tuple[int, str, str]
+NodeIndentationError = tuple[int, str, str]
 
 
 class Node:
@@ -152,7 +151,7 @@ class Node:
         TODO: Probably should never return None and instead raise in check_indentation
         """
         if new_line_no is None:
-            msg = ("Recursive check_indentation returned None for an opening tag " f"line {current_line_no} - missing closing tag",)
+            msg = f"Recursive check_indentation returned None for an opening tag line {current_line_no} - missing closing tag"
             raise JinjaLinterError(msg)
         return new_line_no
 
@@ -190,6 +189,7 @@ class Node:
         int | None
             line_no or None
         """
+        # ruff: noqa: PLR0915,C901
 
         def _append_error_to_result_and_raise(message: str) -> NoReturn:
             """Append error to result and raise a JinjaLinterError."""

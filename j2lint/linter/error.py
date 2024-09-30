@@ -34,8 +34,8 @@ class LinterError:
         self.rule = rule
         self.message = message or rule.description
 
-    def to_rich(self, verbose: bool = False) -> Text:
-        """Setting string output format"""
+    def to_rich(self, *, verbose: bool = False) -> Text:
+        """Generate string output format."""
         text = Text()
         if not verbose:
             text.append(self.filename, "green")
@@ -59,7 +59,7 @@ class LinterError:
         return text
 
     def to_json(self) -> str:
-        """Setting json output format"""
+        """Generate json output format."""
         return json.dumps(
             {
                 "id": self.rule.rule_id,
@@ -73,4 +73,4 @@ class LinterError:
 
 
 class JinjaLinterError(Exception):
-    """Jinja Linter Error"""
+    """Jinja Linter Error."""

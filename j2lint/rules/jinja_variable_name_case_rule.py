@@ -26,7 +26,7 @@ class JinjaVariableNameCaseRule(Rule):
     regex = re.compile(r"([a-zA-Z0-9-_\"']*[A-Z][a-zA-Z0-9-_\"']*)")
 
     def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
-        super().__init__()
+        super().__init__(ignore=ignore, warn=warn)
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:
         """Not Implemented for this rule."""

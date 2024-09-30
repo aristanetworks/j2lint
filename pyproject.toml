@@ -286,6 +286,10 @@ max-complexity = 10
 "tests/conftest.py" = [
   "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used when mocking
 ]
+"j2lint/rules/*" = [
+  "FBT001",  # TODO: Address bool in inputs
+  "FBT002",  # TODO: switch ignore and warn arguments
+]
 
 ################################
 # Pylint

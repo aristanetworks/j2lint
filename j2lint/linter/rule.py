@@ -24,16 +24,16 @@ class Rule(ABC):
 
     def __init__(
         self,
-        warn: list[Any] | None = None,
-        origin: str = "BUILT-IN",
         *,
         ignore: bool = False,
+        warn: list[Any] | None = None,
+        origin: str = "BUILT-IN",
     ) -> None:
         self.ignore = ignore
         self.warn = warn if warn is not None else []
         self.origin = origin
 
-    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
+    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:  # noqa: ANN401
         """Override the way a subclass of Rule is instantiated."""
         super().__init_subclass__(**kwargs)
         # Mandatory class attributes

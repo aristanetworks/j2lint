@@ -23,7 +23,7 @@ class JinjaTemplateNoTabsRule(Rule):
     regex = re.compile(r"\t+")
 
     def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
-        super().__init__()
+        super().__init__(ignore=ignore, warn=warn)
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:
         """Not Implemented for this rule."""

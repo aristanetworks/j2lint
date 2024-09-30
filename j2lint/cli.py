@@ -13,14 +13,13 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from rich.console import Console
 from rich.tree import Tree
 
-from . import DESCRIPTION, NAME, VERSION
-from .linter.collection import DEFAULT_RULE_DIR, RulesCollection
-from .linter.runner import Runner
-from .logger import add_handler, logger
-from .utils import get_files
+from j2lint import CONSOLE, DESCRIPTION, NAME, VERSION
+from j2lint.linter.collection import DEFAULT_RULE_DIR, RulesCollection
+from j2lint.linter.runner import Runner
+from j2lint.logger import add_handler, logger
+from j2lint.utils import get_files
 
 if TYPE_CHECKING:
     from .linter.error import LinterError
@@ -47,8 +46,6 @@ IGNORE_RULES = WARN_RULES = [
     "V1",
     "V2",
 ]
-
-CONSOLE = Console()
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -236,7 +233,7 @@ def print_string_output(
             tree = Tree(f"{key}")
 
             for j2_issue in issues:
-                tree.add(j2_issue.to_rich(verbose))
+                tree.add(j2_issue.to_rich(verbose=verbose))
             CONSOLE.print(tree)
 
     total_lint_errors = sum(len(issues) for _, issues in lint_errors.items())

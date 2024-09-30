@@ -10,16 +10,15 @@ import os
 import re
 from collections.abc import Generator, Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Tuple
+from typing import TYPE_CHECKING, Any
 
 from j2lint.logger import logger
 
 if TYPE_CHECKING:
     from .linter.rule import Rule
 
-# Using Tuple from typing for 3.8 support
 # Statement type is a tuple (line_without_delimiter, start_line, end_line, start_delimiter, end_delimiter)
-Statement = Tuple[str, int, int, str, str]
+Statement = tuple[str, int, int, str, str]
 
 
 def load_plugins(directory: str) -> list[Rule]:
@@ -136,7 +135,7 @@ def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
             yield element
 
 
-def get_tuple(list_of_tuples: list[tuple[Any, ...]], item: Any) -> tuple[Any, ...] | None:
+def get_tuple(list_of_tuples: list[tuple[Any, ...]], item: Any) -> tuple[Any, ...] | None:  # noqa: ANN401
     """Check if an item is present in any of the tuples.
 
     Parameters
