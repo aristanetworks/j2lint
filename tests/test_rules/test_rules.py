@@ -175,10 +175,8 @@ def test_rules(
     expected_log
         a list of expected log tuples as defined per caplog.record_tuples
     """
-    # with Path(filename).open() as f:
-    #    print(f.read())
     caplog.set_level(logging.INFO)
-    errors, warnings = collection.run(filename)
+    errors, warnings = collection.run(Path(filename))
 
     errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]
 

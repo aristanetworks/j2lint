@@ -76,7 +76,7 @@ def is_valid_file_type(filename: Path, extensions: list[str]) -> bool:
     return extension in extensions
 
 
-def get_files(file_or_dir_names: list[str], extensions: list[str]) -> list[Path]:
+def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path]:
     """Get files from a directory recursively.
 
     Parameters
@@ -98,9 +98,9 @@ def get_files(file_or_dir_names: list[str], extensions: list[str]) -> list[Path]
         raise TypeError(msg)
 
     for file_or_dir in file_or_dir_names:
-        file_or_dir_path = Path(file_or_dir)
+        file_or_dir_path = file_or_dir
         if file_or_dir_path.is_dir():
-            for root, _, files in os.walk(file_or_dir_path):
+            for root, _, files in os.walk(str(file_or_dir_path)):
                 root_path = Path(root)
                 for file in files:
                     file_path = root_path / file

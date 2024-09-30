@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import logging
-import os
 import re
 from argparse import Namespace
 from pathlib import Path
@@ -372,19 +371,26 @@ def test_run(
             assert "DEBUG" in [record.levelname for record in caplog.records]
 
 
-def test_run_stdin(capsys: pytest.Fixture) -> None:
+def test_run_stdin(capsys: pytest.LogCaptureFixture) -> None:
     """Test j2lint.cli.run when using stdin.
 
     Note that the code is checking that this is not run from a tty
 
     A solution to run is something like:
+
     ```
     cat myfile.j2 | j2lint --stdin
     ```
 
     In this test, the isatty answer is mocked.
     """
-    with patch("sys.stdin") as patched_stdin, patch("os.unlink", side_effect=os.unlink) as mocked_os_unlink, patch("logging.disable"):
+    import j2lint
+
+    with (
+        patch("sys.stdin") as patched_stdin,
+        patch.object(j2lint.cli.Path, "unlink", side_effect=j2lint.cli.Path.unlink, autospec=True) as mocked_os_unlink,
+        patch("logging.disable"),
+    ):
         patched_stdin.isatty.return_value = False
         patched_stdin.read.return_value = "{%set test=42 %}"
         run_return_value = run(["--log", "--stdin"])
@@ -397,6 +403,7 @@ def test_run_stdin(capsys: pytest.Fixture) -> None:
             re.MULTILINE,
         )
         assert matches is not None
-        mocked_os_unlink.assert_called_with(matches.groups()[0])
-        assert Path(matches.groups()[0]).exists() is False
+        path = Path(matches.groups()[0])
+        mocked_os_unlink.assert_called_with(path)
+        assert path.exists() is False
         assert run_return_value == 2

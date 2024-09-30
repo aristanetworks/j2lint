@@ -322,7 +322,7 @@ def run(args: list[str] | None = None) -> int:
     logger.debug("Lint options selected %s", options)
 
     stdin_filename = None
-    file_or_dir_names: list[Path] = list(set(options.files))
+    file_or_dir_names: list[Path] = [Path(pathname) for pathname in set(options.files)]
     checked_files: list[Path] = []
 
     if options.stdin and not sys.stdin.isatty():

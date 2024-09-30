@@ -83,7 +83,7 @@ class TestRulesCollection:
         make_rules: Callable[[int], list[Rule]],
         make_issue_from_rule: Callable[[int], LinterError],
         file_path: Path,
-        expected_results: tuple[list[tuple[str, str]]],
+        expected_results: tuple[list[tuple[str, str]], list[tuple[str, str]]],
         *,
         verify_logs: bool,
     ) -> None:
@@ -110,7 +110,7 @@ class TestRulesCollection:
             side_effect=checks_side_effect,
             autospec=True,
         ):
-            errors, warnings = test_collection.run(file_path)
+            errors, warnings = test_collection.run(Path(file_path))
             error_tuples = [(error.rule.rule_id, error.rule.short_description) for error in errors]
             warning_tuples = [(warning.rule.rule_id, warning.rule.short_description) for warning in warnings]
             assert error_tuples == expected_results[0]
@@ -154,7 +154,7 @@ class TestRulesCollection:
                 JinjaOperatorHasSpacesRule(),
                 JinjaTemplateSyntaxErrorRule(),
             ]
-            collection = RulesCollection.create_from_directory("dummy", ignore_rules, warn_rules)
+            collection = RulesCollection.create_from_directory(Path("dummy"), ignore_rules, warn_rules)
             mocked_load_plugins.assert_called_once_with("dummy")
             assert collection.rules == mocked_load_plugins.return_value
             for rule in collection.rules:

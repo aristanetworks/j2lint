@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-import pathlib
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -48,7 +48,7 @@ def test_load_plugins() -> None:
 )
 def test_is_valid_file_type(file_name: str, extensions: list[str], *, expected: bool) -> None:
     """Test the utils.is_valid_file_type function."""
-    assert is_valid_file_type(file_name, extensions) == expected
+    assert is_valid_file_type(Path(file_name), extensions) == expected
 
 
 @pytest.mark.parametrize(
@@ -98,7 +98,8 @@ def test_is_valid_file_type(file_name: str, extensions: list[str], *, expected: 
 def test_get_files(file_or_dir_names: list[str], extensions: list[str], expected_value: list[str], expectation: Generator) -> None:
     """Test the utils.get_files function."""
     with expectation:
-        assert get_files(file_or_dir_names, extensions) == expected_value
+        paths = [Path(file_or_dir_name) for file_or_dir_name in file_or_dir_names]
+        assert [str(filepath) for filepath in get_files(paths, extensions)] == expected_value
 
 
 def test_get_files_dir(template_tmp_dir: str) -> None:
@@ -107,7 +108,7 @@ def test_get_files_dir(template_tmp_dir: str) -> None:
     # sadly cannot use fixture in parametrize...
     # https://github.com/pytest-dev/pytest/issues/349
     """
-    tmp_dir = pathlib.Path(__file__).parent / "tmp"  # as passed to pytest in pytest.ini
+    tmp_dir = Path(__file__).parent / "tmp"  # as passed to pytest in pytest.ini
     expected = sorted(
         [
             f"{tmp_dir}/rules/rules.j2",
@@ -116,7 +117,8 @@ def test_get_files_dir(template_tmp_dir: str) -> None:
         ]
     )
     with does_not_raise():
-        assert sorted(get_files(template_tmp_dir, [".j2"])) == expected
+        paths = [Path(file) for file in template_tmp_dir]
+        assert sorted([str(filename) for filename in get_files(paths, [".j2"])]) == expected
 
 
 @pytest.mark.parametrize(

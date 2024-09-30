@@ -28,7 +28,7 @@ RULE_JSON_OUTPUT = '{"id": "T0", "message": "test rule 0", "filename": "dummy.j2
 )
 def test_to_rich(test_issue: LinterError, *, verbose: bool, expected: str) -> None:
     """Test the Rich string formats for LinterError."""
-    assert str(test_issue.to_rich(verbose)) == expected
+    assert str(test_issue.to_rich(verbose=verbose)) == expected
 
 
 def test_to_json(test_issue: LinterError) -> None:
