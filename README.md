@@ -35,7 +35,7 @@ Build a Jinja2 linter that will provide the following capabilities:
 
 ### Requirements
 
-Python version 3.8+
+Minimym Python version: 3.9
 
 ### Install with pip
 
