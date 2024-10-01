@@ -111,12 +111,10 @@ extras =
   lint
   test
 commands =
-  flake8 --max-line-length=160 --config=/dev/null j2lint
-  flake8 --max-line-length=160 --config=/dev/null tests
+  ruff check .
+  ruff format . --check
   pylint j2lint
   pylint tests
-  black --check --diff --color .
-  isort --check --diff --color .
 
 [testenv:type]
 description = check the code type
