@@ -21,12 +21,12 @@ if TYPE_CHECKING:
 Statement = tuple[str, int, int, str, str]
 
 
-def load_plugins(directory: str) -> list[Rule]:
+def load_plugins(directory: Path) -> list[Rule]:
     """Load and execute all the Rule modules from the specified directory.
 
     Parameters
     ----------
-    directory : string
+    directory : Path
         Loads the modules a directory
 
     Returns
@@ -36,8 +36,7 @@ def load_plugins(directory: str) -> list[Rule]:
     """
     result = []
     file_handle = None
-    directory_path = Path(directory)
-    for plugin_file in directory_path.glob(pattern="[A-Za-z_]*.py"):
+    for plugin_file in directory.glob(pattern="[A-Za-z_]*.py"):
         plugin_name = plugin_file.name.replace(".py", "")
         try:
             logger.debug("Loading plugin %s", plugin_name)

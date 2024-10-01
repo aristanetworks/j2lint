@@ -148,15 +148,18 @@ class TestRulesCollection:
         with mock.patch("j2lint.linter.collection.load_plugins") as mocked_load_plugins:
             # importing 3 rules for the need of the tests
             # note that current pylint branch is returning classes
-            # not instances..
+            # not instances.
             mocked_load_plugins.return_value = [
                 JinjaStatementDelimiterRule(),
                 JinjaOperatorHasSpacesRule(),
                 JinjaTemplateSyntaxErrorRule(),
             ]
             collection = RulesCollection.create_from_directory(Path("dummy"), ignore_rules, warn_rules)
-            mocked_load_plugins.assert_called_once_with("dummy")
+            mocked_load_plugins.assert_called_once_with(Path("dummy"))
             assert collection.rules == mocked_load_plugins.return_value
+            assert isinstance(collection, RulesCollection)
+            # Somehow pylint is convinced that rule are integers
+            #  pylint: disable=no-member
             for rule in collection.rules:
                 if rule.rule_id in ignore_rules or rule.short_description in ignore_rules:
                     assert rule.ignore is True

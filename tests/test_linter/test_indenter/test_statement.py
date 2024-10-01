@@ -8,6 +8,8 @@ j2lint.utils.get_jinja_statement as this is the path in the code
 that will parse a file content and return a list of statements - abusively called lines
 """
 
+# pylint: disable=R0903
+
 from __future__ import annotations
 
 from typing import Any

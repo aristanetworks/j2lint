@@ -15,6 +15,7 @@ from unittest.mock import patch
 import pytest
 from rich.console import ConsoleDimensions
 
+import j2lint
 from j2lint import CONSOLE
 from j2lint.cli import (
     create_parser,
@@ -384,8 +385,6 @@ def test_run_stdin(capsys: pytest.LogCaptureFixture) -> None:
 
     In this test, the isatty answer is mocked.
     """
-    import j2lint
-
     with (
         patch("sys.stdin") as patched_stdin,
         patch.object(j2lint.cli.Path, "unlink", side_effect=j2lint.cli.Path.unlink, autospec=True) as mocked_os_unlink,

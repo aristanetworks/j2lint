@@ -188,7 +188,7 @@ class RulesCollection:
             A RulesColleciton object containing the rules from rules_dir except for the ignored ones.
         """
         result = cls()
-        result.rules = load_plugins(str(rules_dir.expanduser()))
+        result.rules = load_plugins(rules_dir.expanduser())
         for rule in result.rules:
             if rule.short_description in ignore_rules or rule.rule_id in ignore_rules:
                 rule.ignore = True
