@@ -27,7 +27,7 @@ class LinterError:
         rule: Rule,
         message: str | None = None,
     ) -> None:
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments,too-many-positional-arguments
         self.line_number = line_number
         self.line = line
         self.filename = filename
