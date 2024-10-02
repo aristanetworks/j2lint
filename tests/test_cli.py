@@ -42,7 +42,6 @@ if TYPE_CHECKING:
 
     from j2lint.linter.error import LinterError
 
-
 # Fixed size console for tests output
 CONSOLE.size = ConsoleDimensions(width=80, height=74)
 
