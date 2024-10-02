@@ -34,7 +34,7 @@ from .utils import (
     j2lint_default_rules_string,
 )
 
-# pylint: disable=fixme, too-many-arguments
+# pylint: disable=fixme, too-many-arguments, too-many-positional-arguments
 
 # Fixed size console for tests output
 CONSOLE.size = ConsoleDimensions(width=80, height=74)
