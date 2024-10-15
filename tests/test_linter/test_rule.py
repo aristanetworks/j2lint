@@ -1,30 +1,32 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-Tests for j2lint.linter.rule.py
-"""
+"""Tests for j2lint.linter.rule.py."""
+
+from __future__ import annotations
+
 import logging
-import pathlib
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
-TEST_DATA_DIR = pathlib.Path(__file__).parent / "data"
+if TYPE_CHECKING:
+    from j2lint.linter.error import LinterError
+    from j2lint.linter.rule import Rule
+
+TEST_DATA_DIR = Path(__file__).parent / "data"
 
 
 class TestRule:
-    def test__repr__(self, test_rule):
-        """
-        Test the Rule __repr__ format
-        """
+    """Test j2lint.linter.rule.Rule."""
+
+    def test__repr__(self, test_rule: Rule) -> None:
+        """Test the Rule __repr__ format."""
         assert str(test_rule) == "T0: test rule 0"
 
-    @pytest.mark.skip("This method will be removed and is tested through other methods")
-    def test_is_valid_language(self, test_rule, file):
-        """ """
-
     @pytest.mark.parametrize(
-        "checktext, checkline, file_path, expected_errors_ids, expected_logs",
+        ("checktext", "checkline", "file_path", "expected_errors_ids", "expected_logs"),
         [
             pytest.param(
                 None,
@@ -54,56 +56,49 @@ class TestRule:
     )
     def test_checkrule(
         self,
-        caplog,
-        test_rule,
-        make_issue_from_rule,
-        checktext,
-        checkline,
-        file_path,
-        expected_errors_ids,
-        expected_logs,
-    ):
-        """
-        Test the Rule.checkrule method
+        caplog: pytest.LogCaptureFixture,
+        test_rule: Rule,
+        make_issue_from_rule: Callable[[int], list[LinterError]],
+        checktext: None | int,
+        checkline: None | int,
+        file_path: dict[str, str],
+        expected_errors_ids: list[tuple[str, int]],
+        expected_logs: list[str],
+    ) -> None:
+        """Test the Rule.checkrule method.
+
+        TODO: This text is too complex and should be rewritten
+        checktext and checkline values help selecting combination of possible rules.
         """
 
-        def raise_NotImplementedError(*args, **kwargs):
+        def raise_notimplementederror(*args: Any, **kwargs: Any) -> None:
             raise NotImplementedError
 
-        def return_empty_list(*args, **kwargs):
+        def return_empty_list(*args: Any, **kwargs: Any) -> list[Any]:  # noqa: ARG001
             return []
 
         caplog.set_level(logging.DEBUG)
 
         # Build checktext and checkline
         if checktext is None:
-            test_rule.checktext = raise_NotImplementedError
+            test_rule.checktext = raise_notimplementederror
         elif checktext == 0:
             test_rule.checktext = return_empty_list
         else:
             # checktext > 0
-            test_rule.checktext = lambda x, y: [
-                issue
-                for i in range(checktext)
-                for issue in make_issue_from_rule(test_rule)
-            ]
+            test_rule.checktext = lambda *_: [issue for i in range(checktext) for issue in make_issue_from_rule(test_rule)]
 
         if checkline is None:
-            test_rule.checkline = raise_NotImplementedError
+            test_rule.checkline = raise_notimplementederror
 
         elif checkline == 0:
             test_rule.checkline = return_empty_list
         else:
             # checkline > 0
-            test_rule.checkline = lambda x, y, line_no=0: [
-                issue
-                for i in range(checkline)
-                for issue in make_issue_from_rule(test_rule)
-            ]
+            test_rule.checkline = lambda *_, line_no=0: [issue for i in range(checkline) for issue in make_issue_from_rule(test_rule)]  # noqa: ARG005
 
-        with open(file_path["path"], "r", encoding="utf-8") as file_d:
+        with Path(file_path["path"]).open(encoding="utf-8") as file_d:
             errors = test_rule.checkrule(file_path, file_d.read())
-        print(errors)
         errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]
         assert errors_ids == expected_errors_ids
         assert caplog.record_tuples == expected_logs

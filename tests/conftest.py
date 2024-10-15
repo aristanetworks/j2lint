@@ -1,13 +1,16 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-content of conftest.py
-"""
+"""Pytest fixtures for j2lint testing."""
+
+from __future__ import annotations
+
 import logging
 import pathlib
 from argparse import Namespace
-from unittest.mock import create_autospec
+from pathlib import Path
+from typing import Callable
+from unittest.mock import MagicMock, create_autospec
 
 import pytest
 
@@ -23,61 +26,61 @@ CONTENT = "content"
 # cf https://docs.pytest.org/en/stable/reference/reference.html#pytest-fixture
 # pylint: disable=fixme, redefined-outer-name
 
-# TODO - proper way to compare LinterError following:
+# TODO: proper way to compare LinterError following:
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
 
 
 class TestRule(Rule):
-    """
-    TestRule class for tests
-    """
+    """TestRule class for tests."""
 
     rule_id = "TT"
     description = "test"
     short_description = "test"
     severity = "LOW"
 
-    def checktext(self, filename, text):
-        pass
+    def checktext(self, filename: Path, text: str) -> list[LinterError]:
+        """Fake checktext implementation."""
+        return []
 
-    def checkline(self, filename, line, line_no):
-        pass
+    def checkline(self, filename: Path, line: int, line_no: int) -> list[LinterError]:
+        """Fake checkline implementation."""
+        return []
 
 
 @pytest.fixture
-def collection():
-    """
-    Return the collection with the default rules
-    """
+def collection() -> RulesCollection:
+    """Return the collection with the default rules."""
     return RulesCollection.create_from_directory(DEFAULT_RULE_DIR, [], [])
 
 
 @pytest.fixture
-def make_rules():
-    """
-    Return a Rule factory that takes one argument
-    `count` and returns count rules following the pattern
-    where `i` is the index
+def make_rules() -> Callable[[int], list[Rule]]:
+    """Return a Rule factory that takes one argument `count` and returns count rules.
 
-        rule_id = Ti
-        description = test rule i
-        short_description = test-rule-i
-        severity in [LOW, MEDIUM, HIGH] based on i % 3
+    The rules arefollowing the pattern where `i` is the index
 
+    ```
+    rule_id = Ti
+    description = test rule i
+    short_description = test-rule-i
+    severity in [LOW, MEDIUM, HIGH] based on i % 3
+    ```
+
+    Examples
+    --------
     The factory can then be invoked as follow:
 
-        def test_blah(makes_rules):
-            rules = make_rules(5)
-            # do stuff with rules
+    ```
+    def test_blah(makes_rules):
+        rules = make_rules(5)
+        # do stuff with rules
+    ```
     """
 
-    def __make_n_rules(count):
-        def get_severity(integer: int):
-            return (
-                "LOW"
-                if integer % 3 == 0
-                else ("MEDIUM" if integer % 3 == 1 else "HIGH")
-            )
+    def __make_n_rules(count: int) -> list[Rule]:
+        def get_severity(integer: int) -> str:
+            """Return a severity based on the integer modulo 3."""
+            return "LOW" if integer % 3 == 0 else ("MEDIUM" if integer % 3 == 1 else "HIGH")
 
         rules = []
         for i in range(count):
@@ -93,38 +96,40 @@ def make_rules():
 
 
 @pytest.fixture
-def test_rule(make_rules):
-    """
-    return a Rule object to use in test
-    from the make_rules - it will have
+def test_rule(make_rules: Callable[[int], list[Rule]]) -> Rule:
+    """Return a Rule object to use in test from the make_rules fixture.
 
-        rule_id = T0
-        description = test rule 0
-        short_description = test-rule-0
-        severity = LOW
+    The rule is
+
+    ```
+    rule_id = T0
+    description = test rule 0
+    short_description = test-rule-0
+    severity = LOW
+    ```
     """
-    yield make_rules(1)[0]
+    return make_rules(1)[0]
 
 
 @pytest.fixture
-def test_other_rule(make_rules):
-    """
-    return the second  Rule object to use in test
-    from the make_rules - it will have
+def test_other_rule(make_rules: Callable[[int], list[Rule]]) -> Rule:
+    """Return the second  Rule object to use in test from the make_rules fixture.
 
-        rule_id = T1
-        description = test rule 1
-        short_description = test-rule-1
-        severity = MEDIUM
+    The rule is:
+
+    ```
+    rule_id = T1
+    description = test rule 1
+    short_description = test-rule-1
+    severity = MEDIUM
+    ```
     """
-    yield make_rules(2)[1]
+    return make_rules(2)[1]
 
 
 @pytest.fixture
-def make_issues(make_rules):
-    """
-    Returns a factory that generates `count` issues and
-    return them as a list
+def make_issues(make_rules: Callable[[int], list[Rule]]) -> Callable[[int], list[LinterError]]:
+    """Return a factory that generates `count` issues and return them as a list.
 
     The fixture invokes `make_rules` first with count
     and every LinterError generated is using the rule
@@ -138,81 +143,67 @@ def make_issues(make_rules):
 
     The factory can then be invoked as follow:
 
-        def test_blah(makes_issues):
-            issues = make_issues(5)
-            # do stuff with issues
+    ```
+    def test_blah(makes_issues):
+        issues = make_issues(5)
+        # do stuff with issues
+    ```
     """
 
-    def __make_n_issues(count):
-        issues = []
+    def __make_n_issues(count: int) -> list[LinterError]:
         rules = make_rules(count)
-        for i in range(count):
-            issues.append(LinterError(i + 1, "dummy", "dummy.j2", rules[i]))
-        return issues
+        return [LinterError(i + 1, "dummy", "dummy.j2", rules[i]) for i in range(count)]
 
     return __make_n_issues
 
 
 @pytest.fixture
-def make_issue_from_rule():
-    """
-    Returns a factory that generates an issue based on
-    a Rule object
+def make_issue_from_rule() -> Callable[[Rule], LinterError]:
+    """Return a factory that generates an issue based on a Rule object.
 
-    it uses line 42, the line content is "dummy" and the
-    filename is "dummy.j2"
+    it uses line 42, the line content is "dummy" and the filename is "dummy.j2".
     """
 
-    def __make_issue_from_rule(rule):
+    def __make_issue_from_rule(rule: Rule) -> LinterError:
         yield LinterError(42, "dummy", "dummy.j2", rule)
 
     return __make_issue_from_rule
 
 
 @pytest.fixture
-def test_issue(make_issues):
-    """
-    Get the first issue from the make_issues factory
+def test_issue(make_issues: Callable[[int], list[Rule]]) -> LinterError:
+    """Get the first issue from the make_issues factory.
 
-    Note: it will use rule T0 as per design
+    It will use rule T0 as per design.
     """
-    yield make_issues(1)[0]
+    return make_issues(1)[0]
 
 
 @pytest.fixture
-def test_collection(test_rule):
-    """
-    test_collection using one rule `test_rule`
-    """
+def test_collection(test_rule: Rule) -> RulesCollection:
+    """test_collection using one rule `test_rule`."""
     collection = RulesCollection()
     collection.extend([test_rule])
-    yield collection
+    return collection
 
 
 @pytest.fixture
-def test_runner(test_collection):
-    """
-    Fixture to get a test runner using the test_collection
-    """
-    yield Runner(test_collection, "test.j2", checked_files=[])
+def test_runner(test_collection: RulesCollection) -> Runner:
+    """Fixture to get a test runner using the test_collection."""
+    return Runner(test_collection, "test.j2", checked_files=[])
 
 
 @pytest.fixture
-def j2lint_usage_string():
-    """
-    Fixture to get the help generated by argparse
-    """
-    yield create_parser().format_help()
+def j2lint_usage_string() -> str:
+    """Fixture to get the help generated by argparse."""
+    return create_parser().format_help()
 
 
-@pytest.fixture()
-def template_tmp_dir(tmp_path_factory):
-    """
-    Create a tmp directory with multiple files and hidden files
-    """
+@pytest.fixture
+def template_tmp_dir(tmp_path_factory: object) -> list[str]:
+    """Create a tmp directory with multiple files and hidden files."""
     tmp_dir = pathlib.Path(__file__).parent / "tmp"
 
-    # Hacking it
     # https://stackoverflow.com/questions/40566968/how-to-dynamically-change-pytests-tmpdir-base-directory
     # +
     # https://docs.pytest.org/en/7.1.x/_modules/_pytest/tmpdir.html
@@ -244,14 +235,12 @@ def template_tmp_dir(tmp_path_factory):
     rules_hidden_subdir_txt = rules_hidden_subdir / "rules.txt"
     rules_hidden_subdir_txt.write_text(CONTENT)
 
-    yield [str(rules)]
+    return [str(rules)]
 
 
 @pytest.fixture
-def default_namespace():
-    """
-    Default ArgPase namespace for j2lint
-    """
+def default_namespace() -> Namespace:
+    """Return the default ArgParse namespace for j2lint."""
     return Namespace(
         files=[],
         ignore=[],
@@ -269,8 +258,6 @@ def default_namespace():
 
 
 @pytest.fixture
-def logger():
-    """
-    Return a MagicMock object with the spec of logging.Logger
-    """
+def logger() -> MagicMock:
+    """Return a MagicMock object with the spec of logging.Logger."""
     return create_autospec(logging.Logger)
