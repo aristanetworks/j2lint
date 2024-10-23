@@ -1,48 +1,48 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""utils.py - Utility functions for jinja2 linter.
-"""
+"""utils.py - Utility functions for jinja2 linter."""
+
 from __future__ import annotations
 
-import glob
 import importlib.util
 import os
 import re
 from collections.abc import Generator, Iterable
-from typing import TYPE_CHECKING, Any, Tuple
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from j2lint.logger import logger
 
 if TYPE_CHECKING:
     from .linter.rule import Rule
 
-# Using Tuple from typing for 3.8 support
-# Statement type is a tuple
-# (line_without_delimiter, start_line, end_line, start_delimiter, end_delimiter)
-Statement = Tuple[str, int, int, str, str]
+# Statement type is a tuple (line_without_delimiter, start_line, end_line, start_delimiter, end_delimiter)
+Statement = tuple[str, int, int, str, str]
 
 
-def load_plugins(directory: str) -> list[Rule]:
-    """Loads and executes all the Rule modules from the specified directory
+def load_plugins(directory: Path) -> list[Rule]:
+    """Load and execute all the Rule modules from the specified directory.
 
-    Args:
-        directory (string): Loads the modules a directory
+    Parameters
+    ----------
+    directory : Path
+        Loads the modules a directory
 
-    Returns:
-        list: List of rule classes
+    Returns
+    -------
+    list
+        List of rule classes
     """
     result = []
     file_handle = None
-    for plugin_file in glob.glob(os.path.join(directory, "[A-Za-z_]*.py")):
-        plugin_name = os.path.basename(plugin_file.replace(".py", ""))
+    for plugin_file in directory.glob(pattern="[A-Za-z_]*.py"):
+        plugin_name = plugin_file.name.replace(".py", "")
         try:
             logger.debug("Loading plugin %s", plugin_name)
             spec = importlib.util.spec_from_file_location(plugin_name, plugin_file)
             if plugin_name != "__init__" and spec is not None:
-                class_name = "".join(
-                    str(name).capitalize() for name in plugin_name.split("_")
-                )
+                class_name = "".join(str(name).capitalize() for name in plugin_name.split("_"))
                 module = importlib.util.module_from_spec(spec)
                 if spec.loader is not None:
                     spec.loader.exec_module(module)
@@ -56,63 +56,77 @@ def load_plugins(directory: str) -> list[Rule]:
     return result
 
 
-def is_valid_file_type(file_name: str, extensions: list[str]) -> bool:
-    """Checks if the file extension is in the list of accepted extensions
+def is_valid_file_type(filename: Path, extensions: list[str]) -> bool:
+    """Check if the file extension is in the list of accepted extensions.
 
-    Args:
-        file_name (string): file path with extension
-        extensions (list): list of file extensions to look for
+    Parameters
+    ----------
+    filename
+        File path with extension
+    extensions
+        List of file extensions to look for
 
-    Returns:
-        boolean: True if file type is correct
+    Returns
+    -------
+    boolean
+        True if file type is correct
     """
-    extension = os.path.splitext(file_name)[1].lower()
+    extension = filename.suffix.lower()
     return extension in extensions
 
 
-def get_files(file_or_dir_names: list[str], extensions: list[str]) -> list[str]:
-    """Get files from a directory recursively
+def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path]:
+    """Get files from a directory recursively.
 
-    Args:
-        file_or_dir_names (list): list of directories and files
-        extensions (list): list of file extensions to look for
+    Parameters
+    ----------
+    file_or_dir_names
+        List of directories and files
+    extensions
+        List of file extensions to look for
 
-    Returns:
-        list: list of file paths
+    Returns
+    -------
+    list
+        List of file paths
     """
-    file_paths: list[str] = []
+    file_paths: list[Path] = []
 
     if not isinstance(file_or_dir_names, (list, set)):
-        raise TypeError(
-            f"get_files expects a list or a set and got {file_or_dir_names}"
-        )
+        msg = f"get_files expects a list or a set and got {file_or_dir_names}"
+        raise TypeError(msg)
 
     for file_or_dir in file_or_dir_names:
-        if os.path.isdir(file_or_dir):
-            for root, _, files in os.walk(file_or_dir):
+        file_or_dir_path = file_or_dir
+        if file_or_dir_path.is_dir():
+            for root, _, files in os.walk(str(file_or_dir_path)):
+                root_path = Path(root)
                 for file in files:
-                    file_path = os.path.join(root, file)
+                    file_path = root_path / file
                     if is_valid_file_type(file_path, extensions):
                         file_paths.append(file_path)
-        elif is_valid_file_type(file_or_dir, extensions):
-            file_paths.append(file_or_dir)
+        elif is_valid_file_type(file_or_dir_path, extensions):
+            file_paths.append(file_or_dir_path)
     logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
     return file_paths
 
 
 def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
-    """Flattens an iterable
+    """Flatten an iterable.
 
-    Args:
-        nested_list (list): Nested list
+    Parameters
+    ----------
+    nested_list
+        Nested list
 
-    Returns:
+    Returns
+    -------
+    Generator[Any, Any, Any]
         a generator that yields the elements of each object in the nested_list
     """
     if not isinstance(nested_list, (list, tuple)):
-        raise TypeError(
-            f"flatten is expecting a list or tuple and received {nested_list}"
-        )
+        msg = f"flatten is expecting a list or tuple and received {nested_list}"
+        raise TypeError(msg)
     for element in nested_list:
         if isinstance(element, Iterable) and not isinstance(element, (str, bytes)):
             yield from flatten(element)
@@ -120,60 +134,74 @@ def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:
             yield element
 
 
-def get_tuple(
-    list_of_tuples: list[tuple[Any, ...]], item: Any
-) -> tuple[Any, ...] | None:
-    """Checks if an item is present in any of the tuples
+def get_tuple(list_of_tuples: list[tuple[Any, ...]], item: Any) -> tuple[Any, ...] | None:  # noqa: ANN401
+    """Check if an item is present in any of the tuples.
 
-    Args:
-        list_of_tuples (list): list of tuples
-        item (object): single object which can be in a tuple
+    Parameters
+    ----------
+    list_of_tuples
+        list of tuples
+    item
+        single object which can be in a tuple
 
-    Returns:
-        [tuple]: tuple if the item exists in any of the tuples
+    Returns
+    -------
+    tuple | None
+        tuple if the item exists in any of the tuples
     """
     return next((entry for entry in list_of_tuples if item in entry), None)
 
 
-def get_jinja_statements(text: str, indentation: bool = False) -> list[Statement]:
-    """Gets jinja statements with {%[-/+] [-]%} delimiters
+def get_jinja_statements(text: str, *, indentation: bool = False) -> list[Statement]:
+    """Get jinja statements with {%[-/+] [-]%} delimiters.
 
     The regex `regex_pattern` will return multiple groups when it matches
     Note that this is a multiline regex
 
-    Args:
-        text (string): multiline text to search the jinja statements in
-        indentation (bool): Set to True if parsing for indentation, it will allow
-                            to retrieve multiple lines
-    Example:
+    # TODO - should probably return a JinjaStatement object..
 
+    Parameters
+    ----------
+    text
+        multiline text to search the jinja statements in.
+    indentation
+        Set to True if parsing for indentation, it will allow to retrieve multiple lines.
+
+    Examples
+    --------
     For this given template:
 
-        {# tcam-profile #}
-        {% if switch.platform_settings.tcam_profile is arista.avd.defined %}
-        tcam_profile:
-          system: {{ switch.platform_settings.tcam_profile }}
-        {% endif %}
+    ```
+    {# tcam-profile #}
+    {% if switch.platform_settings.tcam_profile is arista.avd.defined %}
+    tcam_profile:
+      system: {{ switch.platform_settings.tcam_profile }}
+    {% endif %}
+    ```
 
-    With indentation=True
+    With `indentation=True`:
 
-        Found jinja statements [(' if switch.platform_settings.tcam_profile
-        is arista.avd.defined ', 2, 2, '{%', '%}'), (' endif ', 5, 5, '{%', '%}')]
+    ```
+    Found jinja statements [(' if switch.platform_settings.tcam_profile
+    is arista.avd.defined ', 2, 2, '{%', '%}'), (' endif ', 5, 5, '{%', '%}')]
+    ```
 
-    With indentation=False
+    With `indentation=False`
 
-        Found jinja statements []
-        Found jinja statements [(' if switch.platform_settings.tcam_profile is
-        arista.avd.defined ', 1, 1, '{%', '%}')]
-        Found jinja statements []
-        Found jinja statements []
-        Found jinja statements [(' endif ', 1, 1, '{%', '%}')]
-        Found jinja statements []
+    ```
+    Found jinja statements []
+    Found jinja statements [(' if switch.platform_settings.tcam_profile is
+    arista.avd.defined ', 1, 1, '{%', '%}')]
+    Found jinja statements []
+    Found jinja statements []
+    Found jinja statements [(' endif ', 1, 1, '{%', '%}')]
+    Found jinja statements []
+    ```
 
-    Returns:
-        [list]: list of jinja statements
-
-    # TODO - should probably return a JinjaStatement object..
+    Returns
+    -------
+    list
+        List of jinja statements
     """
     statements: list[Statement] = []
     count = 0
@@ -201,25 +229,37 @@ def get_jinja_statements(text: str, indentation: bool = False) -> list[Statement
 
 
 def delimit_jinja_statement(line: str, start: str = "{%", end: str = "%}") -> str:
-    """Adds end delimiters for a jinja statement
+    """Add start and end delimiters for a jinja statement.
 
-    Args:
-        line (string): text line
+    Parameters
+    ----------
+    line
+        Text line
+    start
+        Start delimiter
+    end
+        End delimiter
 
-    Returns:
-        [string]: jinja statement with jinja start and end delimiters
+    Returns
+    -------
+    str
+        Jinja statement with jinja start and end delimiters
     """
     return start + line + end
 
 
 def get_jinja_comments(text: str) -> list[str]:
-    """Gets jinja comments
+    """Get jinja comments.
 
-    Args:
-        line (string): text to get jinja comments
+    Parameters
+    ----------
+    text
+        Text to get jinja comments
 
-    Returns:
-        [list]: returns list of jinja comments
+    Returns
+    -------
+    list
+        List of jinja comments
     """
     regex_pattern = re.compile("(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
 
@@ -227,27 +267,36 @@ def get_jinja_comments(text: str) -> list[str]:
 
 
 def get_jinja_variables(text: str) -> list[str]:
-    """Gets jinja variables
+    """Get jinja variables.
 
-    Args:
-        line (string): text to get jinja variables
+    Parameters
+    ----------
+    text
+        Text to get jinja variables
 
-    Returns:
-        [list]: returns list of jinja variables
+    Returns
+    -------
+    list
+        List of jinja variables
     """
-    regex_pattern = regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
+    regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
     return [line.group(2) for line in regex_pattern.finditer(text)]
 
 
 def is_rule_disabled(text: str, rule: Rule) -> bool:
-    """Check if rule is disabled
+    """Check if rule is disabled.
 
-    Args:
-        text (string): text to check
-        rule (Rule): Rule object
+    Parameters
+    ----------
+    text
+        Text to check
+    rule
+        Rule object
 
-    Returns:
-        [boolean]: True if rule is disabled
+    Returns
+    -------
+    boolean
+        True if rule is disabled
     """
     comments = get_jinja_comments(text)
     regex = re.compile(r"j2lint\s*:\s*disable\s*=\s*([\w-]+)")

@@ -1,20 +1,23 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-Tests for j2lint.cli.py
-"""
+"""Tests for j2lint.cli.py."""
+
+from __future__ import annotations
+
 import logging
-import os
 import re
 from argparse import Namespace
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable
 from unittest.mock import patch
 
 import pytest
 from rich.console import ConsoleDimensions
 
+import j2lint
+from j2lint import CONSOLE
 from j2lint.cli import (
-    CONSOLE,
     create_parser,
     print_json_output,
     print_string_output,
@@ -34,14 +37,17 @@ from .utils import (
     j2lint_default_rules_string,
 )
 
-# pylint: disable=fixme, too-many-arguments, too-many-positional-arguments
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from j2lint.linter.error import LinterError
 
 # Fixed size console for tests output
 CONSOLE.size = ConsoleDimensions(width=80, height=74)
 
 
 @pytest.mark.parametrize(
-    "argv, namespace_modifications",
+    ("argv", "namespace_modifications"),
     [
         (pytest.param([], {"extensions": [".j2", ".jinja", ".jinja2"]}, id="default")),
         pytest.param(
@@ -60,11 +66,10 @@ CONSOLE.size = ConsoleDimensions(width=80, height=74)
         ),
     ],
 )
-def test_create_parser(default_namespace, argv, namespace_modifications):
-    """
-    Test j2lint.cli.create_parser
+def test_create_parser(default_namespace: Namespace, argv: list[str], namespace_modifications: dict[str, Any]) -> None:
+    """Test j2lint.cli.create_parser.
 
-    the namespace_modifications is a dictionnary where key
+    the namespace_modifications is a dictionary where key
     is one of the keys in the namespace and value is the value
     it should be overwritten to.
 
@@ -80,7 +85,7 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
 
 
 @pytest.mark.parametrize(
-    "number_issues, issues_modifications, expected_sorted_issues_ids",
+    ("number_issues", "issues_modifications", "expected_sorted_issues_ids"),
     [
         (0, {}, []),
         (1, {}, [("dummy.j2", "T0", 1, "test-rule-0")]),
@@ -111,10 +116,12 @@ def test_create_parser(default_namespace, argv, namespace_modifications):
     ],
 )
 def test_sort_issues(
-    make_issues, number_issues, issues_modifications, expected_sorted_issues_ids
-):
-    """
-    Test j2lint.cli.sort_issues
+    make_issues: Callable[[int], list[LinterError]],
+    number_issues: int,
+    issues_modifications: dict[int, dict[str, Any]],
+    expected_sorted_issues_ids: list[tuple[Any]],
+) -> None:
+    """Test j2lint.cli.sort_issues.
 
     the issues_modificartions is a dictionary that has the following
     structure:
@@ -125,7 +132,6 @@ def test_sort_issues(
     appropriate issues, apply the sort_issues method and verifies the
     ordering is correct
     """
-
     issues = make_issues(number_issues)
 
     # In the next step we apply modifications on the generated LinterErrors
@@ -152,7 +158,7 @@ def test_sort_issues(
 
 
 @pytest.mark.parametrize(
-    "options, number_errors, number_warnings, expected_output, expected_stdout",
+    ("options", "number_errors", "number_warnings", "expected_output", "expected_stdout"),
     [
         pytest.param(
             Namespace(verbose=False),
@@ -189,23 +195,18 @@ def test_sort_issues(
     ],
 )
 def test_print_string_output(
-    capsys,
-    make_issues,
-    options,
-    number_errors,
-    number_warnings,
-    expected_output,
-    expected_stdout,
-):
-    """
-    Test j2lint.cli.print_string_output
-    """
-
+    capsys: pytest.LogCaptureFixture,
+    make_issues: Callable[[int], list[LinterError]],
+    options: Namespace,
+    number_errors: int,
+    number_warnings: int,
+    expected_output: tuple[int, int],
+    expected_stdout: str,
+) -> None:
+    """Test j2lint.cli.print_string_output."""
     errors = {"dummy.j2": make_issues(number_errors)}
     warnings = {"dummy.j2": make_issues(number_warnings)}
-    total_errors, total_warnings = print_string_output(
-        errors, warnings, options.verbose
-    )
+    total_errors, total_warnings = print_string_output(errors, warnings, verbose=options.verbose)
 
     assert total_errors == expected_output[0]
     assert total_warnings == expected_output[1]
@@ -215,43 +216,22 @@ def test_print_string_output(
 
 
 @pytest.mark.parametrize(
-    "number_errors, number_warnings, expected_output, expected_stdout",
+    ("number_errors", "number_warnings", "expected_output", "expected_stdout"),
     [
-        pytest.param(
-            0,
-            0,
-            (0, 0),
-            NO_ERROR_NO_WARNING_JSON,
-            id="No issue - json",
-        ),
-        pytest.param(
-            1,
-            0,
-            (1, 0),
-            ONE_ERROR_JSON,
-            id="one error - json",
-        ),
-        pytest.param(
-            1,
-            1,
-            (1, 1),
-            ONE_ERROR_ONE_WARNING_JSON,
-            id="one error and one warning - json",
-        ),
+        pytest.param(0, 0, (0, 0), NO_ERROR_NO_WARNING_JSON, id="No issue - json"),
+        pytest.param(1, 0, (1, 0), ONE_ERROR_JSON, id="one error - json"),
+        pytest.param(1, 1, (1, 1), ONE_ERROR_ONE_WARNING_JSON, id="one error and one warning - json"),
     ],
 )
 def test_print_json_output(
-    capsys,
-    make_issues,
-    number_errors,
-    number_warnings,
-    expected_output,
-    expected_stdout,
-):
-    """
-    Test j2lint.cli.print_json_output
-    """
-
+    capsys: pytest.Fixture,
+    make_issues: pytest.Fixture,
+    number_errors: int,
+    number_warnings: int,
+    expected_output: tuple[int, int],
+    expected_stdout: str,
+) -> None:
+    """Test j2lint.cli.print_json_output."""
     errors = {"ERRORS": make_issues(number_errors)}
     warnings = {"WARNINGS": make_issues(number_warnings)}
     total_errors, total_warnings = print_json_output(errors, warnings)
@@ -260,12 +240,11 @@ def test_print_json_output(
     assert total_warnings == expected_output[1]
 
     captured = capsys.readouterr()
-    print(captured)
     assert captured.out == expected_stdout
 
 
 @pytest.mark.parametrize(
-    "argv, expected_stdout, expected_stderr, expected_exit_code, expected_raise, number_errors, number_warnings",
+    ("argv", "expected_stdout", "expected_stderr", "expected_exit_code", "expected_raise", "number_errors", "number_warnings"),
     [
         pytest.param([], "", "HELP", 1, does_not_raise(), 0, 0, id="no input"),
         pytest.param(["-h"], "HELP", "", 0, pytest.raises(SystemExit), 0, 0, id="help"),
@@ -342,22 +321,21 @@ def test_print_json_output(
     ],
 )
 def test_run(
-    capsys,
-    caplog,
-    j2lint_usage_string,
-    make_issues,
-    argv,
-    expected_stdout,
-    expected_stderr,
-    expected_exit_code,
-    expected_raise,
-    number_errors,
-    number_warnings,
-):
-    """
-    Test the j2lint.cli.run method
+    capsys: pytest.Fixture,
+    caplog: pytest.Fixture,
+    j2lint_usage_string: str,
+    make_issues: pytest.Fixture,
+    argv: list[str],
+    expected_stdout: str,
+    expected_stderr: str,
+    expected_exit_code: int,
+    expected_raise: Generator,
+    number_errors: int,
+    number_warnings: int,
+) -> None:
+    """Test the j2lint.cli.run method.
 
-    This test is a bit too complex and should probably be splitted out to test various
+    This test is a bit too complex and should probably be split out to test various
     functionalities
 
     the call is to test the various options of the main entry point, patching away inner
@@ -367,53 +345,50 @@ def test_run(
         caplog.set_level(logging.INFO)
     if "-d" in argv or "--debug" in argv:
         caplog.set_level(logging.DEBUG)
-    # TODO this method needs to be split a bit as it has
-    # too many responsibility
+    # TODO: this method needs to be split a bit as it has too many responsibility
     if expected_stdout == "HELP":
         expected_stdout = j2lint_usage_string
     if expected_stdout == "DEFAULT_RULES":
         expected_stdout = j2lint_default_rules_string()
     if expected_stderr == "HELP":
         expected_stderr = j2lint_usage_string
-    with expected_raise:
-        with patch("j2lint.cli.Runner.run") as mocked_runner_run, patch(
-            "logging.disable"
-        ):
-            mocked_runner_run.return_value = (
-                make_issues(number_errors),
-                make_issues(number_warnings),
-            )
-            run_return_value = run(argv)
-            captured = capsys.readouterr()
-            if "-o" not in argv and "--stdout" not in argv:
-                assert str(captured.out) == expected_stdout
-                assert captured.out == expected_stdout
-                # Hmm - WHY - need to find why failing with stdout
-                assert captured.err == expected_stderr
-            else:
-                assert expected_stdout in captured.out
-            assert run_return_value == expected_exit_code
-            if ("-o" in argv or "--stdout" in argv) and (
-                "-d" in argv or "--debug" in argv
-            ):
-                assert "DEBUG" in [record.levelname for record in caplog.records]
+    with expected_raise, patch("j2lint.cli.Runner.run") as mocked_runner_run, patch("logging.disable"):
+        mocked_runner_run.return_value = (
+            make_issues(number_errors),
+            make_issues(number_warnings),
+        )
+        run_return_value = run(argv)
+        captured = capsys.readouterr()
+        if "-o" not in argv and "--stdout" not in argv:
+            assert str(captured.out) == expected_stdout
+            assert captured.out == expected_stdout
+            # Hmm - WHY - need to find why failing with stdout
+            assert captured.err == expected_stderr
+        else:
+            assert expected_stdout in captured.out
+        assert run_return_value == expected_exit_code
+        if ("-o" in argv or "--stdout" in argv) and ("-d" in argv or "--debug" in argv):
+            assert "DEBUG" in [record.levelname for record in caplog.records]
 
 
-def test_run_stdin(capsys):
-    """
-    Test j2lint.cli.run when using stdin
+def test_run_stdin(capsys: pytest.LogCaptureFixture) -> None:
+    """Test j2lint.cli.run when using stdin.
+
     Note that the code is checking that this is not run from a tty
 
     A solution to run is something like:
+
     ```
     cat myfile.j2 | j2lint --stdin
     ```
 
     In this test, the isatty answer is mocked.
     """
-    with patch("sys.stdin") as patched_stdin, patch(
-        "os.unlink", side_effect=os.unlink
-    ) as mocked_os_unlink, patch("logging.disable"):
+    with (
+        patch("sys.stdin") as patched_stdin,
+        patch.object(j2lint.cli.Path, "unlink", side_effect=j2lint.cli.Path.unlink, autospec=True) as mocked_os_unlink,
+        patch("logging.disable"),
+    ):
         patched_stdin.isatty.return_value = False
         patched_stdin.read.return_value = "{%set test=42 %}"
         run_return_value = run(["--log", "--stdin"])
@@ -426,6 +401,7 @@ def test_run_stdin(capsys):
             re.MULTILINE,
         )
         assert matches is not None
-        mocked_os_unlink.assert_called_with(matches.groups()[0])
-        assert os.path.exists(matches.groups()[0]) is False
+        path = Path(matches.groups()[0])
+        mocked_os_unlink.assert_called_with(path)
+        assert path.exists() is False
         assert run_return_value == 2

@@ -1,14 +1,16 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""statement.py - Class and variables for jinja statements.
-"""
+"""statement.py - Class and variables for jinja statements."""
+
 from __future__ import annotations
 
 # pylint: disable=too-few-public-methods
 import re
+from typing import TYPE_CHECKING
 
-from j2lint.utils import Statement
+if TYPE_CHECKING:
+    from j2lint.utils import Statement
 
 JINJA_STATEMENT_TAG_NAMES = [
     ("for", "else", "endfor"),
@@ -20,9 +22,7 @@ JINJA_STATEMENT_TAG_NAMES = [
 class JinjaStatement:
     """Class for representing a jinja statement."""
 
-    # pylint: disable = fixme
-    # FIXME - this could probably be a method in Node rather than a class
-    #         with no method - maybe a dataclass
+    # TODO: this could probably be a method in Node rather than a class with no method - maybe a dataclass
     def __init__(self, line: Statement) -> None:
         whitespaces = re.findall(r"\s*", line[0])
 

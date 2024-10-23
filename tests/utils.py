@@ -1,25 +1,25 @@
 # Copyright (c) 2021-2024 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""
-utils.py - functions to assist with tests
-"""
+"""utils.py - functions to assist with tests."""
+
+from __future__ import annotations
+
 from contextlib import contextmanager
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 @contextmanager
-def does_not_raise():
-    """
-    Provides a context manager that does not raise anything
-    for pytest tests
-    """
+def does_not_raise() -> Generator[Any, Any, Any]:
+    """Provide a context manager that does not raise anything for pytest tests."""
     yield
 
 
-def j2lint_default_rules_string():
-    """
-    The description of the default rules
-    """
+def j2lint_default_rules_string() -> str:
+    """Return the description of the default rules."""
     return (
         "─────────────────────────── Rules in the Collection ────────────────────────────\n"
         "Origin: BUILT-IN\n"
@@ -98,7 +98,7 @@ ONE_ERROR = (
     "Jinja2 linting finished with 1 error(s) and 0 warning(s)\n"
 )
 
-# Cannot use """ because of the trailing whitspaces generated in rich Tree
+# Cannot use """ because of the trailing whitespaces generated in rich Tree
 ONE_WARNING_VERBOSE = (
     "───────────────────────────── JINJA2 LINT WARNINGS ─────────────────────────────\n"
     "dummy.j2\n"
@@ -111,7 +111,7 @@ ONE_WARNING_VERBOSE = (
     "Jinja2 linting finished with 0 error(s) and 1 warning(s)\n"
 )
 
-# Cannot use """ because of the trailing whitspaces generated in rich Tree
+# Cannot use """ because of the trailing whitespaces generated in rich Tree
 ONE_ERROR_ONE_WARNING_VERBOSE = (
     "────────────────────────────── JINJA2 LINT ERRORS ──────────────────────────────\n"
     "tests/data/test.j2\n"
