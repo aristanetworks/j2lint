@@ -36,7 +36,7 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 dev = [
   "pre-commit>=3.3.3",
-  "bumpver==2023.1129",
+  "bumpver==2024.1130",
   "tox>=4.10.0,<5.0.0",
 ]
 test = [
