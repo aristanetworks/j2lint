@@ -237,7 +237,7 @@ def print_string_output(
             CONSOLE.print(tree)
 
     total_lint_errors = sum(len(issues) for issues in lint_errors.values())
-    total_lint_warnings = sum(len(issues) for _, issues in lint_warnings.items())
+    total_lint_warnings = sum(len(issues) for issues in lint_warnings.values())
 
     if total_lint_errors:
         print_issues(lint_errors, "ERRORS")
