@@ -217,12 +217,12 @@ def print_string_output(
     lint_warnings
         a dictionary containing pairs of type {filename: list of warnings}
     verbose
-        When True, output a string when no error nor warning was passed.
+        When True, output a string if neither an error nor a warning was passed.
 
     Returns
     -------
     tuple[int, int]
-        A two tuple containing the total number of errors and the total number of warnings.
+        A tuple containing the total number of errors and the total number of warnings.
     """
 
     def print_issues(lint_issues: dict[Path, list[LinterError]], issue_type: str) -> None:
@@ -236,7 +236,7 @@ def print_string_output(
                 tree.add(j2_issue.to_rich(verbose=verbose))
             CONSOLE.print(tree)
 
-    total_lint_errors = sum(len(issues) for _, issues in lint_errors.items())
+    total_lint_errors = sum(len(issues) for issues in lint_errors.values())
     total_lint_warnings = sum(len(issues) for _, issues in lint_warnings.items())
 
     if total_lint_errors:
