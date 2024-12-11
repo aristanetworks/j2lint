@@ -4,7 +4,7 @@
 """__init__.py - A command-line utility that checks for best practices in Jinja2.
 """
 NAME = "j2lint"
-VERSION = "v1.1.0"
+VERSION = "v1.1.1"
 DESCRIPTION = __doc__
 
 __author__ = "Arista Networks"
