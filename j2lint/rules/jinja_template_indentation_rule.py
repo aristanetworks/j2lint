@@ -2,7 +2,7 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_template_indentation_rule.py - Rule class to check the jinja statement
-                                     indentation is correct.
+indentation is correct.
 """
 from __future__ import annotations
 

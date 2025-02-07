@@ -2,7 +2,7 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_variable_name_case_rule.py - Rule class to check the variables use
-                                  lower case.
+lower case.
 """
 from __future__ import annotations
 

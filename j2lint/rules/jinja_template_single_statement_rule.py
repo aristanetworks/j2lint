@@ -2,8 +2,8 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_template_single_statement_rule.py - Rule class to check if only a single
-                                         jinja statement is present on each
-                                         line.
+jinja statement is present on each
+line.
 """
 from __future__ import annotations
 

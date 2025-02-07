@@ -2,8 +2,8 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_variable_has_space_rule.py - Rule class to check if jinja variables have
-                                  single space between curly brackets and
-                                  variable name.
+single space between curly brackets and
+variable name.
 """
 from __future__ import annotations
 
