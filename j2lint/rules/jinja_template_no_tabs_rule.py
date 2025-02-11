@@ -2,7 +2,7 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_template_no_tabs_rule.py - Rule class to check the file does not use tabs
-                                for indentation.
+for indentation.
 """
 from __future__ import annotations
 

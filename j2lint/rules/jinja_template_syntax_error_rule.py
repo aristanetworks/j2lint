@@ -2,7 +2,7 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_template_syntax_error_rule.py - Rule class to check that file does not
-                                     have jinja syntax errors.
+have jinja syntax errors.
 """
 from __future__ import annotations
 

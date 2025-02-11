@@ -2,8 +2,8 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """jinja_statement_has_spaces_rule.py - Rule class to check if jinja statement has
-                                        at least a single space surrounding the
-                                        delimiter.
+at least a single space surrounding the
+delimiter.
 """
 from __future__ import annotations
 

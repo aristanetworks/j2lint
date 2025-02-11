@@ -1,8 +1,7 @@
 # Copyright (c) 2021-2025 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
-"""error.py - Error classes to format the lint errors.
-"""
+"""error.py - Error classes to format the lint errors."""
 from __future__ import annotations
 
 import json

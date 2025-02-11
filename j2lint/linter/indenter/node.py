@@ -2,7 +2,7 @@
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """node.py - Class node for creating a parse tree for jinja statements and
-             checking jinja statement indentation.
+checking jinja statement indentation.
 """
 from __future__ import annotations
 
