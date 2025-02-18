@@ -16,7 +16,7 @@ class JinjaVariableHasSpaceRule(Rule):
     """Rule class to check if jinja variables have single space between curly brackets and variable name."""
 
     rule_id = "S1"
-    description: ClassVar = "A single space should be added between Jinja2 curly brackets " "and a variable name: {{ ethernet_interface }}"
+    description: ClassVar = "A single space should be added between Jinja2 curly brackets and a variable name: {{ ethernet_interface }}"
 
     short_description = "single-space-decorator"
     severity = "LOW"

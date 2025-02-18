@@ -248,7 +248,7 @@ def print_string_output(
         if verbose:
             CONSOLE.print("Linting complete. No problems found!", style="green")
     else:
-        CONSOLE.print(f"\nJinja2 linting finished with " f"{total_lint_errors} error(s) and {total_lint_warnings} warning(s)")
+        CONSOLE.print(f"\nJinja2 linting finished with {total_lint_errors} error(s) and {total_lint_warnings} warning(s)")
 
     return total_lint_errors, total_lint_warnings
 

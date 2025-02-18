@@ -17,7 +17,7 @@ class JinjaVariableNameFormatRule(Rule):
     """Rule class to check that variable names only use underscores."""
 
     rule_id = "V2"
-    description: ClassVar = "If variable is multi-words, underscore `_` should be used " "as a separator: '{{ my_variable_name }}'"
+    description: ClassVar = "If variable is multi-words, underscore `_` should be used as a separator: '{{ my_variable_name }}'"
     short_description = "jinja-variable-format"
     severity = "LOW"
 

@@ -82,7 +82,7 @@ class JinjaOperatorHasSpacesRule(Rule):
                 line,
                 filename,
                 self,
-                f"The operator {issue} needs to be enclosed" " by a single space on each side",
+                f"The operator {issue} needs to be enclosed by a single space on each side",
             )
             for issue in issues
         )
