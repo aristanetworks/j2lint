@@ -39,11 +39,11 @@ repos:
           - --allow-past-years
           - --fuzzy-match-generates-todo
           - --comment-style
-          - '{#||#}'
+          - "{#||#}"
           - --no-extra-eol
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
+    rev: v0.9.6
     hooks:
     - id: ruff
       name: Run Ruff linter
@@ -52,7 +52,7 @@ repos:
       name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: v3.3.3
+    rev: v3.3.4
     hooks:
       - id: pylint
         name: Check for Linting error on Python files
@@ -70,7 +70,7 @@ repos:
         exclude: ^tests/
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.1
+    rev: v1.15.0
     hooks:
       - id: mypy
         args:
