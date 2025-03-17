@@ -52,7 +52,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: v3.3.4
+    rev: v3.3.5
     hooks:
       - id: pylint
         name: Check for Linting error on Python files
