@@ -266,21 +266,39 @@ def get_jinja_comments(text: str) -> list[str]:
     return [line.group(2) for line in regex_pattern.finditer(text)]
 
 
-def get_jinja_variables(text: str) -> list[str]:
-    """Get jinja variables.
+def get_jinja_expressions(text: str, *, blank_literals: bool = False) -> list[str]:
+    """Get jinja expressions.
 
     Parameters
     ----------
     text
-        Text to get jinja variables
+        Text to get jinja expressions
+    blank_literals
+        Set to True to replace string literals with blank (empty) values
 
     Returns
     -------
     list
-        List of jinja variables
+        List of jinja expressions (optionally with string literals blanked)
     """
     regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
-    return [line.group(2) for line in regex_pattern.finditer(text)]
+
+    exps_strings_intact = [line.group(2) for line in regex_pattern.finditer(text)]
+
+    if blank_literals:
+        # Replace string literals with empty strings
+        exps_strings_blanked = []
+        for exp in exps_strings_intact:
+            # Replace single and double quoted strings with empty strings inc. nested
+            single_quote_pattern = re.compile(r"'(?:\\.|[^'\\])*'")
+            double_quote_pattern = re.compile(r"\"(?:\\.|[^\"\\])*\"")
+
+            exp_blanked_no_double_quotes = re.sub(double_quote_pattern, '""', exp)
+            exp_fully_blanked = re.sub(single_quote_pattern, "''", exp_blanked_no_double_quotes)
+
+            exps_strings_blanked.append(exp_fully_blanked)
+        return exps_strings_blanked
+    return exps_strings_intact
 
 
 def is_rule_disabled(text: str, rule: Rule) -> bool:

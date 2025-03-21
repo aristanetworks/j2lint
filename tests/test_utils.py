@@ -180,8 +180,8 @@ def test_get_jinja_comments() -> None:
 
 
 @pytest.mark.skip
-def test_get_jinja_variables() -> None:
-    """Test the utils.get_jinja_variables function."""
+def get_jinja_expressions() -> None:
+    """Test the utils.get_jinja_expressions function."""
     # TODO:
 
 
