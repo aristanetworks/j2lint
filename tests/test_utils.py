@@ -238,11 +238,7 @@ def test_get_jinja_expressions() -> None:
     {{ quux(foo, 'bar', "qux") }}
     """
     result = get_jinja_expressions(test_template, blank_literals=True)
-    expected = [
-        " foo[''] ~ '' ~ foo[''] ",
-        " '' ~ baz.qux ",
-        " quux(foo, '', \"\") "
-    ]
+    expected = [" foo[''] ~ '' ~ foo[''] ", " '' ~ baz.qux ", " quux(foo, '', \"\") "]
     assert result == expected
 
     # complex don't remove strings
@@ -252,11 +248,7 @@ def test_get_jinja_expressions() -> None:
     {{ quux(foo, 'bar', "qux") }}
     """
     result = get_jinja_expressions(test_template, blank_literals=False)
-    expected = [
-        " foo['bar'] ~ ' baz qux ' ~ foo['bar'] ",
-        " 'foo bar: ' ~ baz.qux ",
-        " quux(foo, 'bar', \"qux\") "
-    ]
+    expected = [" foo['bar'] ~ ' baz qux ' ~ foo['bar'] ", " 'foo bar: ' ~ baz.qux ", " quux(foo, 'bar', \"qux\") "]
     assert result == expected
 
     # complex 2
