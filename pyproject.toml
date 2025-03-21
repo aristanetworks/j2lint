@@ -45,7 +45,7 @@ test = [
 lint = [
   "pylint>=3.0.0",
   "ruff>=0.11.0,<0.12.0",
-  "codespell>=2.2.6,<2.4.0",
+  "codespell>=2.2.6,<2.5.0",
 ]
 type = [
   "mypy==1.15.0",
