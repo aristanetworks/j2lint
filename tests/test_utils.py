@@ -14,6 +14,7 @@ from j2lint.utils import (
     delimit_jinja_statement,
     flatten,
     get_files,
+    get_jinja_expressions,
     get_tuple,
     is_rule_disabled,
     is_valid_file_type,
@@ -179,10 +180,94 @@ def test_get_jinja_comments() -> None:
     # TODO:
 
 
-@pytest.mark.skip
-def get_jinja_expressions() -> None:
+def test_get_jinja_expressions() -> None:
     """Test the utils.get_jinja_expressions function."""
-    # TODO:
+    # empty string
+    test_template = "foo {{}} bar"
+    result = get_jinja_expressions(test_template)
+    assert result == [""]
+
+    # no expressions
+    test_template = "a valid simple line - foo, bar, baz, qux, quux"
+    result = get_jinja_expressions(test_template)
+    assert result == []
+
+    # simple expressions
+    test_template = "a valid line with two variables - foo, {{ valid_1 }}, baz, qux, {{ valid_2 }}"
+    result = get_jinja_expressions(test_template)
+    assert result == [" valid_1 ", " valid_2 "]
+
+    # adjacent expressions
+    test_template = "{{foo}}{{ bar }}"
+    result = get_jinja_expressions(test_template)
+    assert result == ["foo", " bar "]
+
+    # with filters
+    test_template = "a valid line with filters - foo, {{ valid_1 | default ('bar') }}, baz, qux, {{ valid_2 | capitalize }}"
+    result = get_jinja_expressions(test_template)
+    assert result == [" valid_1 | default ('bar') ", " valid_2 | capitalize "]
+
+    # multiline
+    test_template = """
+        a valid simple line - foo, bar, baz, qux, quux
+        a valid line with two variables - foo, {{ valid_1 }}, baz, qux, {{ valid_2 }}
+        a valid line with filters - foo, {{ valid_1 | default ('bar') }}, baz, qux, {{ valid_2 | capitalize }}
+    """
+    result = get_jinja_expressions(test_template)
+    assert result == [" valid_1 ", " valid_2 ", " valid_1 | default ('bar') ", " valid_2 | capitalize "]
+
+    # strings left in
+    test_template = "foo {{ 'bar' }} baz {{ \"qux\" }}"
+    result = get_jinja_expressions(test_template)
+    assert result == [" 'bar' ", ' "qux" ']
+
+    # strings removed
+    test_template = "foo {{ 'bar' }} baz {{ \"qux\" }}"
+    result = get_jinja_expressions(test_template, blank_literals=True)
+    assert result == [" '' ", ' "" ']
+
+    # functions
+    test_template = "{{ foo ~ inner_func('bar', \"baz\") }}"
+    result = get_jinja_expressions(test_template, blank_literals=True)
+    assert result == [" foo ~ inner_func('', \"\") "]
+
+    # complex
+    test_template = """
+    {{ foo['bar'] ~ ' baz qux ' ~ foo['bar'] }}
+    {{ 'foo bar: ' ~ baz.qux }}
+    {{ quux(foo, 'bar', "qux") }}
+    """
+    result = get_jinja_expressions(test_template, blank_literals=True)
+    expected = [
+        " foo[''] ~ '' ~ foo[''] ",
+        " '' ~ baz.qux ",
+        " quux(foo, '', \"\") "
+    ]
+    assert result == expected
+
+    # complex don't remove strings
+    test_template = """
+    {{ foo['bar'] ~ ' baz qux ' ~ foo['bar'] }}
+    {{ 'foo bar: ' ~ baz.qux }}
+    {{ quux(foo, 'bar', "qux") }}
+    """
+    result = get_jinja_expressions(test_template, blank_literals=False)
+    expected = [
+        " foo['bar'] ~ ' baz qux ' ~ foo['bar'] ",
+        " 'foo bar: ' ~ baz.qux ",
+        " quux(foo, 'bar', \"qux\") "
+    ]
+    assert result == expected
+
+    # complex 2
+    test_template = "{{ foo('bar \\'baz\\' qux', \"quux \\\"foo\\\" bar\") }}"
+    result = get_jinja_expressions(test_template, blank_literals=True)
+    assert result == [" foo('', \"\") "]
+
+    # complex 2 don't remove strings
+    test_template = "{{ foo('bar \\'baz\\' qux', \"quux \\\"foo\\\" bar\") }}"
+    result = get_jinja_expressions(test_template)
+    assert result == [" foo('bar \\'baz\\' qux', \"quux \\\"foo\\\" bar\") "]
 
 
 @pytest.mark.parametrize(
