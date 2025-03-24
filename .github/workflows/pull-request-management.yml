@@ -1,6 +1,10 @@
 ---
 name: Code Testing
-on: pull_request
+"on":
+  push:
+    branches:
+      - devel
+  pull_request:
 
 jobs:
   lint:
