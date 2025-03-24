@@ -53,7 +53,7 @@ jobs:
         # Coverage only runs as part of 3.11.
         if: |
           matrix == '3.11'
-        uses: action/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: pytest-coverage
           path: .coverage.xml
