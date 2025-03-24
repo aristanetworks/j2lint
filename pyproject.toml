@@ -173,9 +173,6 @@ exclude_lines = [
 	"if TYPE_CHECKING:",
 ]
 
-[tool.coverage.xml]
-output = ".coverage.xml"
-
 [tool.mypy]
 follow_imports = "skip"
 ignore_missing_imports = true

@@ -24,7 +24,6 @@ jobs:
           name: pytest-coverage
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
-          path: /
           merge-multiple: true
 
       - name: "Get PR context"

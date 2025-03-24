@@ -56,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pytest-coverage
-          path: ${{ github.workspace }}/.coverage.xml
+          path: ${{ github.workspace }}/coverage.xml
