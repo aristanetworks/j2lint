@@ -1,3 +1,5 @@
+# Basic set up for three package managers
+
 version: 2
 updates:
   # Maintain dependencies for Python
@@ -9,9 +11,8 @@ updates:
       interval: "daily"
     reviewers:
       - "gmuloc"
-      - "carlbuchmann"
     labels:
-      - 'dependencies'
+      - "dependencies"
     pull-request-branch-name:
       separator: "/"
     commit-message:
@@ -22,9 +23,9 @@ updates:
     schedule:
       interval: "weekly"
     reviewers:
-      - "carlbuchmann"
       - "gmuloc"
     labels:
-      - 'CI'
+      - "CI"
     commit-message:
       prefix: "ci: "
+
