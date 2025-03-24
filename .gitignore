@@ -9,3 +9,4 @@ dist
 tests/tmp/**
 .coverage
 **/.DS_Store
+.coverage.xml

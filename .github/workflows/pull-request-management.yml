@@ -1,12 +1,11 @@
 ---
 name: Code Testing
-on:
-  pull_request
+on: pull_request
 
 jobs:
   lint:
     name: Run pylint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -19,7 +18,7 @@ jobs:
         run: tox -e lint
   type:
     name: Run mypy
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -32,10 +31,10 @@ jobs:
         run: tox -e type
   tox:
     name: Run pytest for supported Python versions
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.9", "3.10", "3.11", "3.12"]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -46,3 +45,11 @@ jobs:
         run: pip install tox tox-gh-actions
       - name: "Run tox for ${{ matrix.python }}"
         run: tox
+      - name: Upload coverage from pytest
+        # Coverage only runs as part of 3.11.
+        if: |
+          matrix == '3.11'
+        uses: action/upload-artifact@v4
+        with:
+          name: pytest-coverage
+          path: .coverage.xml
