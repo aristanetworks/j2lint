@@ -31,7 +31,7 @@ class TestRule:
             pytest.param(
                 None,
                 0,
-                {"path": f"{TEST_DATA_DIR}/test.j2"},
+                {"path": TEST_DATA_DIR / "test.j2"},
                 [],
                 [],
                 id="no error",
@@ -39,7 +39,7 @@ class TestRule:
             pytest.param(
                 None,
                 1,
-                {"path": f"{TEST_DATA_DIR}/test.j2"},
+                {"path": TEST_DATA_DIR / "test.j2"},
                 [("T0", 42), ("T0", 42), ("T0", 42), ("T0", 42), ("T0", 42)],
                 [],
                 id="checkline rule error",
@@ -47,7 +47,7 @@ class TestRule:
             pytest.param(
                 2,
                 None,
-                {"path": "tests/test_linter/data/test.j2"},
+                {"path": TEST_DATA_DIR / "test.j2"},
                 [("T0", 42), ("T0", 42)],
                 [],
                 id="checktext rule error",

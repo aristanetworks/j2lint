@@ -6,3 +6,9 @@
 {{ TEST }}
 {{ tEST }}
 {{ t_A_t }}
+an invalid (jinja-variable-lower-case) line with one variable - foo, {{ inVALid_8_1 }}, baz, qux, quux
+an invalid (jinja-variable-lower-case) line with two bad variables - foo, {{ inVALid_9_1 }}, baz, {{ inVALid_9_2 }}, quux
+an invalid (jinja-variable-lower-case) line with two variables first bad - foo, {{ inVALid_10_1 }}, baz, {{ valid_10_2 }}, quux
+an invalid (jinja-variable-lower-case) line with two variables second bad -foo, {{ valid_11_1 }}, baz, {{ inVALid_11_2 }}, quux
+a valid line with something that LOOKS like an invalid jinja-variable-lower-case inside a string in an expression - foo, bar, baz, {{ ' looks_inVALid_14_1 ' + valid_14_2 if valid_14_3 }}, quux
+an invalid (jinja-variable-lower-case) line with an expression - foo, bar, baz, {{ ' looks_inVALid_17_1 ' + inVALid_17_2 if valid_17_3 }}, quux

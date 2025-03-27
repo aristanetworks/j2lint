@@ -4,3 +4,14 @@
  that can be found in the LICENSE file.
 #}
 {{ test-test }}
+a valid simple line - foo, bar, baz, qux, quux
+a valid line with a variable - foo, {{ valid_2_1 }}, baz, qux, quux
+a valid line with two variables - foo, {{ valid_3_1 }}, baz, qux, {{ valid_3_2 }}
+an invalid (jinja-variable-format) line with one variable - foo, {{ invalid-4_1 }}, baz, qux, quux
+an invalid (jinja-variable-format) line with two bad variables - foo, {{ invalid-5_1 }}, baz, {{ invalid-5_2 }}, quux
+an invalid (jinja-variable-format) line with two variables first bad - foo, {{ invalid-6_1 }}, baz, {{ valid_6_2 }}, quux
+an invalid (jinja-variable-format) line with two variables second bad -foo, {{ valid_7_1 }}, baz, {{ invalid-7_2 }}, quux
+an invalid (jinja-variable-lower-case AND jinja-variable-format) - foo, {{ inVALid_12_1 }}, baz, {{ invalid-12_2 }}, quux
+a valid line with something that LOOKS like an invalid jinja-variable-format inside a string in an expression - foo, bar, baz, {{ " looks_invalid-13_1 " + valid_13_2 if valid_13_3 }}, quux
+a valid line with something that LOOKS like both of the above inside strings in expressions - foo, bar, {{ " looks_invalid-15_1 " + valid_15_2 if valid_15_3 }}, {{ ' looks_inVALid_15_4 ' + valid_15_5 if valid_15_6 }}, quux
+an invalid (jinja-variable-format) line with an expression - foo, bar, baz, {{ " looks_invalid-16_1 " + valid_16_2 if invalid-16_3 }}, quux
