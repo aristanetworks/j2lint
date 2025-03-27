@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Testing",
 ]
@@ -80,11 +81,11 @@ legacy_tox_ini = """
 [tox]
 envlist =
   clean,
-  py38,
   py39,
   py310,
   py311,
   py312,
+  py313,
   lint,
   type,
   report
@@ -95,8 +96,9 @@ isolated_build = True
 python =
   3.9: py39
   3.10: py310
-  3.11: py311, coverage, report
+  3.11: clean, py311, report
   3.12: py312
+  3.13: py313
 
 [testenv]
 description = run the test driver with {basepython}
@@ -129,7 +131,9 @@ commands = coverage erase
 
 [testenv:report]
 deps = coverage[toml]
-commands = coverage report --rcfile=pyproject.toml
+commands = 
+  coverage report --rcfile=pyproject.toml
+  coverage xml --rcfile=pyproject.toml
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
 depends = py311
