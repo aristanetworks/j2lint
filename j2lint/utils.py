@@ -276,6 +276,26 @@ def get_jinja_expressions(text: str, *, blank_literals: bool = False) -> list[st
     blank_literals
         Set to True to replace string literals with blank (empty) values
 
+    Examples
+    --------
+    For this given template:
+
+    ```
+    User info: {{ 'Hello, ' + user.name }}
+    ```
+
+    With `blank_literals=False`:
+
+    ```
+    [" 'Hello, ' + user.name "]
+    ```
+
+    With `blank_literals=True`:
+
+    ```
+    [" '' + user.name "]
+    ```
+
     Returns
     -------
     list
