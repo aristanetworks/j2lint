@@ -12,7 +12,7 @@ AVD Ecosystem - Jinja2 Linter
 
 Build a Jinja2 linter that will provide the following capabilities:
 
-- Validate syntax according to [AVD style guide](https://avd.sh/en/stable/docs/contribution/style-guide.html).
+- Validate syntax according to [AVD style guide](https://avd.arista.com/stable/docs/contribution/style-guide.html).
 - Capability to run as part of a CI pipeline to enforce j2lint rules.
 - Develop an extension that works with VSCode and potentially other IDEs i.e PyCharm.
 
@@ -35,7 +35,7 @@ Build a Jinja2 linter that will provide the following capabilities:
 
 ### Requirements
 
-Minimym Python version: 3.9
+Minimum Python version: 3.9
 
 ### Install with pip
 
