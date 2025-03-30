@@ -14,6 +14,7 @@ from j2lint.utils import (
     delimit_jinja_statement,
     flatten,
     get_files,
+    get_jinja_expressions,
     get_tuple,
     is_rule_disabled,
     is_valid_file_type,
@@ -179,10 +180,63 @@ def test_get_jinja_comments() -> None:
     # TODO:
 
 
-@pytest.mark.skip
-def test_get_jinja_variables() -> None:
-    """Test the utils.get_jinja_variables function."""
-    # TODO:
+@pytest.mark.parametrize(
+    ("test_template", "blank_literals", "expected"),
+    [
+        pytest.param("foo {{}} bar", False, [""], id="empty string"),
+        pytest.param("a valid simple line - foo, bar, baz, qux, quux", False, [], id="no expressions"),
+        pytest.param("a valid line with two variables - foo, {{ valid_1 }}, baz, qux, {{ valid_2 }}", False, [" valid_1 ", " valid_2 "], id="simple expressions"),
+        pytest.param("{{foo}}{{ bar }}", False, ["foo", " bar "], id="adjacent expressions"),
+        pytest.param(
+            "a valid line with filters - foo, {{ valid_1 | default ('bar') }}, baz, qux, {{ valid_2 | capitalize }}",
+            False,
+            [" valid_1 | default ('bar') ", " valid_2 | capitalize "],
+            id="with filters",
+        ),
+        pytest.param(
+            """
+            a valid simple line - foo, bar, baz, qux, quux a valid line with two variables - foo, {{ valid_1 }}, baz, qux, {{ valid_2 }}
+            a valid line with filters - foo, {{ valid_1 | default ('bar') }}, baz, qux, {{ valid_2 | capitalize }}
+            """,
+            False,
+            [" valid_1 ", " valid_2 ", " valid_1 | default ('bar') ", " valid_2 | capitalize "],
+            id="multiline",
+        ),
+        pytest.param(
+            """
+            {{ foo['bar'] ~ ' baz qux ' ~ foo['bar'] }}
+            {{ 'foo bar: ' ~ baz.qux }}
+            {{ quux(foo, 'bar', "qux") }}
+            """,
+            True,
+            [" foo[''] ~ '' ~ foo[''] ", " '' ~ baz.qux ", " quux(foo, '', \"\") "],
+            id="complex",
+        ),
+        pytest.param(
+            """
+            {{ foo['bar'] ~ ' baz qux ' ~ foo['bar'] }}
+            {{ 'foo bar: ' ~ baz.qux }}
+            {{ quux(foo, 'bar', "qux") }}
+            """,
+            False,
+            [" foo['bar'] ~ ' baz qux ' ~ foo['bar'] ", " 'foo bar: ' ~ baz.qux ", " quux(foo, 'bar', \"qux\") "],
+            id="complex don't remove strings",
+        ),
+        pytest.param("foo {{ 'bar' }} baz {{ \"qux\" }}", False, [" 'bar' ", ' "qux" '], id="strings left in"),
+        pytest.param("foo {{ 'bar' }} baz {{ \"qux\" }}", True, [" '' ", ' "" '], id="strings removed"),
+        pytest.param("{{ foo ~ inner_func('bar', \"baz\") }}", True, [" foo ~ inner_func('', \"\") "], id="functions"),
+        pytest.param("{{ foo('bar \\'baz\\' qux', \"quux \\\"foo\\\" bar\") }}", True, [" foo('', \"\") "], id="complex 2"),
+        pytest.param(
+            "{{ foo('bar \\'baz\\' qux', \"quux \\\"foo\\\" bar\") }}",
+            False,
+            [" foo('bar \\'baz\\' qux', \"quux \\\"foo\\\" bar\") "],
+            id="complex 2 don't remove strings",
+        ),
+    ],
+)
+def test_get_jinja_expressions(test_template: str, blank_literals: bool, expected: list[str]) -> None:  # noqa: FBT001
+    """Test the utils.get_jinja_expressions function."""
+    assert get_jinja_expressions(test_template, blank_literals=blank_literals) == expected
 
 
 @pytest.mark.parametrize(

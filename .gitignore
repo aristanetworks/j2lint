@@ -9,4 +9,5 @@ dist
 tests/tmp/**
 .coverage
 **/.DS_Store
+.vscode
 coverage.xml

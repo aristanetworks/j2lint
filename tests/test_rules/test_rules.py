@@ -133,13 +133,13 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_name_case_rule.j2",
-        [("V1", 6), ("V1", 7), ("V1", 8)],
+        [("V1", 6), ("V1", 7), ("V1", 8), ("V1", 9), ("V1", 10), ("V1", 10), ("V1", 11), ("V1", 12), ("V1", 14)],
         [],
         [],
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_variable_name_format_rule.j2",
-        [("V2", 6)],
+        [("V1", 14), ("V2", 6), ("V2", 10), ("V2", 11), ("V2", 11), ("V2", 12), ("V2", 13), ("V2", 14), ("V2", 17)],
         [],
         [],
     ),
