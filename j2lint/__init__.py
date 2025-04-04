@@ -6,7 +6,7 @@
 from rich.console import Console
 
 NAME = "j2lint"
-VERSION = "v1.1.0"
+VERSION = "v1.2.0"
 DESCRIPTION = __doc__
 
 __author__ = "Arista Networks"
