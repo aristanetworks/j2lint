@@ -11,8 +11,6 @@ jobs:
     if: github.repository == 'aristanetworks/j2lint'
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo '${{ toJson(github.event.workflow_run) }}'
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
