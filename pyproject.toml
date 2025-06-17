@@ -49,7 +49,7 @@ lint = [
   "codespell>=2.2.6,<2.5.0",
 ]
 type = [
-  "mypy==1.16.0",
+  "mypy==1.16.1",
 ]
 
 [project.urls]
