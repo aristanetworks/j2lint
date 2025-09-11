@@ -20,7 +20,7 @@ class Rule(ABC):
     rule_id: ClassVar[str]
     short_description: ClassVar[str]
     description: ClassVar[str]
-    severity: ClassVar[Literal[None, "LOW", "MEDIUM", "HIGH"]]
+    severity: ClassVar[Literal["LOW", "MEDIUM", "HIGH"] | None]
 
     def __init__(
         self,
