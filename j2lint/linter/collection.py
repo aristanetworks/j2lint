@@ -188,6 +188,8 @@ class RulesCollection:
             A RulesColleciton object containing the rules from rules_dir except for the ignored ones.
         """
         result = cls()
+        if not hasattr(rules_dir, "expanduser"):
+            rules_dir = Path(rules_dir)
         result.rules = load_plugins(rules_dir.expanduser())
         for rule in result.rules:
             if rule.short_description in ignore_rules or rule.rule_id in ignore_rules:
