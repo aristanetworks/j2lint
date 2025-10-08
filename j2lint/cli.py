@@ -121,6 +121,13 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 class J2LintArgsNamespace(argparse.Namespace):
+    """Typed representation of the argparse Namespace.
+
+    Allows pyright to detect type error in using CLI arguments.
+    """
+
+    # pylint: disable=too-few-public-methods
+
     files: ClassVar[list[str]]
     list: ClassVar[bool]
     rules_dir: ClassVar[list[str]]
