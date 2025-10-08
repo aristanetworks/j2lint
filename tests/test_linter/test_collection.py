@@ -31,18 +31,18 @@ class TestRulesCollection:
         """Test the RuleCollection __len__ method."""
         assert len(test_collection) == 1
 
-    def test__iter__(self) -> None:
+    def test__iter__(self, make_rules: Callable[[int], list[Rule]]) -> None:
         """Test the RuleCollection __iter__ method."""
-        fake_rules = [1, 2, 3]
+        fake_rules = make_rules(3)
         collection = RulesCollection()
         assert len(collection) == 0
         collection.rules = fake_rules
         for index, rule in enumerate(collection):
             assert rule == fake_rules[index]
 
-    def test_extend(self) -> None:
+    def test_extend(self, make_rules: Callable[[int], list[Rule]]) -> None:
         """Test the RuleCollection.extend method."""
-        fake_rules = [1, 2, 3]
+        fake_rules = make_rules(3)
         collection = RulesCollection()
         assert len(collection) == 0
         collection.rules.extend(fake_rules)
@@ -81,7 +81,7 @@ class TestRulesCollection:
         caplog: pytest.LogCaptureFixture,
         test_collection: RulesCollection,
         make_rules: Callable[[int], list[Rule]],
-        make_issue_from_rule: Callable[[int], LinterError],
+        make_issue_from_rule: Callable[[Rule], LinterError],
         file_path: Path,
         expected_results: tuple[list[tuple[str, str]], list[tuple[str, str]]],
         *,
@@ -102,8 +102,8 @@ class TestRulesCollection:
         rules[2].ignore = True
         test_collection.rules = rules
 
-        def checks_side_effect(self, file_path: Path, text: str) -> None:  # type: ignore[no-untyped-def] # noqa: ARG001, ANN001
-            return make_issue_from_rule(self)
+        def checks_side_effect(self: Rule, _file_path: Path, _text: str) -> list[LinterError]:
+            return [make_issue_from_rule(self)]
 
         with mock.patch(
             "j2lint.linter.rule.Rule.checkrule",

@@ -49,7 +49,7 @@ lint = [
   "codespell>=2.2.6,<2.5.0",
 ]
 type = [
-  "mypy==1.18.2",
+  "pyright==1.4.06",
 ]
 
 [project.urls]
@@ -122,7 +122,8 @@ commands =
 description = check the code type
 extras = type
 commands =
-  mypy --config-file=pyproject.toml j2lint
+  pyright --config-file=pyproject.toml j2lint
+  pyright --config-file=pyproject.toml tests
 
 [testenv:clean]
 deps = coverage[toml]
@@ -173,19 +174,6 @@ exclude_lines = [
 	"if TYPE_CHECKING:",
 ]
 
-[tool.mypy]
-follow_imports = "skip"
-ignore_missing_imports = true
-warn_redundant_casts = true
-disallow_any_generics = true
-check_untyped_defs = true
-no_implicit_reexport = true
-strict_optional = true
-
-# for strict mypy: (this is the tricky one :-))
-disallow_untyped_defs = true
-mypy_path = "j2lint"
-
 ################################
 # Ruff
 ################################
@@ -200,7 +188,6 @@ exclude = [
     ".git-rewrite",
     ".hg",
     ".ipynb_checkpoints",
-    ".mypy_cache",
     ".nox",
     ".pants.d",
     ".pyenv",
@@ -317,9 +304,6 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
 	"reimported",
 	"wrong-import-order",
 	"wrong-import-position",
-	"abstract-class-instantiated", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-instantiation-of-abstract-classes-abstract
-	"unexpected-keyword-arg", # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg and other rules
-	"no-value-for-parameter" # Overlap with https://mypy.readthedocs.io/en/stable/error_code_list.html#check-arguments-in-calls-call-arg
 ]
 max-line-length=165
 # making similarity lines limit a bit higher than default 4

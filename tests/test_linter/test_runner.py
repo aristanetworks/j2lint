@@ -53,7 +53,7 @@ class TestRunner:
 
         This test is "bad" for now.
         """
-        test_runner.files = runner_files
+        test_runner.files = set(runner_files)
         # Fake return
         with mock.patch("j2lint.linter.collection.RulesCollection.run") as patched_collection_run:
             patched_collection_run.return_value = ([], [])

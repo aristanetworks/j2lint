@@ -53,6 +53,7 @@ class Runner:
             A tuple containing the list of linting errors and the list of linting warnings found.
 
         TODO: refactor this - it is quite weird to do the conversion from tuple to dict here maybe simply init with the dict
+        TODO: the warning stuff is also very weird..
         """
         files: list[Path] = []
         for index, file in enumerate(self.files):

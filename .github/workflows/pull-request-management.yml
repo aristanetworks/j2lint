@@ -21,7 +21,7 @@ jobs:
       - name: "Run lint"
         run: tox -e lint
   type:
-    name: Run mypy
+    name: Run pyright
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -31,7 +31,7 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: pip install tox tox-gh-actions
-      - name: "Run mypy"
+      - name: "Run pyright"
         run: tox -e type
   tox:
     name: Run pytest for supported Python versions

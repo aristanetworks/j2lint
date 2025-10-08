@@ -5,8 +5,9 @@
 
 from __future__ import annotations
 
+from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 
@@ -20,10 +21,10 @@ from j2lint.utils import (
     is_valid_file_type,
 )
 
-from .utils import does_not_raise
-
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from contextlib import AbstractContextManager
+
+    from j2lint.linter.rule import Rule
 
 
 @pytest.mark.skip
@@ -96,7 +97,7 @@ def test_is_valid_file_type(file_name: str, extensions: list[str], *, expected: 
         pytest.param("not_a_list", None, None, pytest.raises(TypeError), id="Invalid input type"),
     ],
 )
-def test_get_files(file_or_dir_names: list[str], extensions: list[str], expected_value: list[str], expectation: Generator) -> None:
+def test_get_files(file_or_dir_names: list[str], extensions: list[str], expected_value: list[str], expectation: AbstractContextManager[str]) -> None:
     """Test the utils.get_files function."""
     with expectation:
         paths = [Path(file_or_dir_name) for file_or_dir_name in file_or_dir_names]
@@ -131,7 +132,7 @@ def test_get_files_dir(template_tmp_dir: str) -> None:
         ([[1, 2], [3, 4]], [1, 2, 3, 4], does_not_raise()),
     ],
 )
-def test_flatten(input_list: list[list[Any]], expected: list[Any], raising_context: Generator) -> None:
+def test_flatten(input_list: list[list[Any]], expected: list[Any], raising_context: AbstractContextManager[str]) -> None:
     """Test the utils.flatten function."""
     with raising_context:
         assert list(flatten(input_list)) == expected
@@ -267,7 +268,7 @@ def test_get_jinja_expressions(test_template: str, blank_literals: bool, expecte
         ),
     ],
 )
-def test_is_rule_disabled(make_rules: pytest.Fixture, comments: list[str], *, expected_value: bool) -> None:
+def test_is_rule_disabled(make_rules: Callable[[int], list[Rule]], comments: list[str], *, expected_value: bool) -> None:
     """Test the utils.is_rule_disabled function."""
     # Generate one rule through fixture which is always
     # T0, test-rule-0

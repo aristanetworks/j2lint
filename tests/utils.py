@@ -5,18 +5,6 @@
 
 from __future__ import annotations
 
-from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
-
-
-@contextmanager
-def does_not_raise() -> Generator[Any, Any, Any]:
-    """Provide a context manager that does not raise anything for pytest tests."""
-    yield
-
 
 def j2lint_default_rules_string() -> str:
     """Return the description of the default rules."""

@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import jinja2
 
 from j2lint.linter.error import LinterError
@@ -21,7 +19,7 @@ class JinjaTemplateSyntaxErrorRule(Rule):
     short_description = "jinja-syntax-error"
     severity = "HIGH"
 
-    def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
+    def __init__(self, ignore: bool = False, warn: list[Rule] | None = None) -> None:
         super().__init__(ignore=ignore, warn=warn)
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:

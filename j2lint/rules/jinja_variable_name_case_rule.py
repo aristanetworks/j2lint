@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import re
-from typing import Any
 
 from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule
@@ -25,7 +24,7 @@ class JinjaVariableNameCaseRule(Rule):
 
     regex = re.compile(r"([a-zA-Z0-9-_\"']*[A-Z][a-zA-Z0-9-_\"']*)")
 
-    def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
+    def __init__(self, ignore: bool = False, warn: list[Rule] | None = None) -> None:
         super().__init__(ignore=ignore, warn=warn)
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:
