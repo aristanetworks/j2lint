@@ -11,7 +11,7 @@ import logging
 import sys
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from rich.tree import Tree
 
@@ -118,6 +118,21 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     return parser
+
+class J2LintArgsNamespace(argparse.Namespace):
+    files: ClassVar[list[str]]
+    list: ClassVar[bool]
+    rules_dir: ClassVar[list[str]]
+    extensions: ClassVar[list[str]]
+    verbose: ClassVar[bool]
+    debug: ClassVar[bool]
+    json: ClassVar[bool]
+    stdin: ClassVar[bool]
+    log: ClassVar[bool]
+    version: ClassVar[str]
+    stdout: ClassVar[bool]
+    ignore: ClassVar[list[str]]
+    warn: ClassVar[list[str]]
 
 
 def sort_issues(issues: list[LinterError]) -> list[LinterError]:
@@ -305,7 +320,7 @@ def run(args: list[str] | None = None) -> int:
     # given the number of input parameters, it is acceptable to keep these many branches.
 
     parser = create_parser()
-    options = parser.parse_args(args if args is not None else sys.argv[1:])
+    options: J2LintArgsNamespace = parser.parse_args(args if args is not None else sys.argv[1:], namespace=J2LintArgsNamespace())
 
     # Enable logs
 
