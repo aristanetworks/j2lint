@@ -68,6 +68,7 @@ repos:
           - jinja2
           - rich
           - pytest
+          - typing_extensions
 
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.406
@@ -79,6 +80,7 @@ repos:
           - jinja2
           - rich
           - pytest
+          - typing_extensions
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
