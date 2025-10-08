@@ -121,10 +121,11 @@ commands =
 
 [testenv:type]
 description = check the code type
-extras = type
+extras = 
+  type
+  test
 commands =
-  pyright --config-file=pyproject.toml j2lint
-  pyright --config-file=pyproject.toml tests
+  pyright
 
 [testenv:clean]
 deps = coverage[toml]
@@ -309,3 +310,13 @@ disable = [ # Any rule listed here can be disabled: https://github.com/astral-sh
 max-line-length=165
 # making similarity lines limit a bit higher than default 4
 min-similarity-lines=10
+
+
+################################
+# Pyright
+################################
+[tool.pyright]
+include = [
+  "j2lint",
+  "tests"
+]
