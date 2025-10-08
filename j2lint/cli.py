@@ -119,6 +119,7 @@ def create_parser() -> argparse.ArgumentParser:
 
     return parser
 
+
 class J2LintArgsNamespace(argparse.Namespace):
     files: ClassVar[list[str]]
     list: ClassVar[bool]
@@ -349,7 +350,7 @@ def run(args: list[str] | None = None) -> int:
     # Collect the rules from the configuration
     collection = RulesCollection(verbose=options.verbose)
     for rules_dir in options.rules_dir:
-        collection.extend(RulesCollection.create_from_directory(rules_dir, options.ignore, options.warn).rules)
+        collection.extend(RulesCollection.create_from_directory(Path(rules_dir), options.ignore, options.warn).rules)
 
     # List lint rules
     if options.list:
