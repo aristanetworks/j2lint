@@ -58,7 +58,7 @@ class TestRule:
         self,
         caplog: pytest.LogCaptureFixture,
         test_rule: Rule,
-        make_issue_from_rule: Callable[[int], list[LinterError]],
+        make_issue_from_rule: Callable[[Rule], LinterError],
         checktext: None | int,
         checkline: None | int,
         filepath: str,
@@ -67,7 +67,7 @@ class TestRule:
     ) -> None:
         """Test the Rule.checkrule method.
 
-        TODO: This text is too complex and should be rewritten
+        TODO: This test is too complex and should be rewritten
         checktext and checkline values help selecting combination of possible rules.
         """
 
