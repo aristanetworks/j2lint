@@ -6,13 +6,13 @@
 from __future__ import annotations
 
 import logging
-import pathlib
 from argparse import Namespace
 from pathlib import Path
-from typing import Callable
+from typing import Callable, ClassVar, Literal
 from unittest.mock import MagicMock, create_autospec
 
 import pytest
+from typing_extensions import override
 
 from j2lint.cli import create_parser
 from j2lint.linter.collection import DEFAULT_RULE_DIR, RulesCollection
@@ -28,23 +28,6 @@ CONTENT = "content"
 
 # TODO: proper way to compare LinterError following:
 # https://docs.pytest.org/en/7.1.x/how-to/assert.html#defining-your-own-explanation-for-failed-assertions
-
-
-class TestRule(Rule):
-    """TestRule class for tests."""
-
-    rule_id = "TT"
-    description = "test"
-    short_description = "test"
-    severity = "LOW"
-
-    def checktext(self, filename: Path, text: str) -> list[LinterError]:
-        """Fake checktext implementation."""
-        return []
-
-    def checkline(self, filename: Path, line: int, line_no: int) -> list[LinterError]:
-        """Fake checkline implementation."""
-        return []
 
 
 @pytest.fixture
@@ -78,17 +61,34 @@ def make_rules() -> Callable[[int], list[Rule]]:
     """
 
     def __make_n_rules(count: int) -> list[Rule]:
-        def get_severity(integer: int) -> str:
+        def get_severity(integer: int) -> Literal["HIGH", "MEDIUM", "LOW"]:
             """Return a severity based on the integer modulo 3."""
             return "LOW" if integer % 3 == 0 else ("MEDIUM" if integer % 3 == 1 else "HIGH")
 
+        def _make_test_rule_class(i_rule_id: str, i_description: str, i_short_description: str, i_severity: Literal["HIGH", "MEDIUM", "LOW"]) -> type[Rule]:
+            class TestRule(Rule):
+                """TestRule class for tests."""
+
+                rule_id: ClassVar[str] = i_rule_id
+                description: ClassVar[str] = i_description
+                short_description: ClassVar[str] = i_short_description
+                severity: ClassVar[Literal["LOW", "MEDIUM", "HIGH"] | None] = i_severity
+
+                @override
+                def checktext(self, filename: str, text: str) -> list[LinterError]:
+                    """Fake checktext implementation."""
+                    return []
+
+                @override
+                def checkline(self, filename: str, line: str, line_no: int) -> list[LinterError]:
+                    """Fake checkline implementation."""
+                    return []
+
+            return TestRule
+
         rules = []
         for i in range(count):
-            r_obj = TestRule()
-            r_obj.rule_id = f"T{i}"
-            r_obj.description = f"test rule {i}"
-            r_obj.short_description = f"test-rule-{i}"
-            r_obj.severity = get_severity(i)
+            r_obj = _make_test_rule_class(f"T{i}", f"test rule {i}", f"test-rule-{i}", get_severity(i))()
             rules.append(r_obj)
         return rules
 
@@ -165,13 +165,13 @@ def make_issue_from_rule() -> Callable[[Rule], LinterError]:
     """
 
     def __make_issue_from_rule(rule: Rule) -> LinterError:
-        yield LinterError(42, "dummy", "dummy.j2", rule)
+        return LinterError(42, "dummy", "dummy.j2", rule)
 
     return __make_issue_from_rule
 
 
 @pytest.fixture
-def test_issue(make_issues: Callable[[int], list[Rule]]) -> LinterError:
+def test_issue(make_issues: Callable[[int], list[LinterError]]) -> LinterError:
     """Get the first issue from the make_issues factory.
 
     It will use rule T0 as per design.
@@ -190,7 +190,7 @@ def test_collection(test_rule: Rule) -> RulesCollection:
 @pytest.fixture
 def test_runner(test_collection: RulesCollection) -> Runner:
     """Fixture to get a test runner using the test_collection."""
-    return Runner(test_collection, "test.j2", checked_files=[])
+    return Runner(test_collection, Path("test.j2"), checked_files=[])
 
 
 @pytest.fixture
@@ -200,9 +200,9 @@ def j2lint_usage_string() -> str:
 
 
 @pytest.fixture
-def template_tmp_dir(tmp_path_factory: object) -> list[str]:
+def template_tmp_dir(tmp_path_factory: pytest.TempPathFactory) -> list[str]:
     """Create a tmp directory with multiple files and hidden files."""
-    tmp_dir = pathlib.Path(__file__).parent / "tmp"
+    tmp_dir = Path(__file__).parent / "tmp"
 
     # https://stackoverflow.com/questions/40566968/how-to-dynamically-change-pytests-tmpdir-base-directory
     # +

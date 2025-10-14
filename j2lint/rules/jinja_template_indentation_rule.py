@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from j2lint.linter.error import JinjaLinterError, LinterError
 from j2lint.linter.indenter.node import Node, NodeIndentationError
 from j2lint.linter.rule import Rule
@@ -22,7 +20,7 @@ class JinjaTemplateIndentationRule(Rule):
     description = "All J2 statements must be indented by 4 more spaces within jinja delimiter. To close a control, end tag must have same indentation level."
     severity = "HIGH"
 
-    def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
+    def __init__(self, ignore: bool = False, warn: list[Rule] | None = None) -> None:
         super().__init__(ignore=ignore, warn=warn)
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:

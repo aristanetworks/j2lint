@@ -26,12 +26,12 @@ class TestRule:
         assert str(test_rule) == "T0: test rule 0"
 
     @pytest.mark.parametrize(
-        ("checktext", "checkline", "file_path", "expected_errors_ids", "expected_logs"),
+        ("checktext", "checkline", "filepath", "expected_errors_ids", "expected_logs"),
         [
             pytest.param(
                 None,
                 0,
-                {"path": TEST_DATA_DIR / "test.j2"},
+                TEST_DATA_DIR / "test.j2",
                 [],
                 [],
                 id="no error",
@@ -39,7 +39,7 @@ class TestRule:
             pytest.param(
                 None,
                 1,
-                {"path": TEST_DATA_DIR / "test.j2"},
+                TEST_DATA_DIR / "test.j2",
                 [("T0", 42), ("T0", 42), ("T0", 42), ("T0", 42), ("T0", 42)],
                 [],
                 id="checkline rule error",
@@ -47,7 +47,7 @@ class TestRule:
             pytest.param(
                 2,
                 None,
-                {"path": TEST_DATA_DIR / "test.j2"},
+                TEST_DATA_DIR / "test.j2",
                 [("T0", 42), ("T0", 42)],
                 [],
                 id="checktext rule error",
@@ -58,16 +58,16 @@ class TestRule:
         self,
         caplog: pytest.LogCaptureFixture,
         test_rule: Rule,
-        make_issue_from_rule: Callable[[int], list[LinterError]],
+        make_issue_from_rule: Callable[[Rule], LinterError],
         checktext: None | int,
         checkline: None | int,
-        file_path: dict[str, str],
+        filepath: str,
         expected_errors_ids: list[tuple[str, int]],
         expected_logs: list[str],
     ) -> None:
         """Test the Rule.checkrule method.
 
-        TODO: This text is too complex and should be rewritten
+        TODO: This test is too complex and should be rewritten
         checktext and checkline values help selecting combination of possible rules.
         """
 
@@ -81,24 +81,24 @@ class TestRule:
 
         # Build checktext and checkline
         if checktext is None:
-            test_rule.checktext = raise_notimplementederror
+            test_rule.checktext = raise_notimplementederror  # type: ignore[reportAttributeAccessIssue]
         elif checktext == 0:
             test_rule.checktext = return_empty_list
         else:
             # checktext > 0
-            test_rule.checktext = lambda *_: [issue for i in range(checktext) for issue in make_issue_from_rule(test_rule)]
+            test_rule.checktext = lambda *_: [make_issue_from_rule(test_rule) for _ in range(checktext)]  # type: ignore[reportAttributeAccessIssue]
 
         if checkline is None:
-            test_rule.checkline = raise_notimplementederror
+            test_rule.checkline = raise_notimplementederror  # type: ignore[reportAttributeAccessIssue]
 
         elif checkline == 0:
             test_rule.checkline = return_empty_list
         else:
             # checkline > 0
-            test_rule.checkline = lambda *_, line_no=0: [issue for i in range(checkline) for issue in make_issue_from_rule(test_rule)]  # noqa: ARG005
+            test_rule.checkline = lambda *_args, **_kwargs: [make_issue_from_rule(test_rule) for _ in range(checkline)]  # type: ignore[reportAttributeAccessIssue]
 
-        with Path(file_path["path"]).open(encoding="utf-8") as file_d:
-            errors = test_rule.checkrule(file_path, file_d.read())
+        with Path(filepath).open(encoding="utf-8") as file_d:
+            errors = test_rule.checkrule(filepath, file_d.read())
         errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]
         assert errors_ids == expected_errors_ids
         assert caplog.record_tuples == expected_logs

@@ -5,8 +5,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule
 from j2lint.utils import get_jinja_statements
@@ -20,7 +18,7 @@ class JinjaTemplateSingleStatementRule(Rule):
     short_description = "single-statement-per-line"
     severity = "MEDIUM"
 
-    def __init__(self, ignore: bool = False, warn: list[Any] | None = None) -> None:
+    def __init__(self, ignore: bool = False, warn: list[Rule] | None = None) -> None:
         super().__init__(ignore=ignore, warn=warn)
 
     def checktext(self, filename: str, text: str) -> list[LinterError]:

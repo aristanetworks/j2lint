@@ -101,6 +101,8 @@ class RulesCollection:
                 continue
 
             logger.debug("Running linting rule %s on file %s", rule, file_path)
+            # TODO: really this should be defined at the collection level not at the rule level with a list of rules
+            # that's quite clunky - we live with history still.. :)
             if rule in rule.warn:
                 warnings.extend(rule.checkrule(str(file_path), text))
 
