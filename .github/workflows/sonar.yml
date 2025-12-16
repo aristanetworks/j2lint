@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Download coverage from unit tests
         continue-on-error: true
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: pytest-coverage
           github-token: ${{ secrets.GITHUB_TOKEN }}
