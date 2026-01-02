@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2025 Arista Networks, Inc.
+# Copyright (c) 2021-2026 Arista Networks, Inc.
 # Use of this source code is governed by the MIT license
 # that can be found in the LICENSE file.
 """rule.py - Base class for all the lint rules with functions for matching line and text based rule."""
