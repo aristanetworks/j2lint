@@ -58,7 +58,7 @@ jobs:
           name: pytest-coverage
           path: ${{ github.workspace }}/coverage.xml
    codecov:
-    name: Upload coverage to codecov
-    needs: [tox]
-    if: github.repository == 'aristanetworks/j2lint'
-    uses: ./.github/workflows/codecov.yml
+     name: Upload coverage to codecov
+     needs: [tox]
+     if: github.repository == 'aristanetworks/j2lint'
+     uses: ./.github/workflows/codecov.yml
