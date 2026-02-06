@@ -22,7 +22,7 @@ class JinjaVariableNameCaseRule(Rule):
     short_description = "jinja-variable-lower-case"
     severity = "LOW"
 
-    regex = re.compile(r"([a-zA-Z0-9-_\"']*[A-Z][a-zA-Z0-9-_\"']*)")
+    regex = re.compile(r"([a-zA-Z0-9\-_\"']*[A-Z][a-zA-Z0-9\-_\"']*)")
 
     def __init__(self, ignore: bool = False, warn: list[Rule] | None = None) -> None:
         super().__init__(ignore=ignore, warn=warn)

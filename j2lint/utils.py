@@ -35,7 +35,6 @@ def load_plugins(directory: Path) -> list[Rule]:
         List of rule classes
     """
     result = []
-    file_handle = None
     for plugin_file in directory.glob(pattern="[A-Za-z_]*.py"):
         plugin_name = plugin_file.name.replace(".py", "")
         try:
@@ -50,9 +49,6 @@ def load_plugins(directory: Path) -> list[Rule]:
                     result.append(obj)
         except AttributeError:
             logger.warning("Failed to load plugin %s", plugin_name)
-        finally:
-            if file_handle:
-                file_handle.close()
     return result
 
 
@@ -204,12 +200,10 @@ def get_jinja_statements(text: str, *, indentation: bool = False) -> list[Statem
         List of jinja statements
     """
     statements: list[Statement] = []
-    count = 0
-    regex_pattern = re.compile("(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
+    regex_pattern = re.compile("(\\{%[\\-+]?)((.|\n)*?)(-?\\%})", re.MULTILINE)
     newline_pattern = re.compile(r"\n")
     lines = text.split("\n")
     for match in regex_pattern.finditer(text):
-        count += 1
         start_line = len(newline_pattern.findall(text, 0, match.start(2))) + 1
         end_line = len(newline_pattern.findall(text, 0, match.end(2))) + 1
         if indentation and lines[start_line - 1].split()[0] not in ["{%", "{%-", "{%+"]:

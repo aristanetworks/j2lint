@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from j2lint.linter.rule import Rule
 
 
-@pytest.mark.skip
+@pytest.mark.skip(reason="not implemented")
 def test_load_plugins() -> None:
     """Test the utils.load_plugins function.
 
@@ -156,7 +156,7 @@ def test_get_tuple(tuple_list: list[tuple[Any]], lookup_object: Any, expected_va
     assert get_tuple(tuple_list, lookup_object) == expected_value
 
 
-@pytest.mark.skip
+@pytest.mark.skip(reason="not implemented")
 def test_get_jinja_statements() -> None:
     """Test the utils.get_jinja_statements function."""
     # TODO:
@@ -175,7 +175,7 @@ def test_delimit_jinja_statement(line: str, kwargs: dict[str, str], expected: st
     assert delimit_jinja_statement(line, **kwargs) == expected
 
 
-@pytest.mark.skip
+@pytest.mark.skip(reason="not implemented")
 def test_get_jinja_comments() -> None:
     """Test the utils.get_jinja_comments function."""
     # TODO:

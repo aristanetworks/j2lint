@@ -63,7 +63,12 @@ def make_rules() -> Callable[[int], list[Rule]]:
     def __make_n_rules(count: int) -> list[Rule]:
         def get_severity(integer: int) -> Literal["HIGH", "MEDIUM", "LOW"]:
             """Return a severity based on the integer modulo 3."""
-            return "LOW" if integer % 3 == 0 else ("MEDIUM" if integer % 3 == 1 else "HIGH")
+            remainder = integer % 3
+            if remainder == 0:
+                return "LOW"
+            if remainder == 1:
+                return "MEDIUM"
+            return "HIGH"
 
         def _make_test_rule_class(i_rule_id: str, i_description: str, i_short_description: str, i_severity: Literal["HIGH", "MEDIUM", "LOW"]) -> type[Rule]:
             class TestRule(Rule):
