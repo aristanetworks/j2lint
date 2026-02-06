@@ -10,7 +10,7 @@ import re
 from argparse import Namespace
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 import pytest
@@ -37,6 +37,7 @@ from .utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from contextlib import AbstractContextManager
 
     from j2lint.linter.error import LinterError
