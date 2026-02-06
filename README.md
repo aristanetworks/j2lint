@@ -3,6 +3,8 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
 [![PyPI status](https://img.shields.io/pypi/status/j2lint.svg)](https://pypi.python.org/pypi/j2lint/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/aristanetworks/j2lint/graphs/commit-activity)
+[![codecov](https://codecov.io/gh/aristanetworks/j2lint/graph/badge.svg?token=OJYHSUIPG4)](https://codecov.io/gh/aristanetworks/j2lint)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=aristanetworks_j2lint&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=aristanetworks_j2lint)
 
 # Jinja2-Linter
 
@@ -114,9 +116,11 @@ j2lint <path-to-directory-of-templates> --json
 > **Note**
 > This runs the custom linting rules in addition to the default linting rules.
 > When using the `-i/--ignore` or `-w/--warn` options, the arguments MUST either:
-> * Be entered at the end of the CLI as in the example above
-> * Be entered as the last options before the `<path-to-directory-of-templates>`
+>
+> - Be entered at the end of the CLI as in the example above
+> - Be entered as the last options before the `<path-to-directory-of-templates>`
 >   with `--` separator.  e.g.
+>
 >   ```bash
 >   j2lint --ignore <rule_description1> <rule_desc> -- <path-to-directory-of-templates>
 >   ```
@@ -159,7 +163,7 @@ j2lint <path-to-directory-of-templates> --json
 j2lint --help
 ```
 
-### Running jinja2 linter on STDIN template. This option can be used with VS Code.
+### Running jinja2 linter on STDIN template. This option can be used with VS Code
 
 ```bash
 j2lint --stdin
