@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from argparse import Namespace
 from pathlib import Path
-from typing import Callable, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 from unittest.mock import MagicMock, create_autospec
 
 import pytest
@@ -19,6 +19,9 @@ from j2lint.linter.collection import DEFAULT_RULE_DIR, RulesCollection
 from j2lint.linter.error import LinterError
 from j2lint.linter.rule import Rule
 from j2lint.linter.runner import Runner
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 CONTENT = "content"
 
@@ -63,7 +66,13 @@ def make_rules() -> Callable[[int], list[Rule]]:
     def __make_n_rules(count: int) -> list[Rule]:
         def get_severity(integer: int) -> Literal["HIGH", "MEDIUM", "LOW"]:
             """Return a severity based on the integer modulo 3."""
-            return "LOW" if integer % 3 == 0 else ("MEDIUM" if integer % 3 == 1 else "HIGH")
+            match integer % 3:
+                case 0:
+                    return "LOW"
+                case 1:
+                    return "MEDIUM"
+                case _:
+                    return "HIGH"
 
         def _make_test_rule_class(i_rule_id: str, i_description: str, i_short_description: str, i_severity: Literal["HIGH", "MEDIUM", "LOW"]) -> type[Rule]:
             class TestRule(Rule):
