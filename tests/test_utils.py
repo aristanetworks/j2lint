@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -22,6 +22,7 @@ from j2lint.utils import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from contextlib import AbstractContextManager
 
     from j2lint.linter.rule import Rule

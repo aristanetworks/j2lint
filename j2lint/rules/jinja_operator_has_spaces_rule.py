@@ -75,7 +75,7 @@ class JinjaOperatorHasSpacesRule(Rule):
             for match in regx:
                 line = line.replace(('"' + match + '"'), '""')
 
-        issues = [operator for regex, operator in zip(self.regexes, self.operators) if regex.search(line)]
+        issues = [operator for regex, operator in zip(self.regexes, self.operators, strict=False) if regex.search(line)]
         errors.extend(
             LinterError(
                 line_no,

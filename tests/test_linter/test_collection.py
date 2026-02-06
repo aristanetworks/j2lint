@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest
@@ -18,6 +18,8 @@ from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterR
 from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from j2lint.linter.error import LinterError
     from j2lint.linter.rule import Rule
 

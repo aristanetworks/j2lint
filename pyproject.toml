@@ -18,7 +18,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -31,7 +30,7 @@ dependencies = [
     "jinja2>=3.0",
     "rich>=13.5.2,<15",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
 dev = [
@@ -82,7 +81,6 @@ legacy_tox_ini = """
 [tox]
 envlist =
   clean,
-  py39,
   py310,
   py311,
   py312,
@@ -95,7 +93,6 @@ isolated_build = True
 
 [gh-actions]
 python =
-  3.9: py39
   3.10: py310
   3.11: clean, py311, report
   3.12: py312
@@ -213,8 +210,8 @@ exclude = [
 
 line-length = 165
 
-# Assume Python 3.9 as this is the lowest supported version for j2lint
-target-version = "py39"
+# Assume Python 3.10 as this is the lowest supported version for j2lint
+target-version = "py310"
 
 [tool.ruff.lint]
 # select all cause we like being suffering
