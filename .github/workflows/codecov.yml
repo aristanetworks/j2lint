@@ -17,7 +17,7 @@ jobs:
 
       - name: Download coverage from unit tests
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: pytest-coverage
 
