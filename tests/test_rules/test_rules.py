@@ -143,6 +143,12 @@ PARAMS = [
         [],
         [],
     ),
+    pytest.param(
+        f"{TEST_DATA_DIR}/jinja_raw_block_ignored.j2",
+        [("S2", 12)],
+        [],
+        [],
+    ),
 ]
 
 

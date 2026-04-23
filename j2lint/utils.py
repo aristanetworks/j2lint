@@ -321,6 +321,28 @@ def get_jinja_expressions(text: str, *, blank_literals: bool = False) -> list[st
     return exps_strings_intact
 
 
+def strip_raw_blocks(text: str) -> str:
+    """Strip Jinja raw blocks.
+
+    Raw blocks are replaced with newlines in order for the original lines in the text to remain.
+
+    Parameters
+    ----------
+    text
+        Text to strip raw blocks from
+
+    Returns
+    -------
+    str
+        The text with raw blocks replaced
+    """
+
+    def replace_keeping_newlines(match: re.Match) -> str:
+        return "\n" * match.group(0).count("\n")
+
+    return re.sub(r"\{%-?\s*raw\s*-?%\}.*?\{%-?\s*endraw\s*-?%\}", replace_keeping_newlines, text, flags=re.DOTALL)
+
+
 def is_rule_disabled(text: str, rule: Rule) -> bool:
     """Check if rule is disabled.
 

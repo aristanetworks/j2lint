@@ -19,6 +19,7 @@ from j2lint.utils import (
     get_tuple,
     is_rule_disabled,
     is_valid_file_type,
+    strip_raw_blocks,
 )
 
 if TYPE_CHECKING:
@@ -239,6 +240,37 @@ def test_get_jinja_comments() -> None:
 def test_get_jinja_expressions(test_template: str, blank_literals: bool, expected: list[str]) -> None:  # noqa: FBT001
     """Test the utils.get_jinja_expressions function."""
     assert get_jinja_expressions(test_template, blank_literals=blank_literals) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        pytest.param(
+            "{{ variable }}",
+            "{{ variable }}",
+        ),
+        pytest.param(
+            "{% raw %}{{ foo }}{% endraw %}",
+            "",
+        ),
+        pytest.param(
+            "{%- raw %}{{ foo }}{%- endraw %}",
+            "",
+        ),
+        pytest.param(
+            """
+            Test:
+            {% raw %}
+            {{ foo }}
+            {% endraw %}
+            """,
+            "\n            Test:\n            \n\n\n            ",
+        ),
+    ],
+)
+def test_strip_raw_blocks(text: str, expected: str) -> None:
+    """Test the utils.strip_raw_blocks function."""
+    assert strip_raw_blocks(text) == expected
 
 
 @pytest.mark.parametrize(

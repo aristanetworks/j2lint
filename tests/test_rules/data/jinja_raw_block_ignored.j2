@@ -1,0 +1,12 @@
+{#
+ Copyright (c) 2021-2026 Arista Networks, Inc.
+ Use of this source code is governed by the MIT license
+ that can be found in the LICENSE file.
+#}
+{% raw %}{{ some_variable }}{% endraw %}
+
+{% raw %}
+docker inspect traefik --format "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}"
+{% endraw %}
+
+{{ foo|bar }}
