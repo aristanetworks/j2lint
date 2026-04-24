@@ -128,7 +128,7 @@ j2lint <path-to-directory-of-templates> --json
 3. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
 
     ```jinja2
-    {# j2lint: disable=S6}
+    {# j2lint: disable=S6 #}
 
     # OR
     {# j2lint: disable=jinja-delimiter #}
