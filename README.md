@@ -29,7 +29,7 @@ Build a Jinja2 linter that will provide the following capabilities:
 | S4   | `jinja-statements-single-space` | Jinja statement should have at least a single space after '{%' and a single space before '%}' |
 | S5   | `jinja-statements-no-tabs`      | Indentation should not use tabulation but 4 spaces |
 | S6   | `jinja-statements-delimiter`    | Jinja statements should not have {%- or {%+ or -%} as delimiters |
-| S7   | `single-statement-per-line`     | Jinja statements should be on separate lines |
+| S7   | `single-statement-per-line`     | Jinja statements should be on separate lines, ignoring raw block contents |
 | V1   | `jinja-variable-lower-case`     | All variables should use lower case |
 | V2   | `jinja-variable-format`         | If variable is multi-words, underscore `_` should be used as a separator |
 
@@ -37,7 +37,7 @@ Build a Jinja2 linter that will provide the following capabilities:
 
 ### Requirements
 
-Minimum Python version: 3.9
+Minimum Python version: 3.10
 
 ### Install with pip
 
@@ -128,7 +128,7 @@ j2lint <path-to-directory-of-templates> --json
 3. If one or more linting rules are to be ignored only for a specific jinja template file, add a Jinja comment at the top of the file. The rule can be disabled using the short description of the rule or the id of the rule.
 
     ```jinja2
-    {# j2lint: disable=S6}
+    {# j2lint: disable=S6 #}
 
     # OR
     {# j2lint: disable=jinja-delimiter #}

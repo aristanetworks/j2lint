@@ -44,7 +44,7 @@ repos:
           - --no-extra-eol
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.0
+    rev: v0.15.12
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -53,7 +53,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: v4.0.4
+    rev: v4.0.5
     hooks:
       - id: pylint
         name: Check for Linting error on Python files
@@ -72,7 +72,7 @@ repos:
           - typing_extensions
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.408
+    rev: v1.1.409
     hooks:
       - id: pyright
         name: PyRight static type checker
@@ -84,7 +84,7 @@ repos:
           - typing_extensions
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
         name: Checks for common misspellings in text files.

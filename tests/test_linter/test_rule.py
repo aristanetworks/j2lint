@@ -11,10 +11,11 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
+from j2lint.linter.error import LinterError
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from j2lint.linter.error import LinterError
     from j2lint.linter.rule import Rule
 
 TEST_DATA_DIR = Path(__file__).parent / "data"
@@ -104,3 +105,20 @@ class TestRule:
         errors_ids = [(error.rule.rule_id, error.line_number) for error in errors]
         assert errors_ids == expected_errors_ids
         assert caplog.record_tuples == expected_logs
+
+    def test_checkrule_ignores_raw_block_content_for_line_rules(self, test_rule: Rule) -> None:
+        """Test that line-based rules do not inspect content inside raw blocks."""
+
+        def raise_notimplementederror(*args: Any, **kwargs: Any) -> None:
+            raise NotImplementedError
+
+        def checkline(filename: str, line: str, line_no: int) -> list[LinterError]:
+            return [LinterError(line_no, line, filename, test_rule)] if "{{" in line else []
+
+        test_rule.checktext = raise_notimplementederror  # type: ignore[reportAttributeAccessIssue]
+        test_rule.checkline = checkline  # type: ignore[reportAttributeAccessIssue]
+
+        text = "{% raw %}{{ hidden_value }}{% endraw %}\n{{ visible_value }}"
+        errors = test_rule.checkrule("dummy.j2", text)
+
+        assert [(error.line_number, error.line) for error in errors] == [(2, "{{ visible_value }}")]

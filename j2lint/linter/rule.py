@@ -12,6 +12,7 @@ from typing import Any, ClassVar, Literal
 from rich.text import Text
 
 from j2lint.linter.error import JinjaLinterError, LinterError
+from j2lint.utils import mask_raw_block_contents
 
 
 class Rule(ABC):
@@ -149,11 +150,15 @@ class Rule(ABC):
 
         except NotImplementedError:
             # checkline it is
-            for index, line in enumerate(text.split("\n")):
+            original_lines = text.split("\n")
+            masked_lines = mask_raw_block_contents(text).split("\n")
+            for index, (original_line, masked_line) in enumerate(zip(original_lines, masked_lines, strict=True)):
                 # TODO: parsing jinja2 templates .. lines starting with `#` should probably still be parsed somewhow as these are not comments.
-                if line.lstrip().startswith("#"):
+                if original_line.lstrip().startswith("#"):
                     continue
 
-                results = self.checkline(filename, line, line_no=index + 1)
+                results = self.checkline(filename, masked_line, line_no=index + 1)
+                for error in results:
+                    error.line = original_line
                 errors.extend(results)
         return errors
