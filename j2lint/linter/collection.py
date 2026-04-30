@@ -14,7 +14,7 @@ from rich.tree import Tree
 
 from j2lint.linter.error import JinjaLinterError
 from j2lint.logger import logger
-from j2lint.utils import is_rule_disabled, load_plugins, strip_raw_blocks
+from j2lint.utils import is_rule_disabled, load_plugins
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -86,9 +86,6 @@ class RulesCollection:
         except OSError as err:
             logger.warning("Could not open %s - %s", file_path, err.strerror)
             return errors, warnings
-
-        # ensure that we don't report violations in Jinja raw blocks
-        text = strip_raw_blocks(text)
 
         for rule in self.rules:
             if rule.ignore:

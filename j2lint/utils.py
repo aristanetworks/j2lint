@@ -19,6 +19,11 @@ if TYPE_CHECKING:
 
 # Statement type is a tuple (line_without_delimiter, start_line, end_line, start_delimiter, end_delimiter)
 Statement = tuple[str, int, int, str, str]
+RawBlockRange = tuple[int, int]
+
+JINJA_COMMENT_PATTERN = re.compile("(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
+JINJA_EXPRESSION_PATTERN = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
+JINJA_STATEMENT_PATTERN = re.compile("(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
 
 
 def load_plugins(directory: Path) -> list[Rule]:
@@ -152,6 +157,87 @@ def get_tuple(list_of_tuples: list[tuple[Any, ...]], item: Any) -> tuple[Any, ..
     return next((entry for entry in list_of_tuples if item in entry), None)
 
 
+def _position_in_raw_block(position: int, raw_block_ranges: list[RawBlockRange]) -> bool:
+    """Check if a position is inside a Jinja raw block body.
+
+    Parameters
+    ----------
+    position
+        Character offset to inspect.
+    raw_block_ranges
+        Raw block body ranges as `(start, end)` offsets.
+
+    Returns
+    -------
+    bool
+        True if the position is inside a raw block body.
+    """
+    return any(start <= position < end for start, end in raw_block_ranges)
+
+
+def get_raw_block_ranges(text: str) -> list[RawBlockRange]:
+    """Get the ranges of the content contained inside Jinja raw blocks.
+
+    The ranges exclude the opening `{% raw %}` and closing `{% endraw %}` statements so those tags
+    can still be linted.
+
+    Parameters
+    ----------
+    text
+        Text to inspect.
+
+    Returns
+    -------
+    list[RawBlockRange]
+        A list of `(start, end)` offsets for the body of each raw block. If a raw block is never
+        closed, its range extends to the end of the text.
+    """
+    raw_block_ranges: list[RawBlockRange] = []
+    raw_body_start: int | None = None
+
+    for match in JINJA_STATEMENT_PATTERN.finditer(text):
+        words = match.group(2).split()
+        if not words:
+            continue
+
+        tag = words[0]
+        if raw_body_start is None:
+            if tag == "raw":
+                raw_body_start = match.end()
+            continue
+
+        if tag == "endraw":
+            raw_block_ranges.append((raw_body_start, match.start()))
+            raw_body_start = None
+
+    if raw_body_start is not None:
+        raw_block_ranges.append((raw_body_start, len(text)))
+
+    return raw_block_ranges
+
+
+def mask_raw_block_contents(text: str) -> str:
+    """Mask the content of Jinja raw blocks while preserving tags, line count, and columns.
+
+    Parameters
+    ----------
+    text
+        Text to mask.
+
+    Returns
+    -------
+    str
+        The text with raw block bodies replaced by spaces and newlines so the raw tags, line
+        count, and column positions remain stable.
+    """
+    masked_text = list(text)
+
+    for start, end in get_raw_block_ranges(text):
+        masked_text[start:end] = ["\n" if char == "\n" else " " for char in text[start:end]]
+
+    return "".join(masked_text)
+
+
 def get_jinja_statements(text: str, *, indentation: bool = False) -> list[Statement]:
     """Get jinja statements with {%[-/+] [-]%} delimiters.
 
@@ -205,10 +291,12 @@ def get_jinja_statements(text: str, *, indentation: bool = False) -> list[Statem
     """
     statements: list[Statement] = []
     count = 0
-    regex_pattern = re.compile("(\\{%[-|+]?)((.|\n)*?)([-]?\\%})", re.MULTILINE)
     newline_pattern = re.compile(r"\n")
     lines = text.split("\n")
-    for match in regex_pattern.finditer(text):
+    raw_block_ranges = get_raw_block_ranges(text)
+    for match in JINJA_STATEMENT_PATTERN.finditer(text):
+        if _position_in_raw_block(match.start(), raw_block_ranges):
+            continue
         count += 1
         start_line = len(newline_pattern.findall(text, 0, match.start(2))) + 1
         end_line = len(newline_pattern.findall(text, 0, match.end(2))) + 1
@@ -261,9 +349,9 @@ def get_jinja_comments(text: str) -> list[str]:
     list
         List of jinja comments
     """
-    regex_pattern = re.compile("(\\{#)((.|\n)*?)(\\#})", re.MULTILINE)
+    raw_block_ranges = get_raw_block_ranges(text)
 
-    return [line.group(2) for line in regex_pattern.finditer(text)]
+    return [line.group(2) for line in JINJA_COMMENT_PATTERN.finditer(text) if not _position_in_raw_block(line.start(), raw_block_ranges)]
 
 
 def get_jinja_expressions(text: str, *, blank_literals: bool = False) -> list[str]:
@@ -301,9 +389,8 @@ def get_jinja_expressions(text: str, *, blank_literals: bool = False) -> list[st
     list
         List of jinja expressions (optionally with string literals blanked)
     """
-    regex_pattern = re.compile("(\\{{)((.|\n)*?)(\\}})", re.MULTILINE)
-
-    exps_strings_intact = [line.group(2) for line in regex_pattern.finditer(text)]
+    raw_block_ranges = get_raw_block_ranges(text)
+    exps_strings_intact = [line.group(2) for line in JINJA_EXPRESSION_PATTERN.finditer(text) if not _position_in_raw_block(line.start(), raw_block_ranges)]
 
     if blank_literals:
         # Replace string literals with empty strings
@@ -319,28 +406,6 @@ def get_jinja_expressions(text: str, *, blank_literals: bool = False) -> list[st
             exps_strings_blanked.append(exp_fully_blanked)
         return exps_strings_blanked
     return exps_strings_intact
-
-
-def strip_raw_blocks(text: str) -> str:
-    """Strip Jinja raw blocks.
-
-    Raw blocks are replaced with newlines in order for the original lines in the text to remain.
-
-    Parameters
-    ----------
-    text
-        Text to strip raw blocks from
-
-    Returns
-    -------
-    str
-        The text with raw blocks replaced
-    """
-
-    def replace_keeping_newlines(match: re.Match) -> str:
-        return "\n" * match.group(0).count("\n")
-
-    return re.sub(r"\{%-?\s*raw\s*-?%\}.*?\{%-?\s*endraw\s*-?%\}", replace_keeping_newlines, text, flags=re.DOTALL)
 
 
 def is_rule_disabled(text: str, rule: Rule) -> bool:

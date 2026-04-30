@@ -3,10 +3,8 @@
  Use of this source code is governed by the MIT license
  that can be found in the LICENSE file.
 #}
-{% raw %}{{ some_variable }}{% endraw %}
-
-{% raw %}
-docker inspect traefik --format "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}"
-{% endraw %}
+{%raw%}
+{{ raw_value|bad_filter }}
+{%- endraw %}
 
 {{ foo|bar }}

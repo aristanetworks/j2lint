@@ -148,6 +148,28 @@ PARAMS = [
         [("S2", 12)],
         [],
         [],
+        id="jinja_raw_block_ignored",
+    ),
+    pytest.param(
+        f"{TEST_DATA_DIR}/jinja_raw_block_tag_rules.j2",
+        [("S4", 6), ("S6", 8), ("S2", 10)],
+        [],
+        [],
+        id="jinja_raw_block_tag_rules",
+    ),
+    pytest.param(
+        f"{TEST_DATA_DIR}/jinja_raw_block_indentation_ignored.j2",
+        [],
+        [],
+        [],
+        id="jinja_raw_block_indentation_ignored",
+    ),
+    pytest.param(
+        f"{TEST_DATA_DIR}/jinja_raw_block_single_statement_rule.j2",
+        [("S7", 6)],
+        [],
+        [],
+        id="jinja_raw_block_single_statement_rule",
     ),
 ]
 
