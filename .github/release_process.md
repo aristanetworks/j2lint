@@ -5,6 +5,12 @@ Notes regarding how to release
 ## Bumping version
 
 In a branch specific for this, use the `bumpver` tool.
+Install the maintainer dependencies first:
+
+```
+python -m pip install -e . --group dev
+```
+
 It is configured to update:
 * pyproject.toml
 * j2lint/__init__.py
