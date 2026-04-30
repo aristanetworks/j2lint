@@ -15,10 +15,14 @@ from j2lint.utils import (
     delimit_jinja_statement,
     flatten,
     get_files,
+    get_jinja_comments,
     get_jinja_expressions,
+    get_jinja_statements,
+    get_raw_block_ranges,
     get_tuple,
     is_rule_disabled,
     is_valid_file_type,
+    mask_raw_block_contents,
 )
 
 if TYPE_CHECKING:
@@ -157,10 +161,58 @@ def test_get_tuple(tuple_list: list[tuple[Any]], lookup_object: Any, expected_va
     assert get_tuple(tuple_list, lookup_object) == expected_value
 
 
-@pytest.mark.skip
-def test_get_jinja_statements() -> None:
+@pytest.mark.parametrize(
+    ("text", "indentation", "expected"),
+    [
+        pytest.param(
+            "{% if foo %}\n{% endif %}",
+            False,
+            [(" if foo ", 1, 1, "{%", "%}"), (" endif ", 2, 2, "{%", "%}")],
+            id="simple statements",
+        ),
+        pytest.param(
+            "{%- if foo -%}\n{% endif %}",
+            False,
+            [(" if foo ", 1, 1, "{%-", "-%}"), (" endif ", 2, 2, "{%", "%}")],
+            id="trimmed delimiters",
+        ),
+        pytest.param(
+            "prefix {% if foo %}\n{% endif %}",
+            False,
+            [(" if foo ", 1, 1, "{%", "%}"), (" endif ", 2, 2, "{%", "%}")],
+            id="inline statement included by default",
+        ),
+        pytest.param(
+            "prefix {% if foo %}\n{% endif %}",
+            True,
+            [(" endif ", 2, 2, "{%", "%}")],
+            id="indentation mode skips inline statement",
+        ),
+        pytest.param(
+            "{% if foo\n   and bar %}\n{% endif %}",
+            True,
+            [(" if foo\n   and bar ", 1, 2, "{%", "%}"), (" endif ", 3, 3, "{%", "%}")],
+            id="indentation mode keeps multiline statement",
+        ),
+    ],
+)
+def test_get_jinja_statements(text: str, *, indentation: bool, expected: list[tuple[str, int, int, str, str]]) -> None:
     """Test the utils.get_jinja_statements function."""
-    # TODO:
+    assert get_jinja_statements(text, indentation=indentation) == expected
+
+
+def test_get_jinja_statements_ignores_raw_block_content() -> None:
+    """Test that raw block content is ignored while raw tags remain visible."""
+    text = "{% raw %}\n{% if hidden %}\n{% endraw %}\n{% if shown %}\n{% endif %}"
+
+    assert [statement[0].strip() for statement in get_jinja_statements(text)] == ["raw", "endraw", "if shown", "endif"]
+
+
+def test_get_jinja_statements_ignores_raw_block_content_on_same_line() -> None:
+    """Test that same-line raw content is ignored while later statements still count."""
+    text = "{% raw %} {% if blah %} {% endif %} {% endraw %} {% if bloh %} toto {% endif %}"
+
+    assert [statement[0].strip() for statement in get_jinja_statements(text)] == ["raw", "endraw", "if bloh", "endif"]
 
 
 @pytest.mark.parametrize(
@@ -176,10 +228,25 @@ def test_delimit_jinja_statement(line: str, kwargs: dict[str, str], expected: st
     assert delimit_jinja_statement(line, **kwargs) == expected
 
 
-@pytest.mark.skip
-def test_get_jinja_comments() -> None:
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        pytest.param("plain text", [], id="no comments"),
+        pytest.param("{# visible #}", [" visible "], id="single comment"),
+        pytest.param("foo {# inline #} bar", [" inline "], id="inline comment"),
+        pytest.param("{# first #}\n{# second line 1\nsecond line 2 #}", [" first ", " second line 1\nsecond line 2 "], id="multiple comments"),
+    ],
+)
+def test_get_jinja_comments(text: str, expected: list[str]) -> None:
     """Test the utils.get_jinja_comments function."""
-    # TODO:
+    assert get_jinja_comments(text) == expected
+
+
+def test_get_jinja_comments_ignores_raw_block_content() -> None:
+    """Test that Jinja comments inside raw blocks are ignored."""
+    text = "{# visible #}\n{% raw %}\n{# hidden #}\n{% endraw %}\n{# also visible #}"
+
+    assert get_jinja_comments(text) == [" visible ", " also visible "]
 
 
 @pytest.mark.parametrize(
@@ -234,11 +301,77 @@ def test_get_jinja_comments() -> None:
             [" foo('bar \\'baz\\' qux', \"quux \\\"foo\\\" bar\") "],
             id="complex 2 don't remove strings",
         ),
+        pytest.param(
+            "{% raw %}{{ hidden_value }}{% endraw %} {{ visible_value }}",
+            False,
+            [" visible_value "],
+            id="ignore raw block expressions",
+        ),
     ],
 )
 def test_get_jinja_expressions(test_template: str, blank_literals: bool, expected: list[str]) -> None:  # noqa: FBT001
     """Test the utils.get_jinja_expressions function."""
     assert get_jinja_expressions(test_template, blank_literals=blank_literals) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_segments"),
+    [
+        pytest.param(
+            "{{ variable }}",
+            [],
+            id="no raw blocks",
+        ),
+        pytest.param(
+            "{% raw %}{{ foo }}{% endraw %}",
+            ["{{ foo }}"],
+            id="single line raw block",
+        ),
+        pytest.param(
+            "{%- raw %}{{ foo }}{%- endraw %}",
+            ["{{ foo }}"],
+            id="single line trimmed raw block",
+        ),
+        pytest.param(
+            "{%%}{% raw %}{{ foo }}{% endraw %}",
+            ["{{ foo }}"],
+            id="ignore empty statements before raw block",
+        ),
+        pytest.param(
+            "{% raw %}\n{{ foo }}\n{% endraw %}\n{% raw %}{{ bar }}",
+            ["\n{{ foo }}\n", "{{ bar }}"],
+            id="multiple and unterminated raw blocks",
+        ),
+    ],
+)
+def test_get_raw_block_ranges(text: str, expected_segments: list[str]) -> None:
+    """Test the utils.get_raw_block_ranges function."""
+    assert [text[start:end] for start, end in get_raw_block_ranges(text)] == expected_segments
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        pytest.param(
+            "{{ variable }}",
+            "{{ variable }}",
+            id="no raw blocks",
+        ),
+        pytest.param(
+            "{% raw %}{{ foo }}{% endraw %}",
+            "{% raw %}         {% endraw %}",
+            id="single line raw block",
+        ),
+        pytest.param(
+            "{% raw %}\n{{ foo }}\n{% endraw %}\n{{ bar }}",
+            "{% raw %}\n         \n{% endraw %}\n{{ bar }}",
+            id="multiline raw block",
+        ),
+    ],
+)
+def test_mask_raw_block_contents(text: str, expected: str) -> None:
+    """Test the utils.mask_raw_block_contents function."""
+    assert mask_raw_block_contents(text) == expected
 
 
 @pytest.mark.parametrize(
@@ -266,6 +399,11 @@ def test_get_jinja_expressions(test_template: str, blank_literals: bool, expecte
             ["{# j2lint: disable=dummy-rule #}", "{# j2lint: disable=test-rule-0 #}"],
             True,
             id="found_second_second_syntax",
+        ),
+        pytest.param(
+            ["{% raw %}", "{# j2lint: disable=test-rule-0 #}", "{% endraw %}"],
+            False,
+            id="ignore_comments_inside_raw_blocks",
         ),
     ],
 )

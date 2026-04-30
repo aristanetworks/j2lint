@@ -11,3 +11,4 @@ tests/tmp/**
 **/.DS_Store
 .vscode
 coverage.xml
+uv.lock
