@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from j2lint.rules.jinja_template_single_statement_rule import JinjaTemplateSingleStatementRule
+
 if TYPE_CHECKING:
     from j2lint.linter.collection import RulesCollection
 
@@ -215,3 +217,10 @@ def test_rules(
 
     assert sorted(warnings_ids) == sorted(j2_warnings_ids)
     assert sorted(errors_ids) == sorted(j2_errors_ids)
+
+
+def test_jinja_template_single_statement_rule_ignores_empty_statements() -> None:
+    """Test that empty Jinja statements do not count toward S7."""
+    rule = JinjaTemplateSingleStatementRule()
+
+    assert not rule.checkline("dummy.j2", "{%%} {% if foo %}", 1)

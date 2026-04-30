@@ -333,6 +333,11 @@ def test_get_jinja_expressions(test_template: str, blank_literals: bool, expecte
             id="single line trimmed raw block",
         ),
         pytest.param(
+            "{%%}{% raw %}{{ foo }}{% endraw %}",
+            ["{{ foo }}"],
+            id="ignore empty statements before raw block",
+        ),
+        pytest.param(
             "{% raw %}\n{{ foo }}\n{% endraw %}\n{% raw %}{{ bar }}",
             ["\n{{ foo }}\n", "{{ bar }}"],
             id="multiple and unterminated raw blocks",
