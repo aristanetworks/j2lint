@@ -46,7 +46,7 @@ jobs:
           - python: "3.12"
             tox-env: "py312"
           - python: "3.13"
-            tox-env: "py313"
+            tox-env: "clean,py313,report"
     steps:
       - uses: actions/checkout@v6
       - name: Setup Python
@@ -58,9 +58,9 @@ jobs:
       - name: "Run tox for ${{ matrix.python }}"
         run: tox -e ${{ matrix.tox-env }}
       - name: Upload coverage from pytest
-        # Coverage only runs as part of 3.11.
+        # Coverage only runs as part of 3.13.
         if: |
-          matrix.python == '3.11'
+          matrix.python == '3.13'
         uses: actions/upload-artifact@v7
         with:
           name: pytest-coverage

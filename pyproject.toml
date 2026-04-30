@@ -94,13 +94,6 @@ envlist =
 
 isolated_build = True
 
-[gh-actions]
-python =
-  3.10: py310
-  3.11: clean, py311, report
-  3.12: py312
-  3.13: py313
-
 [testenv]
 description = run the test driver with {basepython}
 dependency_groups = test
