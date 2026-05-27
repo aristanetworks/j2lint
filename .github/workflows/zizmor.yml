@@ -1,0 +1,31 @@
+---
+name: zizmor
+
+"on":
+  pull_request:
+    paths:
+      - ".github/**"
+  push:
+    branches:
+      - devel
+    paths:
+      - ".github/**"
+
+permissions:
+  contents: read
+
+jobs:
+  zizmor:
+    name: Audit GitHub Actions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install zizmor
+        run: cargo install --locked zizmor
+
+      - name: Run zizmor
+        run: zizmor .github
