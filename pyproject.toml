@@ -38,7 +38,7 @@ ci = [
 ]
 dev = [
   "pre-commit>=3.3.3",
-  "bumpver==2025.1131",
+  "bumpver==2026.1132",
   { include-group = "ci" },
 ]
 test = [

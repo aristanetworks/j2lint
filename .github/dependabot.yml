@@ -17,6 +17,8 @@ updates:
       separator: "/"
     commit-message:
       prefix: "chore: "
+    cooldown:
+      default-days: 7
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -28,4 +30,6 @@ updates:
       - "CI"
     commit-message:
       prefix: "ci: "
+    cooldown:
+      default-days: 7
 
