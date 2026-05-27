@@ -32,4 +32,3 @@ updates:
       prefix: "ci: "
     cooldown:
       default-days: 7
-

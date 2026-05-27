@@ -45,7 +45,7 @@ This is to be executed at the top of the repo
    ```
    python -m build
    ```
-4. Check the package with `twine` (replace with your vesion)
+4. Check the package with `twine` (replace with your version)
     ```
     twine check dist/j2lint-x.x.x-py3-none-any.whl
     ```
