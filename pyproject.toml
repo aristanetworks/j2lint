@@ -55,7 +55,6 @@ type = [
   "pyright==1.1.409",
 ]
 
-[dependency-groups]
 zizmor = [
   "zizmor==1.25.2",
 ]
