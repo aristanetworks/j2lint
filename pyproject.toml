@@ -32,11 +32,14 @@ dependencies = [
 ]
 requires-python = ">=3.10"
 
-[project.optional-dependencies]
+[dependency-groups]
+ci = [
+  "tox>=4.10.0,<5.0.0",
+]
 dev = [
   "pre-commit>=3.3.3",
   "bumpver==2026.1132",
-  "tox>=4.10.0,<5.0.0",
+  { include-group = "ci" },
 ]
 test = [
   "pytest>=7.4.0",
@@ -52,7 +55,6 @@ type = [
   "pyright==1.1.409",
 ]
 
-[dependency-groups]
 zizmor = [
   "zizmor==1.25.2",
 ]
@@ -96,23 +98,16 @@ envlist =
 
 isolated_build = True
 
-[gh-actions]
-python =
-  3.10: py310
-  3.11: clean, py311, report
-  3.12: py312
-  3.13: py313
-
 [testenv]
 description = run the test driver with {basepython}
-extras = test
+dependency_groups = test
 
 commands =
   pytest  {tty:--color=yes}
 
 [testenv:lint]
 description = check the code style
-extras =
+dependency_groups =
   lint
   test
 commands =
@@ -123,7 +118,7 @@ commands =
 
 [testenv:type]
 description = check the code type
-extras = 
+dependency_groups =
   type
   test
 commands =

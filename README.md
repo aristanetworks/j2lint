@@ -55,6 +55,28 @@ pip3 install j2lint
 pip3 install git+https://github.com/aristanetworks/j2lint.git
 ```
 
+### Install For Development
+
+Create a virtual environment, then install the project in editable mode with the dependency groups you need:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e . --group dev --group test --group lint --group type
+```
+
+If you only need a subset of the contributor tooling, install only the relevant groups.
+
+### Common Contributor Commands
+
+```bash
+pytest
+tox -e lint
+tox -e type
+pre-commit run --all-files
+```
+
 ## Running the linter
 
 ```bash
