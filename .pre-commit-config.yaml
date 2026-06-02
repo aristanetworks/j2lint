@@ -4,7 +4,7 @@
 ci:
   autoupdate_commit_msg: "CI: pre-commit autoupdate"
   skip: [pyright]
-files: ^(j2lint|tests)/
+files: ^(j2lint|tests|\.github)/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -44,7 +44,7 @@ repos:
           - --no-extra-eol
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.14
+    rev: v0.15.15
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -91,3 +91,11 @@ repos:
         entry: codespell
         language: python
         types: [text]
+
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.25.2
+    hooks:
+      - id: zizmor
+        files: ^\.github/
+        pass_filenames: false
+        args: [.github]
