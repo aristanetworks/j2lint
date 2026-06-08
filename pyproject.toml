@@ -55,10 +55,6 @@ type = [
   "pyright==1.1.409",
 ]
 
-zizmor = [
-  "zizmor==1.25.2",
-]
-
 [project.urls]
 Homepage = "https://github.com/aristanetworks/j2lint.git"
 "Bug Tracker" = "https://github.com/aristanetworks/j2lint/issues"
