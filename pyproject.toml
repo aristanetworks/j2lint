@@ -52,7 +52,7 @@ lint = [
   "codespell>=2.2.6,<2.5.0",
 ]
 type = [
-  "pyright==1.1.409",
+  "pyright==1.1.410",
 ]
 
 [project.urls]
