@@ -5,6 +5,12 @@ Notes regarding how to release
 ## Bumping version
 
 In a branch specific for this, use the `bumpver` tool.
+Install the maintainer dependencies first:
+
+```
+python -m pip install -e . --group dev
+```
+
 It is configured to update:
 * pyproject.toml
 * j2lint/__init__.py
@@ -45,7 +51,7 @@ This is to be executed at the top of the repo
    ```
    python -m build
    ```
-4. Check the package with `twine` (replace with your vesion)
+4. Check the package with `twine` (replace with your version)
     ```
     twine check dist/j2lint-x.x.x-py3-none-any.whl
     ```
