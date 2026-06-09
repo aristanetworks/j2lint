@@ -44,7 +44,7 @@ repos:
           - --no-extra-eol
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.15
+    rev: v0.15.16
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -72,7 +72,7 @@ repos:
           - typing_extensions
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.409
+    rev: v1.1.410
     hooks:
       - id: pyright
         name: PyRight static type checker
