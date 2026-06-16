@@ -44,7 +44,7 @@ repos:
           - --no-extra-eol
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 22f0422809455ec89ffdcf5a00170ba816e42ddb  # frozen: v0.15.16
+    rev: 3b3f7c3f57fe9925356faf5fe6230835138be230  # frozen: v0.15.17
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -53,7 +53,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: 88e1ab7545a4af4aea15c305a154c164a95ab842  # frozen: v4.0.5
+    rev: 8a396357098337ba8be714fffdf2d00947a9778c  # frozen: v4.0.6
     hooks:
       - id: pylint
         name: Check for Linting error on Python files
