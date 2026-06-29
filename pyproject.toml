@@ -37,7 +37,7 @@ ci = [
   "tox>=4.10.0,<5.0.0",
 ]
 dev = [
-  "pre-commit>=3.3.3",
+  "pre-commit>=4.6.0",
   "bumpver==2026.1132",
   { include-group = "ci" },
 ]
