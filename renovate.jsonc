@@ -32,13 +32,43 @@
 
   "packageRules": [
     {
-      "description": "Python project dependencies from pyproject.toml, including dependency groups.",
+      "description": "Shared metadata for Python dependencies from pyproject.toml.",
       "matchManagers": ["pep621"],
       "labels": ["dependencies"],
       "reviewers": ["gmuloc"],
       "commitMessagePrefix": "chore:",
-      "rangeStrategy": "bump",
       "schedule": ["before 5am every weekday"]
+    },
+    {
+      "description": "Runtime dependencies define the minimum versions supported by the published library. Keep lower bounds stable for in-range updates and widen capped ranges when needed.",
+      "matchManagers": ["pep621"],
+      // [project].dependencies, plus the poetry dep type if this config is copied to a Poetry project.
+      "matchDepTypes": ["project.dependencies", "dependencies"],
+      "rangeStrategy": "auto"
+    },
+    {
+      "description": "Build-system requirements are feature minimums for building the package, not routine tooling versions. Keep setuptools pinned to the minimum version we actually require.",
+      "matchManagers": ["pep621"],
+      // [build-system].requires, e.g. setuptools>=77.0.0.
+      "matchDepTypes": ["build-system.requires"],
+      "enabled": false
+    },
+    {
+      "description": "Python runtime support is a project compatibility policy, not dependency freshness. Keep requires-python manual.",
+      "matchManagers": ["pep621"],
+      // [project].requires-python, e.g. >=3.10.
+      "matchDepTypes": ["requires-python"],
+      "enabled": false
+    },
+    {
+      "description": "Dependency groups are repo tooling, so keep their minimum versions moving while preserving the existing range shape.",
+      "matchManagers": ["pep621"],
+      // [dependency-groups], e.g. lint/test/dev/ci/type.
+      "matchDepTypes": ["dependency-groups"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "rangeStrategy": "bump",
+      "groupName": "Python tooling dependencies",
+      "groupSlug": "python-tooling"
     },
     {
       "description": "GitHub Actions currently use SHA pins with version comments; keep that security posture.",
