@@ -65,7 +65,6 @@
       "matchManagers": ["pep621"],
       // [dependency-groups], e.g. lint/test/dev/ci/type.
       "matchDepTypes": ["dependency-groups"],
-      "matchUpdateTypes": ["minor", "patch"],
       "rangeStrategy": "bump",
       "groupName": "Python tooling dependencies",
       "groupSlug": "python-tooling"
