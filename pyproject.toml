@@ -34,7 +34,7 @@ requires-python = ">=3.10"
 
 [dependency-groups]
 ci = [
-  "tox>=4.56.0,<5.0.0",
+  "tox>=4.56.1,<5.0.0",
 ]
 dev = [
   "pre-commit>=4.6.0",
@@ -48,7 +48,7 @@ test = [
 ]
 lint = [
   "pylint>=4.0.6",
-  "ruff>=0.15.19,<0.16.0",
+  "ruff>=0.15.20,<0.16.0",
   "codespell>=2.4.2,<2.5.0",
 ]
 type = [
