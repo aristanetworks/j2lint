@@ -34,7 +34,7 @@ requires-python = ">=3.10"
 
 [dependency-groups]
 ci = [
-  "tox>=4.56.2,<5.0.0",
+  "tox>=4.56.4,<5.0.0",
 ]
 dev = [
   "pre-commit>=4.6.0",
