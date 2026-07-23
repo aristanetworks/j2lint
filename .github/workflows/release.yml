@@ -34,10 +34,20 @@ jobs:
       - name: Set target version
         id: target_version
         env:
+          EVENT_NAME: ${{ github.event_name }}
           INPUT_VALUE: ${{ inputs.TESTPYPI_VERSION }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |-
           CURRENT_VERSION=$(bumpver show --environ | grep '^CURRENT_VERSION=' | cut -f "2" -d "=")
-          TARGET_VERSION="${INPUT_VALUE:-$CURRENT_VERSION}"
+          if [ "$EVENT_NAME" = "release" ]; then
+            if [ "$RELEASE_TAG" != "$CURRENT_VERSION" ]; then
+              echo "::error::Release tag '$RELEASE_TAG' does not match package version '$CURRENT_VERSION'"
+              exit 1
+            fi
+            TARGET_VERSION="$CURRENT_VERSION"
+          else
+            TARGET_VERSION="${INPUT_VALUE:-$CURRENT_VERSION}"
+          fi
           echo "TARGET_VERSION=$TARGET_VERSION" >> "$GITHUB_OUTPUT"
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
 
@@ -94,7 +104,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
         with:
           repository-url: https://test.pypi.org/legacy/
-          skip-existing: true
 
   test-j2lint-from-test-pypi:
     name: Test from TestPyPI on Python ${{ matrix.python }}
