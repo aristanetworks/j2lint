@@ -45,6 +45,7 @@ class JinjaTemplateIndentationRule(Rule):
         # indentation level for each statement
         root = Node()
         node_errors: list[NodeIndentationError] = []
+        jinja_node_stack.clear()
         try:
             root.check_indentation(node_errors, lines, 0)
 
