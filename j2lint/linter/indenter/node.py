@@ -21,7 +21,6 @@ DEFAULT_WHITESPACES = 1
 JINJA_START_DELIMITERS = ["{%-", "{%+"]
 
 jinja_node_stack: list[Node] = []
-jinja_delimiter_stack: list[str] = []
 
 NodeIndentationError = tuple[int, str, str]
 
