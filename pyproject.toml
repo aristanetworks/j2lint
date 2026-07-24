@@ -36,10 +36,13 @@ requires-python = ">=3.10"
 ci = [
   "tox>=4.56.4,<5.0.0",
 ]
-dev = [
-  "pre-commit>=4.6.0",
+bumpver = [
   "bumpver==2026.1132",
+]
+dev = [
   { include-group = "ci" },
+  { include-group = "bumpver" },
+  "pre-commit>=4.6.0",
 ]
 test = [
   "pytest>=9.1.1",
@@ -48,8 +51,8 @@ test = [
 ]
 lint = [
   "pylint>=4.0.6",
-  "ruff>=0.15.21,<0.16.0",
-  "codespell>=2.4.2,<2.5.0",
+  "ruff>=0.15.22,<0.16.0",
+  "codespell>=2.4.3,<2.5.0",
 ]
 type = [
   "pyright==1.1.411",

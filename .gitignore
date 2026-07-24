@@ -12,3 +12,4 @@ tests/tmp/**
 .vscode
 coverage.xml
 uv.lock
+.envrc
