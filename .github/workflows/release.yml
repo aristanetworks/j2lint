@@ -38,10 +38,10 @@ jobs:
           INPUT_VALUE: ${{ inputs.TESTPYPI_VERSION }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |-
-          CURRENT_VERSION=$(bumpver show --environ | grep '^CURRENT_VERSION=' | cut -f "2" -d "=")
+          CURRENT_VERSION=$(bumpver show --environ | grep '^PEP440_VERSION=' | cut -f "2" -d "=")
           if [ "$EVENT_NAME" = "release" ]; then
-            if [ "$RELEASE_TAG" != "$CURRENT_VERSION" ]; then
-              echo "::error::Release tag '$RELEASE_TAG' does not match package version '$CURRENT_VERSION'"
+            if [ "$RELEASE_TAG" != "v$CURRENT_VERSION" ]; then
+              echo "::error::Release tag '$RELEASE_TAG' does not match package version 'v$CURRENT_VERSION'"
               exit 1
             fi
             TARGET_VERSION="$CURRENT_VERSION"

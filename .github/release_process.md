@@ -58,6 +58,15 @@ Use `!` for breaking changes, for example `Fix!: remove deprecated behavior`.
 Optional scopes can be included in titles, for example `Fix(rules): ignore raw block contents`.
 Supported scopes are `j2lint`, `cli`, and `rules`.
 
+## Manual TestPyPI release
+
+The `release.yml` workflow can be triggered manually to publish a test build to TestPyPI.
+Use a PEP 440 version without the leading `v` for `TESTPYPI_VERSION`, for example:
+
+```
+1.3.0.dev0
+```
+
 ## Release version `x.x.x`
 
 TODO - make this a workflow

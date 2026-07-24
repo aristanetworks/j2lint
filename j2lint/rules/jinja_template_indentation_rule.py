@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from j2lint.linter.error import JinjaLinterError, LinterError
-from j2lint.linter.indenter.node import Node, NodeIndentationError
+from j2lint.linter.indenter.node import Node, NodeIndentationError, jinja_node_stack
 from j2lint.linter.rule import Rule
 from j2lint.logger import logger
 from j2lint.utils import get_jinja_statements
@@ -45,6 +45,7 @@ class JinjaTemplateIndentationRule(Rule):
         # indentation level for each statement
         root = Node()
         node_errors: list[NodeIndentationError] = []
+        jinja_node_stack.clear()
         try:
             root.check_indentation(node_errors, lines, 0)
 
@@ -55,6 +56,10 @@ class JinjaTemplateIndentationRule(Rule):
                 filename,
                 str(exc),
             )
+        finally:
+            # A parse failure can leave nodes from this file on the module-level
+            # stack, which would corrupt the check of the next file.
+            jinja_node_stack.clear()
 
         return [LinterError(line_no, section, filename, self, message) for line_no, section, message in node_errors]
 

@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from j2lint.linter.indenter.node import jinja_node_stack
+from j2lint.rules.jinja_template_indentation_rule import JinjaTemplateIndentationRule
 from j2lint.rules.jinja_template_single_statement_rule import JinjaTemplateSingleStatementRule
 
 if TYPE_CHECKING:
@@ -123,7 +125,7 @@ PARAMS = [
     ),
     pytest.param(
         f"{TEST_DATA_DIR}/jinja_statement_delimiter_rule.j2",
-        [("S6", 6), ("S6", 8), ("S6", 10)],
+        [("S6", 6), ("S3", 7), ("S6", 8), ("S3", 9), ("S6", 10)],
         [],
         [],
     ),
@@ -224,3 +226,18 @@ def test_jinja_template_single_statement_rule_ignores_empty_statements() -> None
     rule = JinjaTemplateSingleStatementRule()
 
     assert not rule.checkline("dummy.j2", "{%%} {% if foo %}", 1)
+
+
+def test_jinja_template_indentation_rule_resets_state_between_files(caplog: pytest.LogCaptureFixture) -> None:
+    """A file that fails to parse must not leak indentation state into the next file."""
+    caplog.set_level(logging.ERROR)
+    rule = JinjaTemplateIndentationRule()
+
+    contaminator = "{% if enabled %}{% for item in items %}\n{{ item }}{% endfor %}{% endif %}\n"
+    victim = "{% if enabled %}\n    value\n{% endif %}\n"
+
+    assert not rule.checktext("victim.j2", victim)
+    assert not rule.checktext("contaminator.j2", contaminator)
+    assert any("Indentation check failed for file contaminator.j2" in record.message for record in caplog.records)
+    assert not jinja_node_stack
+    assert not rule.checktext("victim.j2", victim)
