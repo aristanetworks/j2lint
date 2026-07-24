@@ -29,8 +29,8 @@ SCOPES = [
     *["|".join(scopes) for scope_count in range(2, len(BASE_SCOPES) + 1) for scopes in permutations(BASE_SCOPES, scope_count)],
 ]
 
-EXCLUDED_TYPES = ["test", "ci"]
-BREAKING_TYPES = ["feat", "fix", "cut", "revert", "refactor", "bump"]
+EXCLUDED_TYPES = [(commit_type, breaking) for commit_type in ("test", "ci") for breaking in (False, True)]
+BREAKING_TYPES = ["feat", "fix", "cut", "revert", "refactor", "bump", "doc"]
 
 
 def labels_for(commit_type: str, *, breaking: bool = False) -> list[str]:
@@ -43,7 +43,7 @@ def labels_for(commit_type: str, *, breaking: bool = False) -> list[str]:
 
 def build_release_config() -> YamlValue:
     """Build the GitHub release-note configuration."""
-    exclude_labels = [label for commit_type in EXCLUDED_TYPES for label in labels_for(commit_type)]
+    exclude_labels = [label for commit_type, breaking in EXCLUDED_TYPES for label in labels_for(commit_type, breaking=breaking)]
     breaking_labels = [label for commit_type in BREAKING_TYPES for label in labels_for(commit_type, breaking=True)]
 
     return {
