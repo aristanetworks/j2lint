@@ -37,6 +37,27 @@ bumpver update --minor --dry
 
 Create the release on Github with the appropriate tag `vx.x.x`
 
+## Release notes
+
+GitHub release notes are generated from `rn: ...` labels applied to merged pull requests.
+The `pull-request-rn-labeler.yml` workflow applies these labels from pull request titles.
+
+Use the repo's existing title style:
+
+* `Feat: ...` for new features and enhancements
+* `Fix: ...` for bug fixes
+* `Doc: ...` for documentation
+* `Refactor: ...` for refactoring
+* `Bump: ...` for dependency or version bumps
+* `Cut: ...` for removed features
+* `CI: ...` for CI changes excluded from release notes
+* `Test: ...` for test-only changes excluded from release notes
+
+The generated labels are lowercase, for example `rn: feat`, `rn: fix`, and `rn: ci`.
+Use `!` for breaking changes, for example `Fix!: remove deprecated behavior`.
+Optional scopes can be included in titles, for example `Fix(rules): ignore raw block contents`.
+Supported scopes are `j2lint`, `cli`, and `rules`.
+
 ## Manual TestPyPI release
 
 The `release.yml` workflow can be triggered manually to publish a test build to TestPyPI.
