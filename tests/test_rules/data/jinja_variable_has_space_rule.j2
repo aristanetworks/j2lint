@@ -14,5 +14,6 @@
 {{ ethernet-}}
 # Next ones should not fail
 {{ ethernet }}
+repo_path="${1:-{{ apt_repo_path }}}"
 # cf issue/62
 {% set row.line = row.line ~ "| {t:{t_width}} ".format(t=text, t_width=table.column_width[key]) %}
