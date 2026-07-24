@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from j2lint.linter.indenter.node import Node
+from j2lint.linter.indenter.node import Node, NodeIndentationError, jinja_node_stack
 
 
 class TestNode:
@@ -36,3 +36,20 @@ class TestNode:
             "{% if switch.platform_settings.tcam_profile is arista.avd.defined %}",
             "test",
         )
+
+    def test_check_indentation_returns_to_begin_tag_after_middle_tag(self) -> None:
+        """Test that a middle tag returns parsing to the matching begin tag."""
+        lines = [
+            (" if enabled ", 1, 1, "{%", "%}"),
+            (" else ", 2, 2, "{%", "%}"),
+            (" endif ", 3, 3, "{%", "%}"),
+        ]
+        result: list[NodeIndentationError] = []
+        jinja_node_stack.clear()
+
+        try:
+            assert Node().check_indentation(result, lines, 0) is None
+            assert not result
+            assert not jinja_node_stack
+        finally:
+            jinja_node_stack.clear()
