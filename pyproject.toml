@@ -36,10 +36,13 @@ requires-python = ">=3.10"
 ci = [
   "tox>=4.56.4,<5.0.0",
 ]
-dev = [
-  "pre-commit>=4.6.0",
+bumpver = [
   "bumpver==2026.1132",
+]
+dev = [
   { include-group = "ci" },
+  { include-group = "bumpver" },
+  "pre-commit>=4.6.0",
 ]
 test = [
   "pytest>=9.1.1",
