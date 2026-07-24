@@ -37,6 +37,15 @@ bumpver update --minor --dry
 
 Create the release on Github with the appropriate tag `vx.x.x`
 
+## Manual TestPyPI release
+
+The `release.yml` workflow can be triggered manually to publish a test build to TestPyPI.
+Use a PEP 440 version without the leading `v` for `TESTPYPI_VERSION`, for example:
+
+```
+1.3.0.dev0
+```
+
 ## Release version `x.x.x`
 
 TODO - make this a workflow
