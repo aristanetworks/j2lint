@@ -24,6 +24,7 @@ from j2lint.cli import (
     run,
     sort_issues,
 )
+from j2lint.linter.collection import DEFAULT_RULE_DIR
 
 from .utils import (
     NO_ERROR_NO_WARNING_JSON,
@@ -85,21 +86,60 @@ def test_create_parser(default_namespace: Namespace, argv: list[str], namespace_
 
 
 @pytest.mark.parametrize(
-    "argv",
+    ("argv", "expected_rules_dir", "expected_ignore", "expected_warn", "expected_files"),
     [
-        pytest.param(["-r", "custom_rules", "tests/data/test.j2"], id="short rules dir"),
-        pytest.param(["--rules_dir", "custom_rules", "tests/data/test.j2"], id="long rules dir"),
-        pytest.param(["--ignore", "jinja-statements-delimiter", "--", "tests/data/test.j2"], id="ignore by short description"),
-        pytest.param(["--ignore", "S6", "--", "tests/data/test.j2"], id="ignore by rule id"),
-        pytest.param(["--warn", "jinja-statements-delimiter", "--", "tests/data/test.j2"], id="warn by short description"),
-        pytest.param(["--warn", "S6", "--", "tests/data/test.j2"], id="warn by rule id"),
+        pytest.param(
+            ["-r", "custom_rules", "tests/data/test.j2"],
+            [DEFAULT_RULE_DIR, "custom_rules"],
+            [],
+            [],
+            ["tests/data/test.j2"],
+            id="short rules dir",
+        ),
+        pytest.param(
+            ["--rules_dir", "custom_rules", "tests/data/test.j2"],
+            [DEFAULT_RULE_DIR, "custom_rules"],
+            [],
+            [],
+            ["tests/data/test.j2"],
+            id="long rules dir",
+        ),
+        pytest.param(
+            ["--ignore", "jinja-statements-delimiter", "--", "tests/data/test.j2"],
+            [DEFAULT_RULE_DIR],
+            ["jinja-statements-delimiter"],
+            [],
+            ["tests/data/test.j2"],
+            id="ignore by short description",
+        ),
+        pytest.param(["--ignore", "S6", "--", "tests/data/test.j2"], [DEFAULT_RULE_DIR], ["S6"], [], ["tests/data/test.j2"], id="ignore by rule id"),
+        pytest.param(
+            ["--warn", "jinja-statements-delimiter", "--", "tests/data/test.j2"],
+            [DEFAULT_RULE_DIR],
+            [],
+            ["jinja-statements-delimiter"],
+            ["tests/data/test.j2"],
+            id="warn by short description",
+        ),
+        pytest.param(["--warn", "S6", "--", "tests/data/test.j2"], [DEFAULT_RULE_DIR], [], ["S6"], ["tests/data/test.j2"], id="warn by rule id"),
     ],
 )
-def test_create_parser_documented_options(argv: list[str]) -> None:
+def test_create_parser_documented_options(
+    argv: list[str],
+    expected_rules_dir: list[Path | str],
+    expected_ignore: list[str],
+    expected_warn: list[str],
+    expected_files: list[str],
+) -> None:
     """Test documented CLI option spellings and rule names."""
     parser = create_parser()
 
-    parser.parse_args(argv)
+    options = parser.parse_args(argv)
+
+    assert options.rules_dir == expected_rules_dir
+    assert options.ignore == expected_ignore
+    assert options.warn == expected_warn
+    assert options.files == expected_files
 
 
 @pytest.mark.parametrize(

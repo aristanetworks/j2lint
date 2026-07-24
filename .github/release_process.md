@@ -75,7 +75,7 @@ The primary release path is the `Tag & Release management` workflow.
 
 1. Checkout the latest `devel` branch.
 2. Bump the version and open a pull request.
-   ```
+   ```bash
    bumpver update --minor
    ```
 3. Merge the version bump after CI passes.
@@ -87,7 +87,7 @@ The primary release path is the `Tag & Release management` workflow.
 
 Optional local package validation before creating the release:
 
-```
+```bash
 python -m build
 twine check dist/j2lint-x.x.x-py3-none-any.whl
 ```
