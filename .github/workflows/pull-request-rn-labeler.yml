@@ -1,0 +1,20 @@
+---
+name: "Label for Release Notes"
+
+"on": # zizmor: ignore[dangerous-triggers] Runs after merge or title edits and only uses trusted base-branch action code to maintain release-note labels.
+  pull_request_target:
+    types:
+      - closed
+      - edited
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  if_merged:
+    name: "PR was merged"
+    if: github.event.pull_request.merged == true && (github.event.action == 'closed' || (github.event.action == 'edited' && github.event.changes.title != null))
+    uses: aristanetworks/avd/.github/workflows/release-note-labeler.yml@6a65932293a2b5ece0edb77712b475a505f1b878 # v6.3.0
+    with:
+      auto_create_label: true
