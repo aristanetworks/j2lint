@@ -66,8 +66,8 @@ Homepage = "https://github.com/aristanetworks/j2lint.git"
 j2lint = "j2lint.cli:run"
 
 [tool.bumpver]
-current_version = "v1.2.0"
-version_pattern = "vMAJOR.MINOR.PATCH"
+current_version = "1.2.0"
+version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 commit_message  = "Chore: Version {old_version} -> {new_version}"
 commit          = true
 # No Tag
@@ -75,9 +75,9 @@ tag             = false
 push            = false
 
 [tool.bumpver.file_patterns]
-"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
-"j2lint/__init__.py" = ["{version}"]
-"tests/test_cli.py" = ["{version}"]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "v{version}"']
+"j2lint/__init__.py" = ["v{version}"]
+"tests/test_cli.py" = ["v{version}"]
 
 [tool.pylint.'MESSAGES CONTROL']
 max-line-length = 165
