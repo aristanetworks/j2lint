@@ -13,3 +13,4 @@ tests/tmp/**
 coverage.xml
 uv.lock
 .envrc
+.worktrees

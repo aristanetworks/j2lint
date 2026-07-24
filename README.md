@@ -127,7 +127,13 @@ j2lint <path-to-directory-of-templates> --json
 
 ### Ignoring rules
 
-1. The --ignore option can have one or more of these values: syntax-error, single-space-decorator, filter-enclosed-by-spaces, jinja-statement-single-space, jinja-statements-indentation, no-tabs, single-statement-per-line, jinja-delimiter, jinja-variable-lower-case, jinja-variable-format.
+1. The `--ignore` option can have one or more rule IDs or short descriptions:
+   `S0`, `S1`, `S2`, `S3`, `S4`, `S5`, `S6`, `S7`, `V1`, `V2`,
+   `jinja-syntax-error`, `single-space-decorator`,
+   `operator-enclosed-by-spaces`, `jinja-statements-single-space`,
+   `jinja-statements-indentation`, `jinja-statements-no-tabs`,
+   `single-statement-per-line`, `jinja-statements-delimiter`,
+   `jinja-variable-lower-case`, `jinja-variable-format`.
 
 2. If multiple rules are to be ignored, use the --ignore option along with rule descriptions separated by space.
 
@@ -136,7 +142,6 @@ j2lint <path-to-directory-of-templates> --json
     ```
 
 > **Note**
-> This runs the custom linting rules in addition to the default linting rules.
 > When using the `-i/--ignore` or `-w/--warn` options, the arguments MUST either:
 >
 > - Be entered at the end of the CLI as in the example above
@@ -153,13 +158,13 @@ j2lint <path-to-directory-of-templates> --json
     {# j2lint: disable=S6 #}
 
     # OR
-    {# j2lint: disable=jinja-delimiter #}
+    {# j2lint: disable=jinja-statements-delimiter #}
     ```
 
 4. Disabling multiple rules
 
     ```jinja2
-    {# j2lint: disable=jinja-delimiter j2lint: disable=S1 #}
+    {# j2lint: disable=jinja-statements-delimiter j2lint: disable=S1 #}
     ```
 
 ### Adding custom rules
@@ -170,10 +175,10 @@ j2lint <path-to-directory-of-templates> --json
     - File name: `jinja_operator_has_spaces_rule.py`
     - Class name: `JinjaOperatorHasSpacesRule`
 
-3. Run the jinja2 linter using --rules-dir option
+3. Run the jinja2 linter using the `-r` or `--rules_dir` option
 
     ```bash
-    j2lint <path-to-directory-of-templates> --rules-dir <custom-rules-directory>
+    j2lint <path-to-directory-of-templates> -r <custom-rules-directory>
     ```
 
 > **Note**

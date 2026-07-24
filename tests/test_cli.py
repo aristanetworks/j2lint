@@ -85,6 +85,24 @@ def test_create_parser(default_namespace: Namespace, argv: list[str], namespace_
 
 
 @pytest.mark.parametrize(
+    "argv",
+    [
+        pytest.param(["-r", "custom_rules", "tests/data/test.j2"], id="short rules dir"),
+        pytest.param(["--rules_dir", "custom_rules", "tests/data/test.j2"], id="long rules dir"),
+        pytest.param(["--ignore", "jinja-statements-delimiter", "--", "tests/data/test.j2"], id="ignore by short description"),
+        pytest.param(["--ignore", "S6", "--", "tests/data/test.j2"], id="ignore by rule id"),
+        pytest.param(["--warn", "jinja-statements-delimiter", "--", "tests/data/test.j2"], id="warn by short description"),
+        pytest.param(["--warn", "S6", "--", "tests/data/test.j2"], id="warn by rule id"),
+    ],
+)
+def test_create_parser_documented_options(argv: list[str]) -> None:
+    """Test documented CLI option spellings and rule names."""
+    parser = create_parser()
+
+    parser.parse_args(argv)
+
+
+@pytest.mark.parametrize(
     ("number_issues", "issues_modifications", "expected_sorted_issues_ids"),
     [
         (0, {}, []),
