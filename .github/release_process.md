@@ -69,38 +69,25 @@ Use a PEP 440 version without the leading `v` for `TESTPYPI_VERSION`, for exampl
 
 ## Release version `x.x.x`
 
-TODO - make this a workflow
-
 `x.x.x` is the version to be released
 
-This is to be executed at the top of the repo
+The primary release path is the `Tag & Release management` workflow.
 
-1. Checkout the latest version of devel with the correct tag for the release
-2. [Optional] Clean dist if required
-3. Build the package locally
+1. Checkout the latest `devel` branch.
+2. Bump the version and open a pull request.
+   ```bash
+   bumpver update --minor
    ```
-   python -m build
-   ```
-4. Check the package with `twine` (replace with your version)
-    ```
-    twine check dist/j2lint-x.x.x-py3-none-any.whl
-    ```
-5. Upload the package to test.pypi
-    ```
-    twine upload -r testpypi dist/j2lint-x.x.x.*
-    ```
-6. Verify the package by installing it in a local venv and checking it installs
-   and run correctly (run the tests)
-   ```
-   # In a brand new venv
-   pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple  --no-cache j2lint
-   ```
-7. Upload the package to pypi
-    ```
-    twine upload dist/j2lint-x.x.x.*
-    ```
-8. Like 5 but for normal pypi
-   ```
-   # In a brand new venv
-   pip install j2lint
-   ```
+3. Merge the version bump after CI passes.
+4. Create a GitHub release with the tag `vx.x.x`, matching the package version.
+5. The release workflow verifies the release tag matches the package version.
+6. The release workflow builds the package and publishes it to TestPyPI.
+7. The release workflow installs the TestPyPI package and runs the tests on Python 3.10, 3.11, 3.12, 3.13, and 3.14.
+8. After the TestPyPI validation passes, the release workflow publishes the same distribution to PyPI.
+
+Optional local package validation before creating the release:
+
+```bash
+python -m build
+twine check dist/j2lint-x.x.x-py3-none-any.whl
+```
