@@ -248,6 +248,7 @@ convention = "numpy"
 # we have not removed pylint completely, these settings should be kept in sync with our pylintrc file.
 # https://github.com/astral-sh/ruff/issues/970
 max-branches = 13
+max-positional-args = 6
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
@@ -263,6 +264,7 @@ max-complexity = 10
   "S101",    # Complains about asserts in units and libs.
   "SLF001",  # Lots of private member accessed for test purposes
   "PLR0913", # Too many arguments to function call
+  "PLR0917", # Too many positional arguments in test helpers/parametrized tests is acceptable
   "PLR2004", # Magic value used in comparison, consider replacing {value} with a constant variable
 #  "ARG002",  # Sometimes we need to declare unused arguments when a parameter is not used but declared in @pytest.mark.parametrize
 #  "FBT001",  # Boolean-typed positional argument in function definition
