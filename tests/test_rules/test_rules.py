@@ -75,8 +75,10 @@ PARAMS = [
             (
                 "root",
                 logging.ERROR,
-                f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.JinjaLinterError.j2: "
-                "Error: Line 1 - Tag is out of order 'endfor'",
+                (
+                    f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.JinjaLinterError.j2: "
+                    "Error: Line 1 - Tag is out of order 'endfor'"
+                ),
             )
         ],
         id="jinja_template_indentation_rule JinjaLinterError",
@@ -89,8 +91,10 @@ PARAMS = [
             (
                 "root",
                 logging.ERROR,
-                f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.missing_end_tag.j2: "
-                "Error: Recursive check_indentation returned None for an opening tag line 0 - missing closing tag",
+                (
+                    f"Indentation check failed for file {TEST_DATA_DIR}/jinja_template_indentation_rule.missing_end_tag.j2: "
+                    "Error: Recursive check_indentation returned None for an opening tag line 0 - missing closing tag"
+                ),
             )
         ],
     ),
