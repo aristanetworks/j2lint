@@ -1,9 +1,6 @@
 ---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-ci:
-  autoupdate_commit_msg: "CI: pre-commit autoupdate"
-  skip: [pyright]
 files: ^(j2lint|tests|\.github)/
 
 repos:
@@ -59,6 +56,7 @@ repos:
         name: Check for Linting error on Python files
         description: This hook runs pylint.
         types: [python]
+        language: python
         args:
           - -rn # Only display messages
           - -sn # Don't display the score
@@ -66,10 +64,10 @@ repos:
           # Suppress duplicate code for modules header
           - -d duplicate-code
         additional_dependencies:
-          - jinja2
-          - rich
-          - pytest
-          - typing_extensions
+          - jinja2==3.1.6
+          - rich==15.0.0
+          - pytest==9.1.1
+          - typing_extensions==4.15.0
 
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: 392b6ba8e54be6d603e02e9f8d601d27b7a48d12  # frozen: v1.1.411
@@ -77,11 +75,12 @@ repos:
       - id: pyright
         name: PyRight static type checker
         types: [python]
+        language: python
         additional_dependencies:
-          - jinja2
-          - rich
-          - pytest
-          - typing_extensions
+          - jinja2==3.1.6
+          - rich==15.0.0
+          - pytest==9.1.1
+          - typing_extensions==4.15.0
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3

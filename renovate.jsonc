@@ -12,12 +12,10 @@
   "dependencyDashboard": true,
 
   // Match j2lint's dependency surfaces intentionally.
-  // pre-commit is included explicitly for Python additional_dependencies only; hook rev
-  // updates stay with pre-commit.ci.
+  // pre-commit is included explicitly for hook revisions and Python additional_dependencies.
   "enabledManagers": ["pep621", "github-actions", "pre-commit"],
 
-  // Renovate's pre-commit manager is disabled by default. Keep it enabled only
-  // because we disable hook repository rev updates below.
+  // The pre-commit manager is disabled by default, so enable it explicitly.
   "pre-commit": {
     "enabled": true
   },
@@ -79,13 +77,13 @@
       "schedule": ["before 5am on monday"]
     },
     {
-      "description": "Let pre-commit.ci keep handling hook rev autoupdates.",
+      "description": "Let Renovate handle pre-commit hook revision updates.",
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["repository"],
-      "enabled": false
+      "enabled": true
     },
     {
-      "description": "pre-commit Python additional_dependencies only; hook rev updates stay with pre-commit.ci.",
+      "description": "Keep pre-commit Python additional_dependencies updated.",
       "matchManagers": ["pre-commit"],
       "matchDepTypes": ["pre-commit-python"],
       "labels": ["CI"],
