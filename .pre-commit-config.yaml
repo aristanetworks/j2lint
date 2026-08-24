@@ -67,7 +67,7 @@ repos:
           - jinja2==3.1.6
           - rich==15.0.0
           - pytest==9.1.1
-          - typing_extensions==4.15.0
+          - typing_extensions==4.16.0
 
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: 392b6ba8e54be6d603e02e9f8d601d27b7a48d12  # frozen: v1.1.411
@@ -80,7 +80,7 @@ repos:
           - jinja2==3.1.6
           - rich==15.0.0
           - pytest==9.1.1
-          - typing_extensions==4.15.0
+          - typing_extensions==4.16.0
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
