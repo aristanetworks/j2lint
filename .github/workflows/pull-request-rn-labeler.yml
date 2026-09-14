@@ -15,6 +15,6 @@ jobs:
   if_merged:
     name: "PR was merged"
     if: github.event.pull_request.merged == true && (github.event.action == 'closed' || (github.event.action == 'edited' && github.event.changes.title != null))
-    uses: aristanetworks/avd/.github/workflows/release-note-labeler.yml@6a65932293a2b5ece0edb77712b475a505f1b878 # v6.3.0
+    uses: aristanetworks/avd/.github/workflows/release-note-labeler.yml@f125f65b7c0463f30121fd4d8f504a55e1a8dbc6 # v6.4.0
     with:
       auto_create_label: true
