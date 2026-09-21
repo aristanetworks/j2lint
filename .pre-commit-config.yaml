@@ -70,7 +70,7 @@ repos:
           - typing_extensions==4.16.0
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: 474b7be9073c7a02f95c2825c2db8ed05835844e  # frozen: v1.1.413
+    rev: 1aa6dfeb849ae43fb6f16fc17228bcbd358a19c3  # frozen: v1.1.414
     hooks:
       - id: pyright
         name: PyRight static type checker
