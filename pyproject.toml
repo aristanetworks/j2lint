@@ -52,11 +52,11 @@ test = [
 ]
 lint = [
   "pylint>=4.0.8",
-  "ruff>=0.16.6,<0.16.7",
+  "ruff>=0.16.7,<0.16.8",
   "codespell>=2.4.3,<2.5.0",
 ]
 type = [
-  "pyright==1.1.411",
+  "pyright==1.1.414",
 ]
 
 [project.urls]
