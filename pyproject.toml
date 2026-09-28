@@ -35,7 +35,7 @@ requires-python = ">=3.10"
 
 [dependency-groups]
 ci = [
-  "tox>=4.61.4,<5.0.0",
+  "tox>=4.63.0,<5.0.0",
 ]
 bumpver = [
   "bumpver==2026.1132",
@@ -52,7 +52,7 @@ test = [
 ]
 lint = [
   "pylint>=4.0.8",
-  "ruff>=0.16.7,<0.16.8",
+  "ruff>=0.16.8,<0.16.9",
   "codespell>=2.4.3,<2.5.0",
 ]
 type = [
