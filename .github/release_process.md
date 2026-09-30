@@ -82,7 +82,7 @@ The primary release path is the `Tag & Release management` workflow.
 4. Create a GitHub release with the tag `vx.x.x`, matching the package version.
 5. The release workflow verifies the release tag matches the package version.
 6. The release workflow builds the package and publishes it to TestPyPI.
-7. The release workflow installs the TestPyPI package and runs the tests on Python 3.10, 3.11, 3.12, 3.13, and 3.14.
+7. The release workflow installs the TestPyPI package and runs the tests on Python 3.10, 3.11, 3.12, 3.13, 3.14, and 3.15.
 8. After the TestPyPI validation passes, the release workflow publishes the same distribution to PyPI.
 
 Optional local package validation before creating the release:
