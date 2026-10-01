@@ -1,9 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
 
-  // Baseline Renovate behavior: sane defaults, vulnerability alerts, lockfile handling,
-  // and common grouping/deduplication rules.
-  "extends": ["config:recommended"],
+  // Baseline Renovate behavior plus Renovate's opinionated configuration best practices.
+  "extends": ["config:best-practices"],
 
   // Keep scheduling deterministic for maintainers in Europe.
   "timezone": "Europe/Paris",
