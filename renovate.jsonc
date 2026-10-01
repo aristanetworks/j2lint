@@ -93,6 +93,38 @@
       "schedule": ["before 5am on monday"]
     },
     {
+      "description": "Group Ruff updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["ruff", "astral-sh/ruff-pre-commit"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Ruff",
+      "groupSlug": "ruff"
+    },
+    {
+      "description": "Group Pylint updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["pylint", "pycqa/pylint"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Pylint",
+      "groupSlug": "pylint"
+    },
+    {
+      "description": "Group Pyright updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["pyright", "RobertCraigie/pyright-python"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Pyright",
+      "groupSlug": "pyright"
+    },
+    {
+      "description": "Group codespell updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["codespell", "codespell-project/codespell"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "codespell",
+      "groupSlug": "codespell"
+    },
+    {
       "description": "Keep breaking dependency changes deliberate instead of auto-opening noisy PRs.",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
