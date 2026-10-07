@@ -51,7 +51,7 @@ test = [
   "typing_extensions",
 ]
 lint = [
-  "pylint>=4.0.9",
+  "pylint>=4.1.1",
   "ruff>=0.16.8,<0.16.9",
   "codespell>=2.4.3,<2.5.0",
 ]
