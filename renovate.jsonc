@@ -1,9 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
 
-  // Baseline Renovate behavior: sane defaults, vulnerability alerts, lockfile handling,
-  // and common grouping/deduplication rules.
-  "extends": ["config:recommended"],
+  // Baseline Renovate behavior plus Renovate's opinionated configuration best practices.
+  "extends": ["config:best-practices"],
 
   // Keep scheduling deterministic for maintainers in Europe.
   "timezone": "Europe/Paris",
@@ -34,8 +33,7 @@
       "matchManagers": ["pep621"],
       "labels": ["dependencies"],
       "reviewers": ["gmuloc"],
-      "commitMessagePrefix": "chore:",
-      "schedule": ["before 5am every weekday"]
+      "commitMessagePrefix": "chore:"
     },
     {
       "description": "Runtime dependencies define the minimum versions supported by the published library. Keep lower bounds stable for in-range updates and widen capped ranges when needed.",
@@ -73,8 +71,7 @@
       "labels": ["CI"],
       "reviewers": ["gmuloc"],
       "commitMessagePrefix": "ci:",
-      "pinDigests": true,
-      "schedule": ["before 5am on monday"]
+      "pinDigests": true
     },
     {
       "description": "Let Renovate handle pre-commit hook revision updates.",
@@ -89,8 +86,39 @@
       "labels": ["CI"],
       "reviewers": ["gmuloc"],
       "commitMessagePrefix": "ci:",
-      "rangeStrategy": "bump",
-      "schedule": ["before 5am on monday"]
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "Group Ruff updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["ruff", "astral-sh/ruff-pre-commit"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Ruff",
+      "groupSlug": "ruff"
+    },
+    {
+      "description": "Group Pylint updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["pylint", "pycqa/pylint"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Pylint",
+      "groupSlug": "pylint"
+    },
+    {
+      "description": "Group Pyright updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["pyright", "RobertCraigie/pyright-python"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Pyright",
+      "groupSlug": "pyright"
+    },
+    {
+      "description": "Group codespell updates across Python and pre-commit",
+      "matchManagers": ["pep621", "pre-commit"],
+      "matchPackageNames": ["codespell", "codespell-project/codespell"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "codespell",
+      "groupSlug": "codespell"
     },
     {
       "description": "Keep breaking dependency changes deliberate instead of auto-opening noisy PRs.",

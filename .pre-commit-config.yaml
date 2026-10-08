@@ -41,7 +41,7 @@ repos:
           - --no-extra-eol
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 321478e58f4938179c6b86e4ddfa923d1547a49b  # frozen: v0.16.6
+    rev: a56c0b927e6465d37cae3e97d35d4d18ab2b96cd  # frozen: v0.16.9
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -50,7 +50,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: ecb84baf74ae152a511e5fdada5000c85250a48f  # frozen: v4.0.8
+    rev: 8c6daca55b8526ea9060303daacd8b6cb36961b6  # frozen: v4.1.1
     hooks:
       - id: pylint
         name: Check for Linting error on Python files
@@ -70,7 +70,7 @@ repos:
           - typing_extensions==4.16.0
 
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: 474b7be9073c7a02f95c2825c2db8ed05835844e  # frozen: v1.1.413
+    rev: 1aa6dfeb849ae43fb6f16fc17228bcbd358a19c3  # frozen: v1.1.414
     hooks:
       - id: pyright
         name: PyRight static type checker
