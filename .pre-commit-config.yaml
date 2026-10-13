@@ -50,7 +50,7 @@ repos:
         name: Run Ruff formatter
 
   - repo: https://github.com/pycqa/pylint
-    rev: 8c6daca55b8526ea9060303daacd8b6cb36961b6  # frozen: v4.1.1
+    rev: 40be3a2f729cdf667eae46272369aeffe1abf651  # frozen: v4.1.2
     hooks:
       - id: pylint
         name: Check for Linting error on Python files
