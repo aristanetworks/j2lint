@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Software Development :: Testing",
 ]
@@ -93,6 +94,7 @@ envlist =
   py312,
   py313,
   py314,
+  py315,
   lint,
   type,
   report
@@ -137,7 +139,7 @@ commands =
   coverage xml --rcfile=pyproject.toml
 # add the following to make the report fail under some percentage
 # commands = coverage report --fail-under=80
-depends = py314
+depends = py315
 """
 
 [tool.pytest.ini_options]
