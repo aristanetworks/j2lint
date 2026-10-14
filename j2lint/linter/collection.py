@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from rich.console import Group
 from rich.tree import Tree
@@ -172,7 +172,7 @@ class RulesCollection:
         return json.dumps([json.loads(rule.to_json()) for rule in sorted(self.rules, key=lambda x: (x.origin, x.rule_id))])
 
     @classmethod
-    def create_from_directory(cls, rules_dir: Path, ignore_rules: list[str], warn_rules: list[str]) -> RulesCollection:
+    def create_from_directory(cls, rules_dir: Path, ignore_rules: list[str], warn_rules: list[str]) -> Self:
         """Create a collection from all rule modules.
 
         Parameters
