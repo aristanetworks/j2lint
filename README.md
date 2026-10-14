@@ -39,8 +39,6 @@ Build a Jinja2 linter that will provide the following capabilities:
 
 Minimum Python version: 3.11
 
-Python 3.10 reached [end of life](https://devguide.python.org/versions/) on October 1, 2026 and is no longer supported.
-
 ### Install with pip
 
 To get started, you can use Python pip to install j2lint:
