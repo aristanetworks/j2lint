@@ -52,7 +52,7 @@
     {
       "description": "Python runtime support is a project compatibility policy, not dependency freshness. Keep requires-python manual.",
       "matchManagers": ["pep621"],
-      // [project].requires-python, e.g. >=3.10.
+      // [project].requires-python, e.g. >=3.11.
       "matchDepTypes": ["requires-python"],
       "enabled": false
     },

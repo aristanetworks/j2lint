@@ -46,8 +46,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - python: "3.10"
-            tox-env: "py310"
           - python: "3.11"
             tox-env: "py311"
           - python: "3.12"
