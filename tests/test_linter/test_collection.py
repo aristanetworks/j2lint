@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, assert_type
 from unittest import mock
 
 import pytest
@@ -32,6 +32,18 @@ class TestRulesCollection:
     def test__len__(self, test_collection: RulesCollection) -> None:
         """Test the RuleCollection __len__ method."""
         assert len(test_collection) == 1
+
+    def test_create_from_directory_subclass(self) -> None:
+        """The inherited factory preserves the subclass at runtime and in its return type."""
+
+        class CustomCollection(RulesCollection):
+            """A collection subclass used to check the factory return type."""
+
+        with mock.patch("j2lint.linter.collection.load_plugins", return_value=[]):
+            collection = CustomCollection.create_from_directory(Path("dummy"), [], [])
+
+        assert_type(collection, CustomCollection)
+        assert isinstance(collection, CustomCollection)
 
     def test__iter__(self, make_rules: Callable[[int], list[Rule]]) -> None:
         """Test the RuleCollection __iter__ method."""
