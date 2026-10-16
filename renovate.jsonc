@@ -11,7 +11,8 @@
   "dependencyDashboard": true,
 
   // Match j2lint's dependency surfaces intentionally.
-  // pre-commit is included explicitly for hook revisions and Python additional_dependencies.
+  // prek uses the YAML configuration; the pre-commit manager maintains hook
+  // revisions and Python additional_dependencies. prek itself is managed by pep621.
   "enabledManagers": ["pep621", "github-actions", "pre-commit"],
 
   // The pre-commit manager is disabled by default, so enable it explicitly.
