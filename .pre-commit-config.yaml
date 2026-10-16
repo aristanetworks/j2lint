@@ -1,5 +1,6 @@
 ---
-# See https://pre-commit.com for more information
+# Run with prek: https://prek.j178.dev/
+# Keep YAML so Renovate's pre-commit manager can update hooks and dependencies.
 # See https://pre-commit.com/hooks.html for more hooks
 files: ^(j2lint|tests|\.github)/
 
