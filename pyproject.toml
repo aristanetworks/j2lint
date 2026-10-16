@@ -40,10 +40,13 @@ ci = [
 bumpver = [
   "bumpver==2026.1132",
 ]
+hooks = [
+  "prek==0.5.5",
+]
 dev = [
   { include-group = "ci" },
   { include-group = "bumpver" },
-  "pre-commit>=4.7.0",
+  { include-group = "hooks" },
 ]
 test = [
   "pytest>=9.1.1",
