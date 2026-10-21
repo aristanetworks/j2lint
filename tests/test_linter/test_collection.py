@@ -13,6 +13,7 @@ from unittest import mock
 import pytest
 
 from j2lint.linter.collection import RulesCollection
+from j2lint.linter.error import InputError
 from j2lint.rules.jinja_operator_has_spaces_rule import JinjaOperatorHasSpacesRule
 from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterRule
 from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
@@ -28,6 +29,24 @@ TEST_DATA_DIR = Path(__file__).parent / "data"
 
 class TestRulesCollection:
     """Test j2lint.linter.collection.RulesCollection."""
+
+    @pytest.mark.parametrize("failure", ["missing", "permission", "encoding"])
+    def test_run_input_failure(self, tmp_path: Path, collection: RulesCollection, failure: str) -> None:
+        """An unchecked file must not be returned as a successful lint result."""
+        path = tmp_path / "template.j2"
+        if failure == "missing":
+            with pytest.raises(InputError, match="Could not read file"):
+                collection.run(path)
+        elif failure == "encoding":
+            path.write_bytes(b"\xff")
+            with pytest.raises(InputError, match="expected UTF-8"):
+                collection.run(path)
+        else:
+            with (
+                mock.patch.object(Path, "open", side_effect=PermissionError(13, "Permission denied")),
+                pytest.raises(InputError, match="Permission denied"),
+            ):
+                collection.run(path)
 
     def test__len__(self, test_collection: RulesCollection) -> None:
         """Test the RuleCollection __len__ method."""
@@ -68,12 +87,6 @@ class TestRulesCollection:
     @pytest.mark.parametrize(
         ("file_path", "expected_results", "verify_logs"),
         [
-            pytest.param(
-                "dummy.j2",
-                ([], []),
-                False,
-                id="non existing file",
-            ),
             pytest.param(
                 f"{TEST_DATA_DIR}/disable-rule-3.j2",
                 (

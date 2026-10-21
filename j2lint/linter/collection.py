@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Self
 from rich.console import Group
 from rich.tree import Tree
 
-from j2lint.linter.error import JinjaLinterError
+from j2lint.linter.error import InputError, JinjaLinterError
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
@@ -75,6 +75,11 @@ class RulesCollection:
         -------
         tuple[list, list]
             A tuple containing the list of linting errors and the list of linting warnings found.
+
+        Raises
+        ------
+        InputError
+            The file could not be read as UTF-8. No lint rules run for that file.
         """
         text = ""
         errors: list[LinterError] = []
@@ -84,8 +89,9 @@ class RulesCollection:
             with file_path.open(encoding="utf-8") as file:
                 text = file.read()
         except OSError as err:
-            logger.warning("Could not open %s - %s", file_path, err.strerror)
-            return errors, warnings
+            raise InputError(str(file_path), f"Could not read file: {err.strerror}") from err
+        except UnicodeDecodeError as err:
+            raise InputError(str(file_path), "Could not read file: expected UTF-8 text") from err
 
         for rule in self.rules:
             if rule.ignore:
