@@ -7,10 +7,11 @@ from __future__ import annotations
 
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
+from j2lint.linter.error import InputError
 from j2lint.utils import (
     delimit_jinja_statement,
     flatten,
@@ -84,7 +85,7 @@ def test_is_valid_file_type(file_name: str, extensions: list[str], *, expected: 
             ["test.blah"],
             [".j2", ".jinja2", ".jinja"],
             [],
-            does_not_raise(),
+            pytest.raises(InputError, match="Unsupported file extension"),
         ),
         (
             ["test.html"],
@@ -98,29 +99,37 @@ def test_is_valid_file_type(file_name: str, extensions: list[str], *, expected: 
             ["test_dir/test.j2"],
             does_not_raise(),
         ),
-        (["test"], [".j2", ".jinja2", ".jinja"], [], does_not_raise()),
-        pytest.param("not_a_list", None, None, pytest.raises(TypeError), id="Invalid input type"),
+        (["test"], [".j2", ".jinja2", ".jinja"], [], pytest.raises(InputError, match="Unsupported file extension")),
     ],
 )
-def test_get_files(file_or_dir_names: list[str], extensions: list[str], expected_value: list[str], expectation: AbstractContextManager[str]) -> None:
+def test_get_files(tmp_path: Path, file_or_dir_names: list[str], extensions: list[str], expected_value: list[str], expectation: AbstractContextManager[str]) -> None:
     """Test the utils.get_files function."""
     with expectation:
-        paths = [Path(file_or_dir_name) for file_or_dir_name in file_or_dir_names]
-        assert [str(filepath) for filepath in get_files(paths, extensions)] == expected_value
+        paths = [tmp_path / file_or_dir_name for file_or_dir_name in file_or_dir_names]
+        for path in paths:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+        assert [str(filepath.relative_to(tmp_path)) for filepath in get_files(paths, extensions)] == expected_value
 
 
-def test_get_files_dir(template_tmp_dir: str) -> None:
+def test_get_files_invalid_type() -> None:
+    """Reject an invalid argument independently of path validation."""
+    with pytest.raises(TypeError, match="expects a list or a set"):
+        get_files(cast("list[Path]", "not_a_list"), [".j2"])
+
+
+def test_get_files_dir(template_tmp_dir: list[str]) -> None:
     """Test the utils.get_files function.
 
     # sadly cannot use fixture in parametrize...
     # https://github.com/pytest-dev/pytest/issues/349
     """
-    tmp_dir = Path(__file__).parent / "tmp"  # as passed to pytest in pytest.ini
+    tmp_dir = Path(template_tmp_dir[0])
     expected = sorted(
         [
-            f"{tmp_dir}/rules/rules.j2",
-            f"{tmp_dir}/rules/rules_subdir/rules.j2",
-            f"{tmp_dir}/rules/.rules_hidden_subdir/rules.j2",
+            f"{tmp_dir}/rules.j2",
+            f"{tmp_dir}/rules_subdir/rules.j2",
+            f"{tmp_dir}/.rules_hidden_subdir/rules.j2",
         ]
     )
     with does_not_raise():

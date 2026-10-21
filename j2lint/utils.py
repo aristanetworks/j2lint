@@ -10,8 +10,10 @@ import os
 import re
 from collections.abc import Generator, Iterable
 from pathlib import Path
+from stat import S_ISDIR, S_ISREG
 from typing import TYPE_CHECKING, Any
 
+from j2lint.linter.error import InputError
 from j2lint.logger import logger
 
 if TYPE_CHECKING:
@@ -94,6 +96,11 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path
     -------
     list
         List of file paths
+
+    Raises
+    ------
+    InputError
+        An explicit path is missing or unsupported, or a directory cannot be scanned.
     """
     file_paths: list[Path] = []
 
@@ -101,19 +108,40 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path
         msg = f"get_files expects a list or a set and got {file_or_dir_names}"
         raise TypeError(msg)
 
+    def report_walk_error(error: OSError) -> None:
+        raise InputError(str(error.filename), f"Could not scan directory: {error.strerror}") from error
+
     for file_or_dir in file_or_dir_names:
         file_or_dir_path = file_or_dir
-        if file_or_dir_path.is_dir():
-            for root, _, files in os.walk(str(file_or_dir_path)):
+        if _is_input_directory(file_or_dir_path, extensions):
+            for root, _, files in os.walk(str(file_or_dir_path), onerror=report_walk_error):
                 root_path = Path(root)
                 for file in files:
                     file_path = root_path / file
                     if is_valid_file_type(file_path, extensions):
                         file_paths.append(file_path)
-        elif is_valid_file_type(file_or_dir_path, extensions):
+        else:
             file_paths.append(file_or_dir_path)
     logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
     return file_paths
+
+
+def _is_input_directory(path: Path, extensions: list[str]) -> bool:
+    """Validate an explicit input and return whether it is a directory."""
+    try:
+        mode = path.stat().st_mode
+    except OSError as err:
+        raise InputError(str(path), f"Could not access path: {err.strerror}") from err
+    if S_ISDIR(mode):
+        return True
+    if not S_ISREG(mode):
+        raise InputError(str(path), "Expected a regular file or directory")
+    if not is_valid_file_type(path, extensions):
+        raise InputError(
+            str(path),
+            f"Unsupported file extension. Use --extensions to select accepted extensions (currently: {', '.join(extensions)}).",
+        )
+    return False
 
 
 def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:

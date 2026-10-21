@@ -125,6 +125,32 @@ j2lint <path-to-directory-of-templates> --log --debug
 j2lint <path-to-directory-of-templates> --json
 ```
 
+### Input failures and exit codes
+
+Explicit file paths must exist, be readable as UTF-8, and have an accepted extension.
+Use `--extensions` to lint files with other extensions, for example:
+
+```bash
+j2lint template.yaml --extensions yaml
+```
+
+Directory scans continue to filter by extension; empty directories and directories
+without matching files succeed. Missing paths, directory scan failures, unreadable
+files, and invalid UTF-8 are reported as input errors. Other supplied paths are still
+checked. Standard input is checked regardless of `--extensions`.
+
+Exit codes are:
+
+- `0`: no errors (warnings alone do not fail).
+- `1`: an input could not be checked, or no input was supplied.
+- `2`: lint errors, or invalid command-line arguments.
+
+With `--json`, input errors appear in the existing `ERRORS` array with ID `E0`,
+`line_number: 0`, an empty `line`, and severity `HIGH`. They cannot be ignored or
+downgraded to warnings. Console logs requested with `--stdout` go to stderr when
+combined with `--json`, keeping stdout valid JSON. Invalid command-line arguments
+still use argparse's text diagnostics on stderr.
+
 ### Ignoring rules
 
 1. The `--ignore` option can have one or more rule IDs or short descriptions:
