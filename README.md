@@ -125,42 +125,20 @@ j2lint <path-to-directory-of-templates> --log --debug
 j2lint <path-to-directory-of-templates> --json
 ```
 
-### Strict input checking and exit codes
+### Strict input checking
 
-Use `--strict-inputs` to fail when an input cannot be checked:
+Use `--strict-inputs` to fail on missing paths, unsupported file extensions,
+unreadable files, invalid UTF-8, or directory scan failures:
 
 ```bash
 j2lint --strict-inputs templates/
-j2lint --strict-inputs template.yaml --extensions yaml
 ```
 
-In strict mode, explicit file paths must exist, be readable as UTF-8, and have an
-accepted extension. Missing paths, directory scan failures, unreadable files, and
-invalid UTF-8 are reported as input errors. Other supplied paths are still checked.
-Directory scans continue to filter by extension; empty directories and directories
-without matching files succeed. Standard input is always checked in strict mode,
-regardless of `--extensions`.
+This is opt-in. Directory scans still filter by extension, and empty scans succeed.
+Input failures exit with code `1` (`E0` in JSON output); lint errors use code `2`.
 
-Without this flag, existing input handling is preserved: explicit unsupported
-extensions are filtered out, file access errors only generate logs, and decoding
-errors raise exceptions. Python callers also retain their existing defaults. They
-can opt in with `get_files(paths, extensions, strict_inputs=True)` and
-`RulesCollection(strict_inputs=True)`, or pass `strict_inputs=True` to
-`RulesCollection.create_from_directory(...)`. Strict discovery and read failures
-raise `j2lint.linter.error.InputError`. `RulesCollection()` does not load rules;
-use the factory when a populated collection is needed.
-
-Exit codes are:
-
-- `0`: no errors (warnings alone do not fail).
-- `1`: a strict input error, an unexpected exception, or no input supplied.
-- `2`: lint errors, or invalid command-line arguments.
-
-With `--strict-inputs --json`, input errors appear in the existing `ERRORS` array with ID `E0`,
-`line_number: 0`, an empty `line`, and severity `HIGH`. They cannot be ignored or
-downgraded to warnings. Console logs requested with `--stdout` go to stderr when
-combined with `--json`, keeping stdout valid JSON. Invalid command-line arguments
-still use argparse's text diagnostics on stderr.
+Python callers can pass `strict_inputs=True` to `get_files`, `RulesCollection`, or
+`RulesCollection.create_from_directory` and catch `InputError` for input failures.
 
 ### Ignoring rules
 
