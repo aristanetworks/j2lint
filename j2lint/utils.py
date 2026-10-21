@@ -82,7 +82,7 @@ def is_valid_file_type(filename: Path, extensions: list[str]) -> bool:
     return extension in extensions
 
 
-def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path]:
+def get_files(file_or_dir_names: list[Path], extensions: list[str], *, strict_inputs: bool = False) -> list[Path]:
     """Get files from a directory recursively.
 
     Parameters
@@ -91,6 +91,9 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path
         List of directories and files
     extensions
         List of file extensions to look for
+    strict_inputs
+        Reject missing or unsupported explicit paths and report directory scan failures.
+        Disabled by default to preserve existing filtering behavior.
 
     Returns
     -------
@@ -100,7 +103,7 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path
     Raises
     ------
     InputError
-        An explicit path is missing or unsupported, or a directory cannot be scanned.
+        With strict_inputs enabled, an explicit path is invalid or a directory cannot be scanned.
     """
     file_paths: list[Path] = []
 
@@ -113,14 +116,15 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path
 
     for file_or_dir in file_or_dir_names:
         file_or_dir_path = file_or_dir
-        if _is_input_directory(file_or_dir_path, extensions):
-            for root, _, files in os.walk(str(file_or_dir_path), onerror=report_walk_error):
+        is_directory = _is_input_directory(file_or_dir_path, extensions) if strict_inputs else file_or_dir_path.is_dir()
+        if is_directory:
+            for root, _, files in os.walk(str(file_or_dir_path), onerror=report_walk_error if strict_inputs else None):
                 root_path = Path(root)
                 for file in files:
                     file_path = root_path / file
                     if is_valid_file_type(file_path, extensions):
                         file_paths.append(file_path)
-        else:
+        elif is_valid_file_type(file_or_dir_path, extensions):
             file_paths.append(file_or_dir_path)
     logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
     return file_paths

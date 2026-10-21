@@ -109,13 +109,24 @@ def test_get_files(tmp_path: Path, file_or_dir_names: list[str], extensions: lis
         for path in paths:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.touch()
-        assert [str(filepath.relative_to(tmp_path)) for filepath in get_files(paths, extensions)] == expected_value
+        assert [str(filepath.relative_to(tmp_path)) for filepath in get_files(paths, extensions, strict_inputs=True)] == expected_value
 
 
 def test_get_files_invalid_type() -> None:
     """Reject an invalid argument independently of path validation."""
     with pytest.raises(TypeError, match="expects a list or a set"):
         get_files(cast("list[Path]", "not_a_list"), [".j2"])
+
+
+def test_get_files_legacy_filtering(tmp_path: Path) -> None:
+    """Existing Python callers keep permissive filtering unless they explicitly opt in."""
+    missing = tmp_path / "missing.j2"
+    unsupported = tmp_path / "template.yaml"
+    assert get_files([missing, unsupported], [".j2"]) == [missing]
+    unsupported.write_text("plain text", encoding="utf-8")
+    assert not get_files([unsupported], [".j2"])
+    with pytest.raises(InputError, match="Could not access path"):
+        get_files([missing], [".j2"], strict_inputs=True)
 
 
 def test_get_files_dir(template_tmp_dir: list[str]) -> None:

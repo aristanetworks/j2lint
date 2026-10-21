@@ -31,9 +31,10 @@ def invoke(request: pytest.FixtureRequest) -> Callable[..., subprocess.Completed
     if request.param == "console":
         command = [sys.executable, "-c", "from j2lint.cli import run; raise SystemExit(run())"]
 
-    def invoke_cli(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
+    def invoke_cli(*args: str, stdin: str | None = None, strict_inputs: bool = True) -> subprocess.CompletedProcess[str]:
+        flags = ["--strict-inputs"] if strict_inputs else []
         return subprocess.run(  # noqa: S603
-            [*command, *args],
+            [*command, *flags, *args],
             input=stdin,
             capture_output=True,
             text=True,
@@ -85,6 +86,19 @@ def test_input_failure_text(tmp_path: Path, invoke: Callable[..., subprocess.Com
     assert "Could not access path" in " ".join(result.stdout.split())
     assert "E0" in result.stdout
     assert "Traceback" not in result.stdout + result.stderr
+
+
+def test_legacy_cli_defaults(tmp_path: Path, invoke: Callable[..., subprocess.CompletedProcess[str]]) -> None:
+    """The new flag does not change existing permissive invocations."""
+    missing = tmp_path / "missing.j2"
+    unsupported = tmp_path / "template.yaml"
+    unsupported.write_text("{{Bad}}", encoding="utf-8")
+    result = invoke("--json", str(missing), str(unsupported), strict_inputs=False)
+    assert result.returncode == 0
+    assert json.loads(result.stdout) == {"ERRORS": [], "WARNINGS": []}
+    result = invoke("--json", "--extensions", "yaml", "--stdin", stdin="{{Bad}}", strict_inputs=False)
+    assert result.returncode == 0
+    assert json.loads(result.stdout) == {"ERRORS": [], "WARNINGS": []}
 
 
 def test_other_inputs_are_checked(tmp_path: Path, invoke: Callable[..., subprocess.CompletedProcess[str]]) -> None:
@@ -148,7 +162,7 @@ def test_directory_scan_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
     monkeypatch.setattr("j2lint.utils.os.walk", fail_walk)
     with pytest.raises(InputError, match="Could not scan directory: Permission denied"):
-        get_files([tmp_path], [".j2"])
+        get_files([tmp_path], [".j2"], strict_inputs=True)
 
 
 def test_read_permission_error(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -156,7 +170,7 @@ def test_read_permission_error(tmp_path: Path, capsys: pytest.CaptureFixture[str
     path = tmp_path / "template.j2"
     path.touch()
     with patch.object(Path, "open", side_effect=PermissionError(13, "Permission denied")):
-        result = run(["--json", str(path)])
+        result = run(["--json", "--strict-inputs", str(path)])
     assert result == 1
     assert "Permission denied" in json.loads(capsys.readouterr().out)["ERRORS"][0]["message"]
 

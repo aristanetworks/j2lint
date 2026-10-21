@@ -96,6 +96,12 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument("-d", "--debug", default=False, action="store_true", help="enable debug logs")
     parser.add_argument("-j", "--json", default=False, action="store_true", help="enable JSON output")
     parser.add_argument(
+        "--strict-inputs",
+        default=False,
+        action="store_true",
+        help="fail when an explicit input is missing, unsupported, unreadable, or not UTF-8",
+    )
+    parser.add_argument(
         "-s",
         "--stdin",
         default=False,
@@ -140,6 +146,7 @@ class J2LintArgsNamespace(argparse.Namespace):
     verbose: ClassVar[bool]
     debug: ClassVar[bool]
     json: ClassVar[bool]
+    strict_inputs: ClassVar[bool]
     stdin: ClassVar[bool]
     log: ClassVar[bool]
     version: ClassVar[str]
@@ -166,8 +173,12 @@ def sort_issues(issues: list[LinterError]) -> list[LinterError]:
 
 
 def get_linting_issues(
-    files: list[Path], collection: RulesCollection, checked_files: list[Path]
-) -> tuple[dict[Path, list[Diagnostic]], dict[Path, list[LinterError]]]:
+    files: list[Path],
+    collection: RulesCollection,
+    checked_files: list[Path],
+    *,
+    input_errors: dict[Path, list[InputError]] | None = None,
+) -> tuple[dict[Path, list[LinterError]], dict[Path, list[LinterError]]]:
     """Check errors and warnings.
 
     Parameters
@@ -178,13 +189,15 @@ def get_linting_issues(
         The RulesCollection to use on the file.
     checked_files
         List of files already checked.
+    input_errors
+        Optional collector for strict input failures. Otherwise they propagate to the caller.
 
     Returns
     -------
-    tuple[dict[Path, list[Diagnostic]], dict[Path, list[LinterError]]]
-        Errors (including unreadable inputs) and lint warnings, grouped by file.
+    tuple[dict[Path, list[LinterError]], dict[Path, list[LinterError]]]
+        Lint errors and warnings, grouped by file.
     """
-    lint_errors: dict[Path, list[Diagnostic]] = {}
+    lint_errors: dict[Path, list[LinterError]] = {}
     lint_warnings: dict[Path, list[LinterError]] = {}
 
     # Get linting issues
@@ -197,7 +210,9 @@ def get_linting_issues(
         try:
             j2_errors, j2_warnings = runner.run()
         except InputError as err:
-            lint_errors[file_name].append(err)
+            if input_errors is None:
+                raise
+            input_errors.setdefault(file_name, []).append(err)
             checked_files.append(file_name)
         else:
             lint_errors[file_name].extend(sort_issues(j2_errors))
@@ -354,7 +369,7 @@ def run(args: list[str] | None = None) -> int:
     logger.debug("Lint options selected %s", options)
 
     # Collect the rules from the configuration
-    collection = RulesCollection(verbose=options.verbose)
+    collection = RulesCollection(verbose=options.verbose, strict_inputs=options.strict_inputs)
     for rules_dir in options.rules_dir:
         collection.extend(RulesCollection.create_from_directory(Path(rules_dir), options.ignore, options.warn).rules)
 
@@ -376,9 +391,8 @@ def run(args: list[str] | None = None) -> int:
 
 def _lint_inputs(options: J2LintArgsNamespace, collection: RulesCollection, parser: argparse.ArgumentParser) -> int:
     """Discover and lint inputs, keeping operational failures separate from rule failures."""
-    file_or_dir_names = [Path(pathname) for pathname in dict.fromkeys(options.files)]
     files: list[Path] = []
-    input_errors: dict[Path, list[Diagnostic]] = {}
+    input_errors: dict[Path, list[InputError]] = {}
     stdin_filename = None
 
     try:
@@ -387,33 +401,48 @@ def _lint_inputs(options: J2LintArgsNamespace, collection: RulesCollection, pars
                 with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".j2", delete=False) as stdin_tmpfile:
                     stdin_filename = Path(stdin_tmpfile.name)
                     stdin_tmpfile.write(sys.stdin.read())
-                # STDIN has no user-selected extension and must always be checked.
-                files.append(stdin_filename)
+                if options.strict_inputs:
+                    # Strict mode always checks STDIN, regardless of extension filters.
+                    files.append(stdin_filename)
+                else:
+                    files.extend(get_files([stdin_filename], options.extensions))
             except (OSError, UnicodeError) as err:
+                if not options.strict_inputs:
+                    raise
                 input_errors[Path("<stdin>")] = [InputError("<stdin>", f"Could not read standard input: {err}")]
 
-        if not file_or_dir_names and not files and not input_errors:
+        if not options.files and stdin_filename is None and not input_errors:
             parser.print_help(file=sys.stderr)
             return 1
 
-        for path in file_or_dir_names:
-            try:
-                files.extend(get_files([path], options.extensions))
-            except InputError as err:
-                input_errors[path] = [err]
+        files.extend(_discover_inputs(options, input_errors))
 
-        lint_errors, lint_warnings = get_linting_issues(files, collection, [])
-        lint_errors.update(input_errors)
+        lint_errors, lint_warnings = get_linting_issues(files, collection, [], input_errors=input_errors)
+        reported_errors: dict[Path, list[Diagnostic]] = {path: list(errors) for path, errors in lint_errors.items()}
+        for path, errors in input_errors.items():
+            reported_errors.setdefault(path, []).extend(errors)
 
         if options.json:
             logger.debug("JSON output enabled")
-            total_lint_errors, _ = print_json_output(lint_errors, lint_warnings)
+            total_lint_errors, _ = print_json_output(reported_errors, lint_warnings)
         else:
-            total_lint_errors, _ = print_string_output(lint_errors, lint_warnings, verbose=options.verbose)
+            total_lint_errors, _ = print_string_output(reported_errors, lint_warnings, verbose=options.verbose)
 
-        if any(isinstance(error, InputError) for errors in lint_errors.values() for error in errors):
+        if input_errors:
             return 1
         return 2 if total_lint_errors else 0
     finally:
         if stdin_filename is not None:
             remove_temporary_file(stdin_filename)
+
+
+def _discover_inputs(options: J2LintArgsNamespace, input_errors: dict[Path, list[InputError]]) -> list[Path]:
+    """Collect each explicit input independently so one failure does not stop the others."""
+    files: list[Path] = []
+    for pathname in dict.fromkeys(options.files):
+        path = Path(pathname)
+        try:
+            files.extend(get_files([path], options.extensions, strict_inputs=options.strict_inputs))
+        except InputError as err:
+            input_errors[path] = [err]
+    return files
