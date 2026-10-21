@@ -33,6 +33,7 @@ class TestRulesCollection:
     @pytest.mark.parametrize("failure", ["missing", "permission", "encoding"])
     def test_run_input_failure(self, tmp_path: Path, collection: RulesCollection, failure: str) -> None:
         """An unchecked file must not be returned as a successful lint result."""
+        collection.strict_inputs = True
         path = tmp_path / "template.j2"
         if failure == "missing":
             with pytest.raises(InputError, match="Could not read file"):
@@ -52,17 +53,33 @@ class TestRulesCollection:
         """Test the RuleCollection __len__ method."""
         assert len(test_collection) == 1
 
-    def test_create_from_directory_subclass(self) -> None:
+    @pytest.mark.parametrize("strict_inputs", [False, True])
+    def test_create_from_directory_subclass(self, *, strict_inputs: bool) -> None:
         """The inherited factory preserves the subclass at runtime and in its return type."""
 
         class CustomCollection(RulesCollection):
             """A collection subclass used to check the factory return type."""
 
+            def __init__(self) -> None:
+                super().__init__()
+
         with mock.patch("j2lint.linter.collection.load_plugins", return_value=[]):
-            collection = CustomCollection.create_from_directory(Path("dummy"), [], [])
+            collection = CustomCollection.create_from_directory(Path("dummy"), [], [], strict_inputs=strict_inputs)
 
         assert_type(collection, CustomCollection)
         assert isinstance(collection, CustomCollection)
+        assert collection.strict_inputs is strict_inputs
+
+    def test_run_legacy_input_handling(self, tmp_path: Path) -> None:
+        """Python callers retain empty results for OSError and decoding exceptions by default."""
+        collection = RulesCollection()
+        path = tmp_path / "missing.j2"
+        assert collection.run(path) == ([], [])
+        with mock.patch.object(Path, "open", side_effect=PermissionError(13, "Permission denied")):
+            assert collection.run(path) == ([], [])
+        path.write_bytes(b"\xff")
+        with pytest.raises(UnicodeDecodeError):
+            collection.run(path)
 
     def test__iter__(self, make_rules: Callable[[int], list[Rule]]) -> None:
         """Test the RuleCollection __iter__ method."""

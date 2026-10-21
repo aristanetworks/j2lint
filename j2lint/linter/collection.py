@@ -28,9 +28,10 @@ DEFAULT_RULE_DIR = Path(__file__).parent.parent / "rules"
 class RulesCollection:
     """RulesCollection class which checks the linting rules against a file."""
 
-    def __init__(self, *, verbose: bool = False) -> None:
+    def __init__(self, *, verbose: bool = False, strict_inputs: bool = False) -> None:
         self.rules: list[Rule] = []
         self.verbose = verbose
+        self.strict_inputs = strict_inputs
 
     def __iter__(self) -> Iterator[Rule]:
         """Return iterable of Rules in the collection.
@@ -79,19 +80,14 @@ class RulesCollection:
         Raises
         ------
         InputError
-            The file could not be read as UTF-8. No lint rules run for that file.
+            With strict_inputs enabled, the file could not be read as UTF-8.
         """
-        text = ""
         errors: list[LinterError] = []
         warnings: list[LinterError] = []
 
-        try:
-            with file_path.open(encoding="utf-8") as file:
-                text = file.read()
-        except OSError as err:
-            raise InputError(str(file_path), f"Could not read file: {err.strerror}") from err
-        except UnicodeDecodeError as err:
-            raise InputError(str(file_path), "Could not read file: expected UTF-8 text") from err
+        text = self._read_file(file_path)
+        if text is None:
+            return errors, warnings
 
         for rule in self.rules:
             if rule.ignore:
@@ -122,6 +118,21 @@ class RulesCollection:
             logger.warning(warning.to_rich())
 
         return errors, warnings
+
+    def _read_file(self, file_path: Path) -> str | None:
+        """Apply legacy or strict error handling before any rules run."""
+        try:
+            with file_path.open(encoding="utf-8") as file:
+                return file.read()
+        except OSError as err:
+            if self.strict_inputs:
+                raise InputError(str(file_path), f"Could not read file: {err.strerror}") from err
+            logger.warning("Could not open %s - %s", file_path, err.strerror)
+            return None
+        except UnicodeDecodeError as err:
+            if not self.strict_inputs:
+                raise
+            raise InputError(str(file_path), "Could not read file: expected UTF-8 text") from err
 
     def __repr__(self) -> str:
         """Return a representation of a RulesCollection object.
@@ -178,7 +189,7 @@ class RulesCollection:
         return json.dumps([json.loads(rule.to_json()) for rule in sorted(self.rules, key=lambda x: (x.origin, x.rule_id))])
 
     @classmethod
-    def create_from_directory(cls, rules_dir: Path, ignore_rules: list[str], warn_rules: list[str]) -> Self:
+    def create_from_directory(cls, rules_dir: Path, ignore_rules: list[str], warn_rules: list[str], *, strict_inputs: bool = False) -> Self:
         """Create a collection from all rule modules.
 
         Parameters
@@ -189,6 +200,8 @@ class RulesCollection:
             List of rule short_descriptions or ids to ignore.
         warn_rules
             List of rule short_descriptions or ids to consider as warnings rather than errors.
+        strict_inputs
+            Raise InputError for unreadable files instead of preserving legacy read handling.
 
         Returns
         -------
@@ -196,6 +209,7 @@ class RulesCollection:
             A RulesColleciton object containing the rules from rules_dir except for the ignored ones.
         """
         result = cls()
+        result.strict_inputs = strict_inputs
         result.rules = load_plugins(rules_dir.expanduser())
         for rule in result.rules:
             if rule.short_description in ignore_rules or rule.rule_id in ignore_rules:

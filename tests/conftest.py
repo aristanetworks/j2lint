@@ -259,6 +259,7 @@ def default_namespace() -> Namespace:
         verbose=False,
         debug=False,
         json=False,
+        strict_inputs=False,
         stdin=False,
         log=False,
         version=False,
