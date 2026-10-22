@@ -1,8 +1,8 @@
 ---
 name: "Label for Release Notes"
 
-"on": # zizmor: ignore[dangerous-triggers] Runs after merge or title edits and only uses trusted base-branch action code to maintain release-note labels.
-  pull_request_target:
+"on":
+  pull_request_target: # zizmor: ignore[dangerous-triggers] Runs after merge or title edits and only uses trusted base-branch action code to maintain release-note labels.
     types:
       - closed
       - edited
