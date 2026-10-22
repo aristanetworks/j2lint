@@ -111,22 +111,29 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str], *, strict_in
         msg = f"get_files expects a list or a set and got {file_or_dir_names}"
         raise TypeError(msg)
 
-    def report_walk_error(error: OSError) -> None:
-        raise InputError(str(error.filename), f"Could not scan directory: {error.strerror}") from error
-
     for file_or_dir in file_or_dir_names:
         file_or_dir_path = file_or_dir
         is_directory = _is_input_directory(file_or_dir_path, extensions) if strict_inputs else file_or_dir_path.is_dir()
         if is_directory:
-            for root, _, files in os.walk(str(file_or_dir_path), onerror=report_walk_error if strict_inputs else None):
-                root_path = Path(root)
-                for file in files:
-                    file_path = root_path / file
-                    if is_valid_file_type(file_path, extensions):
-                        file_paths.append(file_path)
+            file_paths.extend(_walk_directory(file_or_dir_path, extensions, strict_inputs=strict_inputs))
         elif is_valid_file_type(file_or_dir_path, extensions):
             file_paths.append(file_or_dir_path)
     logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
+    return file_paths
+
+
+def _walk_directory(directory: Path, extensions: list[str], *, strict_inputs: bool) -> list[Path]:
+    """Find files with accepted extensions and optionally report scan failures."""
+
+    def report_walk_error(error: OSError) -> None:
+        raise InputError(str(error.filename), f"Could not scan directory: {error.strerror}") from error
+
+    file_paths: list[Path] = []
+    for root, _, files in os.walk(str(directory), onerror=report_walk_error if strict_inputs else None):
+        for name in files:
+            path = Path(root) / name
+            if is_valid_file_type(path, extensions):
+                file_paths.append(path)
     return file_paths
 
 

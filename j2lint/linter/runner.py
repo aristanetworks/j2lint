@@ -44,8 +44,13 @@ class Runner:
         """
         return file_path in self.checked_files
 
-    def run(self) -> tuple[list[LinterError], list[LinterError]]:
+    def run(self, *, strict_inputs: bool = False) -> tuple[list[LinterError], list[LinterError]]:
         """Run the lint rules collection on all the files.
+
+        Parameters
+        ----------
+        strict_inputs
+            Raise input failures for this run instead of preserving legacy read handling.
 
         Returns
         -------
@@ -71,7 +76,10 @@ class Runner:
         # TODO: if there are multiple files, errors and warnings are overwritten.. fortunately there is only one file currently
         for file in files:
             logger.debug("Running linting rules for %s", file)
-            errors, warnings = self.collection.run(file)
+            if strict_inputs:
+                errors, warnings = self.collection.run(file, strict_inputs=True)
+            else:
+                errors, warnings = self.collection.run(file)
 
         # Update list of checked files
         self.checked_files.extend(files)

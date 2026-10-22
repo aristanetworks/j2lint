@@ -104,18 +104,20 @@ def test_is_valid_file_type(file_name: str, extensions: list[str], *, expected: 
 )
 def test_get_files(tmp_path: Path, file_or_dir_names: list[str], extensions: list[str], expected_value: list[str], expectation: AbstractContextManager[str]) -> None:
     """Test the utils.get_files function."""
+    paths = [tmp_path / file_or_dir_name for file_or_dir_name in file_or_dir_names]
+    for path in paths:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
     with expectation:
-        paths = [tmp_path / file_or_dir_name for file_or_dir_name in file_or_dir_names]
-        for path in paths:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.touch()
-        assert [str(filepath.relative_to(tmp_path)) for filepath in get_files(paths, extensions, strict_inputs=True)] == expected_value
+        files = get_files(paths, extensions, strict_inputs=True)
+        assert [str(filepath.relative_to(tmp_path)) for filepath in files] == expected_value
 
 
 def test_get_files_invalid_type() -> None:
     """Reject an invalid argument independently of path validation."""
+    invalid_paths = cast("list[Path]", "not_a_list")
     with pytest.raises(TypeError, match="expects a list or a set"):
-        get_files(cast("list[Path]", "not_a_list"), [".j2"])
+        get_files(invalid_paths, [".j2"])
 
 
 def test_get_files_legacy_filtering(tmp_path: Path) -> None:
