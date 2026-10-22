@@ -252,12 +252,12 @@ def test_stdin_input_failure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ca
 def test_python_input_error_handling(tmp_path: Path, *, collect_errors: bool) -> None:
     """Python callers can propagate failures or collect them without duplicates."""
     path = tmp_path / "missing.j2"
-    collection = RulesCollection(strict_inputs=True)
+    collection = RulesCollection()
     checked_files: list[Path] = []
 
     if collect_errors:
         input_errors: dict[Path, list[InputError]] = {}
-        errors, warnings = get_linting_issues([path, path], collection, checked_files, input_errors=input_errors)
+        errors, warnings = get_linting_issues([path, path], collection, checked_files, strict_inputs=True, input_errors=input_errors)
         assert errors == {path: []}
         assert warnings == {path: []}
         assert len(input_errors[path]) == 1
@@ -265,7 +265,7 @@ def test_python_input_error_handling(tmp_path: Path, *, collect_errors: bool) ->
         assert checked_files == [path]
     else:
         with pytest.raises(InputError) as raised:
-            get_linting_issues([path], collection, checked_files)
+            get_linting_issues([path], collection, checked_files, strict_inputs=True)
         assert raised.value.filename == str(path)
         assert not checked_files
 

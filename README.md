@@ -137,8 +137,8 @@ j2lint --strict-inputs templates/
 This is opt-in. Directory scans still filter by extension, and empty scans succeed.
 Input failures exit with code `1` (`E0` in JSON output); lint errors use code `2`.
 
-Python callers can pass `strict_inputs=True` to `get_files`, `RulesCollection`, or
-`RulesCollection.create_from_directory` and catch `InputError` for input failures.
+Python callers can use `get_files(..., strict_inputs=True)` and
+`collection.run(path, strict_inputs=True)`, and catch `InputError` for input failures.
 
 ### Ignoring rules
 
