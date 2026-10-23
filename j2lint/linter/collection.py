@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Self
 from rich.console import Group
 from rich.tree import Tree
 
-from j2lint.linter.error import JinjaLinterError
+from j2lint.linter.error import InputError, JinjaLinterError
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
@@ -63,28 +63,31 @@ class RulesCollection:
         """
         self.rules.extend(more)
 
-    def run(self, file_path: Path) -> tuple[list[LinterError], list[LinterError]]:
+    def run(self, file_path: Path, *, strict_inputs: bool = False) -> tuple[list[LinterError], list[LinterError]]:
         """Run the linting rules for given file.
 
         Parameters
         ----------
         file_path
             Path
+        strict_inputs
+            Raise InputError for unreadable or invalid UTF-8 files for this run.
 
         Returns
         -------
         tuple[list, list]
             A tuple containing the list of linting errors and the list of linting warnings found.
+
+        Raises
+        ------
+        InputError
+            With strict_inputs enabled, the file could not be read as UTF-8.
         """
-        text = ""
         errors: list[LinterError] = []
         warnings: list[LinterError] = []
 
-        try:
-            with file_path.open(encoding="utf-8") as file:
-                text = file.read()
-        except OSError as err:
-            logger.warning("Could not open %s - %s", file_path, err.strerror)
+        text = self._read_file(file_path, strict_inputs=strict_inputs)
+        if text is None:
             return errors, warnings
 
         for rule in self.rules:
@@ -116,6 +119,21 @@ class RulesCollection:
             logger.warning(warning.to_rich())
 
         return errors, warnings
+
+    def _read_file(self, file_path: Path, *, strict_inputs: bool) -> str | None:
+        """Apply legacy or strict error handling before any rules run."""
+        try:
+            with file_path.open(encoding="utf-8") as file:
+                return file.read()
+        except OSError as err:
+            if strict_inputs:
+                raise InputError(str(file_path), f"Could not read file: {err.strerror}") from err
+            logger.warning("Could not open %s - %s", file_path, err.strerror)
+            return None
+        except UnicodeDecodeError as err:
+            if not strict_inputs:
+                raise
+            raise InputError(str(file_path), "Could not read file: expected UTF-8 text") from err
 
     def __repr__(self) -> str:
         """Return a representation of a RulesCollection object.

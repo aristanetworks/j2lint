@@ -52,7 +52,7 @@ CONSOLE.size = ConsoleDimensions(width=80, height=74)
     [
         (pytest.param([], {"extensions": [".j2", ".jinja", ".jinja2"]}, id="default")),
         pytest.param(
-            ["--log", "--stdout", "-j", "-d", "-v", "--stdin", "--version"],
+            ["--log", "--stdout", "-j", "-d", "-v", "--stdin", "--version", "--strict-inputs"],
             {
                 "debug": True,
                 "stdout": True,
@@ -60,6 +60,7 @@ CONSOLE.size = ConsoleDimensions(width=80, height=74)
                 "version": True,
                 "log": True,
                 "json": True,
+                "strict_inputs": True,
                 "verbose": True,
                 "extensions": [".j2", ".jinja", ".jinja2"],
             },

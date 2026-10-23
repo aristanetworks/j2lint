@@ -125,6 +125,21 @@ j2lint <path-to-directory-of-templates> --log --debug
 j2lint <path-to-directory-of-templates> --json
 ```
 
+### Strict input checking
+
+Use `--strict-inputs` to fail on missing paths, unsupported file extensions,
+unreadable files, invalid UTF-8, or directory scan failures:
+
+```bash
+j2lint --strict-inputs templates/
+```
+
+This is opt-in. Directory scans still filter by extension, and empty scans succeed.
+Input failures exit with code `1` (`E0` in JSON output); lint errors use code `2`.
+
+Python callers can use `get_files(..., strict_inputs=True)` and
+`collection.run(path, strict_inputs=True)`, and catch `InputError` for input failures.
+
 ### Ignoring rules
 
 1. The `--ignore` option can have one or more rule IDs or short descriptions:
