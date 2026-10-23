@@ -279,6 +279,30 @@ def test_strict_nonregular_input(tmp_path: Path) -> None:
         get_files([path], [".j2"], strict_inputs=True)
 
 
+@pytest.mark.skipif(not hasattr(os, "mkfifo"), reason="Named pipes are unavailable")
+def test_nonregular_directory_entries(tmp_path: Path) -> None:
+    """Strict scans reject matching pipes but still filter unsupported extensions."""
+    template = tmp_path / "template.j2"
+    template.write_text("plain text", encoding="utf-8")
+    os.mkfifo(tmp_path / "ignored.yaml")
+    assert get_files([tmp_path], [".j2"], strict_inputs=True) == [template]
+
+    pipe = tmp_path / "pipe.j2"
+    os.mkfifo(pipe)
+    assert set(get_files([tmp_path], [".j2"])) == {template, pipe}
+    with pytest.raises(InputError, match="Expected a regular file or directory") as raised:
+        get_files([tmp_path], [".j2"], strict_inputs=True)
+    assert raised.value.filename == str(pipe)
+
+
+def test_directory_entry_becomes_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Skip a scanned file that becomes a directory before strict validation."""
+    entry = tmp_path / "replaced.j2"
+    entry.mkdir()
+    monkeypatch.setattr("j2lint.utils.os.walk", Mock(return_value=[(str(tmp_path), [], [entry.name])]))
+    assert not get_files([tmp_path], [".j2"], strict_inputs=True)
+
+
 def test_unexpected_module_failure() -> None:
     """Unexpected exceptions must exit nonzero and leave traceback output on stderr."""
     result = subprocess.run(

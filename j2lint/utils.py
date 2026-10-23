@@ -133,6 +133,8 @@ def _walk_directory(directory: Path, extensions: list[str], *, strict_inputs: bo
         for name in files:
             path = Path(root) / name
             if is_valid_file_type(path, extensions):
+                if strict_inputs and _is_input_directory(path, extensions):
+                    continue
                 file_paths.append(path)
     return file_paths
 
