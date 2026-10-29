@@ -42,7 +42,7 @@ repos:
           - --no-extra-eol
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 44b5042edab9382aba712eed4f9c7bab7a3d6a3e  # frozen: v0.17.0
+    rev: 38bfb07c0c64c304f47eb52090f8288150c77730  # frozen: v0.17.1
     hooks:
       - id: ruff
         name: Run Ruff linter
@@ -93,7 +93,7 @@ repos:
         types: [text]
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
-    rev: d25b2b1dc80689fb633f21f6978bba69871181d3  # frozen: v1.31.0
+    rev: c92afdf2c6ca336aaa8f39e2bd8d48f62dbd8e1f  # frozen: v1.31.1
     hooks:
       - id: zizmor
         name: Check GitHub Actions with zizmor
