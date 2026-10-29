@@ -68,13 +68,23 @@ python -m pip install -e . --group dev --group test --group lint --group type
 
 If you only need a subset of the contributor tooling, install only the relevant groups.
 
+Install the Git hook to run checks automatically before committing:
+
+```bash
+prek install
+```
+
+If you previously installed the hook with pre-commit, run `prek install -f` once to replace it.
+The repository uses prek with `.pre-commit-config.yaml` so Renovate can maintain hook revisions and dependencies.
+
 ### Common Contributor Commands
 
 ```bash
 pytest
 tox -e lint
 tox -e type
-pre-commit run --all-files
+prek run                     # Check staged files
+prek run --all-files         # Check all files matched by the hook configuration
 ```
 
 ## Running the linter
@@ -196,31 +206,33 @@ j2lint --help
 j2lint --stdin
 ```
 
-### Using j2lint as a pre-commit-hook
+### Using j2lint with prek or pre-commit
 
-1. Add j2lint pre-commit hook inside your repository in .pre-commit-config.yaml.
+1. Add the j2lint hook to your repository's `.pre-commit-config.yaml`. Both prek and pre-commit support this configuration.
 
-    ```bash
-    - repo: https://github.com/aristanetworks/j2lint.git
+    ```yaml
+    repos:
+      - repo: https://github.com/aristanetworks/j2lint.git
         rev: <release_tag/sha>
         hooks:
-        - id: j2lint
+          - id: j2lint
     ```
 
-2. Run pre-commit -> `pre-commit run --all-files`
+2. Run `prek run --all-files`, or `pre-commit run --all-files` if you use pre-commit.
 
 > **Note**
-> When using `-i/--ignore` or `-w/--warn` argument in pre-commit, use the
+> When using `-i/--ignore` or `-w/--warn` arguments with either runner, use the
 > following syntax
 >
-> ```bash
-> - repo: https://github.com/aristanetworks/j2lint.git
+> ```yaml
+> repos:
+>   - repo: https://github.com/aristanetworks/j2lint.git
 >     rev: <release_tag/sha>
 >     hooks:
->     - id: j2lint
->     # Using -- to separate the end of ignore from the positional arguments
->     # passed to j2lint
->       args: [--ignore, S3, jinja-statements-single-space, --]
+>       - id: j2lint
+>         # Using -- to separate the end of ignore from the positional arguments
+>         # passed to j2lint
+>         args: [--ignore, S3, jinja-statements-single-space, --]
 > ```
 
 ## Acknowledgments
