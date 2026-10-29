@@ -41,7 +41,7 @@ bumpver = [
   "bumpver==2026.1132",
 ]
 hooks = [
-  "prek==0.5.5",
+  "prek==0.5.7",
 ]
 dev = [
   { include-group = "ci" },
