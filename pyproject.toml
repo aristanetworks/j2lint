@@ -35,15 +35,18 @@ requires-python = ">=3.11"
 
 [dependency-groups]
 ci = [
-  "tox>=4.65.5,<5.0.0",
+  "tox>=4.67.1,<5.0.0",
 ]
 bumpver = [
   "bumpver==2026.1132",
 ]
+hooks = [
+  "prek==0.5.7",
+]
 dev = [
   { include-group = "ci" },
   { include-group = "bumpver" },
-  "pre-commit>=4.7.0",
+  { include-group = "hooks" },
 ]
 test = [
   "pytest>=9.1.1",
@@ -52,7 +55,7 @@ test = [
 ]
 lint = [
   "pylint>=4.1.3",
-  "ruff>=0.17.0,<0.17.1",
+  "ruff>=0.17.2,<0.17.3",
   "codespell>=2.4.3,<2.5.0",
 ]
 type = [
