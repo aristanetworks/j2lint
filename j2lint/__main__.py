@@ -5,12 +5,13 @@
 
 import sys
 
-from j2lint import CONSOLE
+from rich.console import Console
+
 from j2lint.cli import run
 
 if __name__ == "__main__":
     try:
         sys.exit(run())
-    except Exception:  # noqa: BLE001
-        CONSOLE.print_exception(show_locals=True)
-        raise SystemExit from BaseException
+    except Exception as exc:
+        Console(stderr=True).print_exception(show_locals=False)
+        raise SystemExit(1) from exc
