@@ -77,6 +77,27 @@ prek install
 If you previously installed the hook with pre-commit, run `prek install -f` once to replace it.
 The repository uses prek with `.pre-commit-config.yaml` so Renovate can maintain hook revisions and dependencies.
 
+### Performance Benchmarks
+
+Install the optional benchmark dependencies and run the self-contained suite explicitly:
+
+```bash
+python -m pip install -e . --group test --group benchmark
+pytest --codspeed --no-cov -o addopts= -q tests/benchmark
+```
+
+Normal `pytest` and tox test runs exclude `tests/benchmark`. The suite generates deterministic
+templates inside j2lint, with no AVD dependency or external template downloads. It measures the
+complete built-in rule collection on clean templates, templates with lint errors, and raw blocks,
+plus statement extraction at increasing sizes. Input creation and correctness assertions are outside
+the measured calls; full-rule benchmarks include file reading but exclude CLI startup and final output.
+
+CI uses CodSpeed's simulation mode on Python 3.12 to compare CPU performance across commits;
+it does not measure memory. The reusable `codspeed.yml` workflow runs after the supported-version
+tests on upstream pushes and pull requests, and can also be started manually. Uploads authenticate
+using GitHub OIDC, as in ANTA; the repository must be enabled in CodSpeed. Local runs use CodSpeed's
+wall-time measurement by default; CI's simulated measurements require the CodSpeed runner.
+
 ### Common Contributor Commands
 
 ```bash
