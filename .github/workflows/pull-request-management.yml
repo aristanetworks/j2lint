@@ -77,6 +77,14 @@ jobs:
         with:
           name: pytest-coverage
           path: ${{ github.workspace }}/coverage.xml
+  benchmarks:
+    name: Benchmark j2lint for Python 3.12
+    needs: [tox]
+    if: github.repository == 'aristanetworks/j2lint'
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/codspeed.yml
   codecov:
     name: Upload coverage to codecov
     needs: [tox]
