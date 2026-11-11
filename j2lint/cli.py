@@ -379,6 +379,14 @@ def run(args: list[str] | None = None) -> int:
 
     files = get_files(file_or_dir_names, options.extensions)
 
+    missing_paths = [path for path in file_or_dir_names if not path.exists()]
+    if missing_paths:
+        for path in missing_paths:
+            print(f'Error: file "{path}" does not exist.', file=sys.stderr)
+        if stdin_filename is not None:
+            remove_temporary_file(stdin_filename)
+        return 2
+
     lint_errors, lint_warnings = get_linting_issues(files, collection, checked_files)
 
     if options.json:

@@ -461,3 +461,12 @@ def test_run_stdin(capsys: pytest.CaptureFixture[str]) -> None:
         path = Path(matches.groups()[0])
         assert path.exists() is False
         assert run_return_value == 2
+
+
+def test_run_missing_file(capsys: pytest.CaptureFixture[str]) -> None:
+    """Test j2lint.cli.run reports missing input files instead of passing silently."""
+    with patch("logging.disable"):
+        run_return_value = run(["does-not-exist.j2"])
+    captured = capsys.readouterr()
+    assert run_return_value == 2
+    assert 'Error: file "does-not-exist.j2" does not exist.' in captured.err
