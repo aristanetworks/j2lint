@@ -84,7 +84,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/codspeed.yml
+    uses: $/.github/workflows/codspeed.yml
   codecov:
     name: Upload coverage to codecov
     needs: [tox]
