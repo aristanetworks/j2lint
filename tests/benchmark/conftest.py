@@ -64,7 +64,8 @@ def template_file(tmp_path: Path, block_count: int, template_kind: str) -> Path:
     return path
 
 
-@pytest.fixture(params=[100, 1000, 4000], ids=["100-statements", "1000-statements", "4000-statements"])
+# Bound the workload for CPU simulation while retaining a tenfold range of template sizes.
+@pytest.fixture(params=[100, 500, 1000], ids=["100-statements", "500-statements", "1000-statements"])
 def statement_text(request: pytest.FixtureRequest) -> str:
     """Generate statements separated by template text to expose prefix-scan scaling."""
     return "plain template text\n{% set value =\n    1 %}\n" * request.param
