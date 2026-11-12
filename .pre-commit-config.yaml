@@ -69,6 +69,7 @@ repos:
           - rich==15.0.0
           - pytest==9.1.1
           - typing_extensions==4.16.0
+          - pytest-codspeed==5.0.3
 
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: 1aa6dfeb849ae43fb6f16fc17228bcbd358a19c3  # frozen: v1.1.414
@@ -82,6 +83,7 @@ repos:
           - rich==15.0.0
           - pytest==9.1.1
           - typing_extensions==4.16.0
+          - pytest-codspeed==5.0.3
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
