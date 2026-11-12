@@ -14,6 +14,10 @@ from j2lint.logger import logger
 if TYPE_CHECKING:
     from pathlib import Path
 
+# Disabling redefined-outer-name as a solution for pylint
+# cf https://docs.pytest.org/en/stable/reference/reference.html#pytest-fixture
+# pylint: disable=redefined-outer-name
+
 CLEAN_BLOCK = """{# Benchmark template #}
 {% for item in items %}
 {%     if item.enabled %}

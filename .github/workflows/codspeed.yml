@@ -11,7 +11,8 @@ permissions:
 jobs:
   benchmarks:
     name: Benchmark j2lint for Python 3.12
-    runs-on: ubuntu-latest
+    # CodSpeed runner 5.2.1 does not support the Ubuntu 26.04 image selected by ubuntu-latest.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
