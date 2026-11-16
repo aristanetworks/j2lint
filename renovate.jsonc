@@ -8,7 +8,9 @@
   "timezone": "Europe/Paris",
 
   // Keep the PR backlog visible in one place, especially when major updates are gated below.
-  "dependencyDashboard": true,
+  "dependencyDashboard": {
+    "enabled": true
+  },
 
   // Match j2lint's dependency surfaces intentionally.
   // prek uses the YAML configuration; the pre-commit manager maintains hook
