@@ -35,13 +35,13 @@ requires-python = ">=3.11"
 
 [dependency-groups]
 ci = [
-  "tox>=4.67.1,<5.0.0",
+  "tox>=4.67.13,<5.0.0",
 ]
 bumpver = [
   "bumpver==2026.1132",
 ]
 hooks = [
-  "prek==0.5.7",
+  "prek==0.5.10",
 ]
 dev = [
   { include-group = "ci" },
@@ -49,7 +49,7 @@ dev = [
   { include-group = "hooks" },
 ]
 test = [
-  "pytest>=9.1.1",
+  "pytest>=9.2.0",
   "pytest-cov>=7.1.0",
   "typing_extensions",
 ]
