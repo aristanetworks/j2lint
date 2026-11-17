@@ -54,7 +54,7 @@ test = [
   "typing_extensions",
 ]
 benchmark = [
-  "pytest-codspeed>=5.0.3",
+  "pytest-codspeed>=5.0.4",
 ]
 lint = [
   "pylint>=4.1.3",
