@@ -30,7 +30,20 @@
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
 
+  // The pep621 manager maintains uv.lock, including transitive dependencies.
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on monday"],
+    "rebaseWhen": "behind-base-branch"
+  },
+
   "packageRules": [
+    {
+      "description": "Let uv enforce release age during lockfile maintenance.",
+      "matchManagers": ["pep621"],
+      "matchUpdateTypes": ["lockFileMaintenance"],
+      "minimumReleaseAge": "0 days"
+    },
     {
       "description": "Shared metadata for Python dependencies from pyproject.toml.",
       "matchManagers": ["pep621"],

@@ -57,16 +57,28 @@ pip3 install git+https://github.com/aristanetworks/j2lint.git
 
 ### Install For Development
 
-Create a virtual environment, then install the project in editable mode with the dependency groups you need:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then create an editable
+development environment from the committed `uv.lock`:
 
 ```bash
-python3 -m venv .venv
+uv sync --locked --group test --group lint --group type --group benchmark
 source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e . --group dev --group test --group lint --group type
 ```
 
-If you only need a subset of the contributor tooling, install only the relevant groups.
+The `dev` group is included by default. Select fewer groups if you only need a subset of the
+contributor tooling. The `benchmark` group is also needed when linting or type-checking the benchmark tests.
+Standard pip installations remain supported, but do not use the lock file.
+
+CI uses locked dependencies for a Python 3.11 test job, linting, type checking, and benchmarks.
+The Python 3.11–3.15 tox matrix resolves dependencies independently to check compatibility with
+current releases. Running tox locally also resolves dependencies independently of `uv.lock`.
+
+After changing dependency declarations or bumping the project version, run `uv lock` and include
+the updated lock file in the same pull request. Use `uv lock --upgrade-package PACKAGE` for a
+targeted upgrade or `uv lock --upgrade` to refresh all locked dependencies. Renovate opens weekly
+lock maintenance pull requests; uv excludes releases less than seven days old, including transitive
+dependencies. This delay applies when resolving dependencies, without preventing CI from using
+the existing lock. Published package dependency ranges are unchanged by the lock file.
 
 Install the Git hook to run checks automatically before committing:
 
@@ -82,9 +94,12 @@ The repository uses prek with `.pre-commit-config.yaml` so Renovate can maintain
 Install the optional benchmark dependencies and run the self-contained suite explicitly:
 
 ```bash
-python -m pip install -e . --group test --group benchmark
-pytest --codspeed --no-cov -o addopts= -q tests/benchmark
+uv sync --locked --no-default-groups --group test --group benchmark
+uv run --no-sync python -m pytest --codspeed --no-cov -o addopts= -q tests/benchmark
 ```
+
+`uv sync` removes dependencies outside the selected groups; rerun the development setup command
+above to restore the full contributor environment.
 
 Normal `pytest` and tox test runs exclude `tests/benchmark`. The suite generates deterministic
 templates inside j2lint, with no AVD dependency or external template downloads. It measures the
@@ -101,12 +116,18 @@ wall-time measurement by default; CI's simulated measurements require the CodSpe
 ### Common Contributor Commands
 
 ```bash
-pytest
-tox -e lint
-tox -e type
+uv run --no-sync python -m pytest
+uv run --no-sync ruff check .
+uv run --no-sync ruff format . --check
+uv run --no-sync pylint j2lint
+uv run --no-sync pylint tests
+uv run --no-sync pyright
 prek run                     # Check staged files
 prek run --all-files         # Check all files matched by the hook configuration
 ```
+
+The commands above assume the development environment has been synced. Pre-commit hooks create
+their own environments from `.pre-commit-config.yaml`; their dependencies are not controlled by `uv.lock`.
 
 ## Running the linter
 
