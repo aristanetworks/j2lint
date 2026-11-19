@@ -233,6 +233,33 @@ class TestRulesCollection:
         checkrule.assert_called_once_with(str(path), "\tvisible")
         assert len(errors) == 1
 
+    @pytest.mark.parametrize(
+        ("receiver_type", "delegate_type", "text", "expected_rule_id"),
+        [
+            (JinjaTemplateNoTabsRule, JinjaTemplateSyntaxErrorRule, "{{ broken", "S0"),
+            (JinjaTemplateSyntaxErrorRule, JinjaTemplateNoTabsRule, "\tvisible", "S5"),
+        ],
+    )
+    def test_run_honors_checkrule_bound_to_another_rule(
+        self, tmp_path: Path, receiver_type: type[Rule], delegate_type: type[Rule], text: str, expected_rule_id: str
+    ) -> None:
+        """Rebinding an inherited method must preserve its receiver and diagnostics."""
+        path = tmp_path / "template.j2"
+        path.write_text(text, encoding="utf-8")
+        receiver = receiver_type()
+        delegate = delegate_type()
+        expected_errors = delegate.checkrule(str(path), text)
+        collection = RulesCollection()
+        collection.extend([receiver])
+
+        with mock.patch.object(receiver, "checkrule", new=delegate.checkrule):
+            errors, warnings = collection.run(path)
+
+        assert [error.rule.rule_id for error in errors] == [expected_rule_id]
+        assert all(error.rule is delegate for error in errors)
+        assert [error.to_json() for error in errors] == [error.to_json() for error in expected_errors]
+        assert not warnings
+
     def test_run_honors_base_checkrule_replacement(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Replacing the base implementation should still intercept public dispatch."""
         path = tmp_path / "template.j2"

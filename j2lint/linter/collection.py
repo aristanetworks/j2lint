@@ -108,7 +108,7 @@ class RulesCollection:
             # that's quite clunky - we live with history still.. :)
             destination = warnings if rule in rule.warn else errors
             checkrule = rule.checkrule
-            if getattr(checkrule, "__func__", None) is _DEFAULT_CHECKRULE:
+            if getattr(checkrule, "__func__", None) is _DEFAULT_CHECKRULE and getattr(checkrule, "__self__", None) is rule:
                 results = rule._check_prepared(str(file_path), prepared)  # noqa: SLF001 - collection owns the shared preparation
             else:
                 results = checkrule(str(file_path), text)
