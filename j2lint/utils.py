@@ -10,8 +10,10 @@ import os
 import re
 from collections.abc import Generator, Iterable
 from pathlib import Path
+from stat import S_ISDIR, S_ISREG
 from typing import TYPE_CHECKING, Any
 
+from j2lint.linter.error import InputError
 from j2lint.logger import logger
 
 if TYPE_CHECKING:
@@ -80,7 +82,7 @@ def is_valid_file_type(filename: Path, extensions: list[str]) -> bool:
     return extension in extensions
 
 
-def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path]:
+def get_files(file_or_dir_names: list[Path], extensions: list[str], *, strict_inputs: bool = False) -> list[Path]:
     """Get files from a directory recursively.
 
     Parameters
@@ -89,11 +91,19 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path
         List of directories and files
     extensions
         List of file extensions to look for
+    strict_inputs
+        Reject missing or unsupported explicit paths and report directory scan failures.
+        Disabled by default to preserve existing filtering behavior.
 
     Returns
     -------
     list
         List of file paths
+
+    Raises
+    ------
+    InputError
+        With strict_inputs enabled, an explicit path is invalid or a directory cannot be scanned.
     """
     file_paths: list[Path] = []
 
@@ -103,17 +113,48 @@ def get_files(file_or_dir_names: list[Path], extensions: list[str]) -> list[Path
 
     for file_or_dir in file_or_dir_names:
         file_or_dir_path = file_or_dir
-        if file_or_dir_path.is_dir():
-            for root, _, files in os.walk(str(file_or_dir_path)):
-                root_path = Path(root)
-                for file in files:
-                    file_path = root_path / file
-                    if is_valid_file_type(file_path, extensions):
-                        file_paths.append(file_path)
+        is_directory = _is_input_directory(file_or_dir_path, extensions) if strict_inputs else file_or_dir_path.is_dir()
+        if is_directory:
+            file_paths.extend(_walk_directory(file_or_dir_path, extensions, strict_inputs=strict_inputs))
         elif is_valid_file_type(file_or_dir_path, extensions):
             file_paths.append(file_or_dir_path)
     logger.debug("Linting directory %s: files %s", file_or_dir_names, file_paths)
     return file_paths
+
+
+def _walk_directory(directory: Path, extensions: list[str], *, strict_inputs: bool) -> list[Path]:
+    """Find files with accepted extensions and optionally report scan failures."""
+
+    def report_walk_error(error: OSError) -> None:
+        raise InputError(str(error.filename), f"Could not scan directory: {error.strerror}") from error
+
+    file_paths: list[Path] = []
+    for root, _, files in os.walk(str(directory), onerror=report_walk_error if strict_inputs else None):
+        for name in files:
+            path = Path(root) / name
+            if is_valid_file_type(path, extensions):
+                if strict_inputs and _is_input_directory(path, extensions):
+                    continue
+                file_paths.append(path)
+    return file_paths
+
+
+def _is_input_directory(path: Path, extensions: list[str]) -> bool:
+    """Validate an explicit input and return whether it is a directory."""
+    try:
+        mode = path.stat().st_mode
+    except OSError as err:
+        raise InputError(str(path), f"Could not access path: {err.strerror}") from err
+    if S_ISDIR(mode):
+        return True
+    if not S_ISREG(mode):
+        raise InputError(str(path), "Expected a regular file or directory")
+    if not is_valid_file_type(path, extensions):
+        raise InputError(
+            str(path),
+            f"Unsupported file extension. Use --extensions to select accepted extensions (currently: {', '.join(extensions)}).",
+        )
+    return False
 
 
 def flatten(nested_list: Iterable[Any]) -> Generator[Any, Any, Any]:

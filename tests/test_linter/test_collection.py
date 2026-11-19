@@ -13,6 +13,7 @@ from unittest import mock
 import pytest
 
 from j2lint.linter.collection import RulesCollection
+from j2lint.linter.error import InputError
 from j2lint.rules.jinja_operator_has_spaces_rule import JinjaOperatorHasSpacesRule
 from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterRule
 from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
@@ -29,6 +30,24 @@ TEST_DATA_DIR = Path(__file__).parent / "data"
 class TestRulesCollection:
     """Test j2lint.linter.collection.RulesCollection."""
 
+    @pytest.mark.parametrize("failure", ["missing", "permission", "encoding"])
+    def test_run_input_failure(self, tmp_path: Path, collection: RulesCollection, failure: str) -> None:
+        """An unchecked file must not be returned as a successful lint result."""
+        path = tmp_path / "template.j2"
+        if failure == "missing":
+            with pytest.raises(InputError, match="Could not read file"):
+                collection.run(path, strict_inputs=True)
+        elif failure == "encoding":
+            path.write_bytes(b"\xff")
+            with pytest.raises(InputError, match="expected UTF-8"):
+                collection.run(path, strict_inputs=True)
+        else:
+            with (
+                mock.patch.object(Path, "open", side_effect=PermissionError(13, "Permission denied")),
+                pytest.raises(InputError, match="Permission denied"),
+            ):
+                collection.run(path, strict_inputs=True)
+
     def test__len__(self, test_collection: RulesCollection) -> None:
         """Test the RuleCollection __len__ method."""
         assert len(test_collection) == 1
@@ -39,11 +58,34 @@ class TestRulesCollection:
         class CustomCollection(RulesCollection):
             """A collection subclass used to check the factory return type."""
 
+            def __init__(self) -> None:
+                super().__init__()
+
         with mock.patch("j2lint.linter.collection.load_plugins", return_value=[]):
             collection = CustomCollection.create_from_directory(Path("dummy"), [], [])
 
         assert_type(collection, CustomCollection)
         assert isinstance(collection, CustomCollection)
+
+    def test_strict_inputs_is_per_run(self, tmp_path: Path) -> None:
+        """A strict run must not change subsequent runs on the same collection."""
+        collection = RulesCollection()
+        path = tmp_path / "missing.j2"
+        assert collection.run(path) == ([], [])
+        with pytest.raises(InputError):
+            collection.run(path, strict_inputs=True)
+        assert collection.run(path) == ([], [])
+
+    def test_run_legacy_input_handling(self, tmp_path: Path) -> None:
+        """Python callers retain empty results for OSError and decoding exceptions by default."""
+        collection = RulesCollection()
+        path = tmp_path / "missing.j2"
+        assert collection.run(path) == ([], [])
+        with mock.patch.object(Path, "open", side_effect=PermissionError(13, "Permission denied")):
+            assert collection.run(path) == ([], [])
+        path.write_bytes(b"\xff")
+        with pytest.raises(UnicodeDecodeError):
+            collection.run(path)
 
     def test__iter__(self, make_rules: Callable[[int], list[Rule]]) -> None:
         """Test the RuleCollection __iter__ method."""
@@ -68,12 +110,6 @@ class TestRulesCollection:
     @pytest.mark.parametrize(
         ("file_path", "expected_results", "verify_logs"),
         [
-            pytest.param(
-                "dummy.j2",
-                ([], []),
-                False,
-                id="non existing file",
-            ),
             pytest.param(
                 f"{TEST_DATA_DIR}/disable-rule-3.j2",
                 (

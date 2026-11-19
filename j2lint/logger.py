@@ -6,6 +6,7 @@
 import logging
 from logging import handlers
 
+from rich.console import Console
 from rich.logging import RichHandler
 
 JINJA2_LOG_FILE = "jinja2-linter.log"
@@ -13,7 +14,7 @@ JINJA2_LOG_FILE = "jinja2-linter.log"
 logger = logging.getLogger("")
 
 
-def add_handler(log: logging.Logger, log_level: int, *, stream_handler: bool) -> None:
+def add_handler(log: logging.Logger, log_level: int, *, stream_handler: bool, stderr: bool = False) -> None:
     """Define logging handlers.
 
     Parameters
@@ -23,7 +24,9 @@ def add_handler(log: logging.Logger, log_level: int, *, stream_handler: bool) ->
     log_level:
         The level to set on `log` as an integer.
     stream_handler:
-        When True add a RotatingFileHandler to the logger, otherwise add a RichHandler.
+        When True add a RichHandler, otherwise add a RotatingFileHandler.
+    stderr:
+        Send console logs to stderr to keep JSON stdout readable.
     """
     log_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     log.setLevel(log_level)
@@ -32,6 +35,6 @@ def add_handler(log: logging.Logger, log_level: int, *, stream_handler: bool) ->
         file_handler.setFormatter(log_format)
         log.addHandler(file_handler)
     else:
-        console_handler = RichHandler()
+        console_handler = RichHandler(console=Console(stderr=stderr))
         console_handler.setFormatter(log_format)
         log.addHandler(console_handler)

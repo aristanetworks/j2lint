@@ -74,3 +74,32 @@ class LinterError:
 
 class JinjaLinterError(Exception):
     """Jinja Linter Error."""
+
+
+class InputError(JinjaLinterError):
+    """An input could not be discovered or read, rather than failing a lint rule."""
+
+    def __init__(self, filename: str, message: str) -> None:
+        super().__init__(message)
+        self.filename = filename
+        self.message = message
+
+    # Keep the shared diagnostic formatting signature even when the flag is unused.
+    def to_rich(self, *, verbose: bool = False) -> Text:  # noqa: ARG002
+        """Format an input failure independently of logging and lint rule selection."""
+        text = Text(self.filename, style="green")
+        text.append(f": {self.message} (E0)")
+        return text
+
+    def to_json(self) -> str:
+        """Use the existing diagnostic fields; zero denotes no source line."""
+        return json.dumps(
+            {
+                "id": "E0",
+                "message": self.message,
+                "filename": self.filename,
+                "line_number": 0,
+                "line": "",
+                "severity": "HIGH",
+            }
+        )
