@@ -13,15 +13,17 @@ from unittest import mock
 import pytest
 
 from j2lint.linter.collection import RulesCollection
+from j2lint.linter.rule import Rule
 from j2lint.rules.jinja_operator_has_spaces_rule import JinjaOperatorHasSpacesRule
 from j2lint.rules.jinja_statement_delimiter_rule import JinjaStatementDelimiterRule
+from j2lint.rules.jinja_template_no_tabs_rule import JinjaTemplateNoTabsRule
 from j2lint.rules.jinja_template_syntax_error_rule import JinjaTemplateSyntaxErrorRule
+from j2lint.utils import mask_raw_block_contents
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from j2lint.linter.error import LinterError
-    from j2lint.linter.rule import Rule
 
 TEST_DATA_DIR = Path(__file__).parent / "data"
 
@@ -135,6 +137,135 @@ class TestRulesCollection:
             assert any("Ignoring rule T2" in message for message in caplog.messages)
             # True for the test file
             assert any("Skipping linting rule T3" in message for message in caplog.messages)
+
+    def test_run_shares_preparation_and_preserves_diagnostics(self, tmp_path: Path) -> None:
+        """Share masking across error and warning rules without masking reported source."""
+        path = tmp_path / "template.j2"
+        text = "{% raw %}\t{% endraw %}\t\n# \tignored\n\tvisible\n"
+        path.write_text(text, encoding="utf-8")
+        error_rule = JinjaTemplateNoTabsRule()
+        warning_rule = JinjaTemplateNoTabsRule()
+        warning_rule.warn.append(warning_rule)
+        collection = RulesCollection()
+        collection.extend([error_rule, warning_rule])
+
+        with mock.patch("j2lint.linter.rule.mask_raw_block_contents", wraps=mask_raw_block_contents) as mask:
+            errors, warnings = collection.run(path)
+
+        mask.assert_called_once_with(text)
+        expected = [(1, text.split("\n", maxsplit=1)[0]), (3, "\tvisible")]
+        assert [(error.line_number, error.line) for error in errors] == expected
+        assert [(warning.line_number, warning.line) for warning in warnings] == expected
+        assert all(error.filename == str(path) and error.rule is error_rule for error in errors)
+        assert all(warning.rule is warning_rule for warning in warnings)
+
+    def test_run_prepares_each_file_invocation_independently(self, tmp_path: Path) -> None:
+        """Reusing a collection and filename must not reuse stale prepared lines."""
+        path = tmp_path / "template.j2"
+        collection = RulesCollection()
+        collection.extend([JinjaTemplateNoTabsRule(), JinjaTemplateNoTabsRule()])
+
+        with mock.patch("j2lint.linter.rule.mask_raw_block_contents", wraps=mask_raw_block_contents) as mask:
+            path.write_text("{% raw %}\t{% endraw %}\n", encoding="utf-8")
+            assert collection.run(path) == ([], [])
+            path.write_text("\tvisible\n", encoding="utf-8")
+            errors, warnings = collection.run(path)
+            other_path = tmp_path / "other.j2"
+            other_path.write_text("plain text", encoding="utf-8")
+            assert collection.run(other_path) == ([], [])
+
+        assert mask.call_count == 3
+        assert [(error.line_number, error.line) for error in errors] == [(1, "\tvisible"), (1, "\tvisible")]
+        assert not warnings
+
+    @pytest.mark.parametrize("mode", ["text-only", "ignored", "disabled", "empty", "unreadable"])
+    def test_run_does_not_prepare_unused_lines(self, tmp_path: Path, mode: str) -> None:
+        """Only an active line-based rule should trigger preparation."""
+        path = tmp_path / "template.j2"
+        path.write_text("{# j2lint: disable=S5 #}\nplain text\n", encoding="utf-8")
+        collection = RulesCollection()
+        if mode == "text-only":
+            collection.extend([JinjaTemplateSyntaxErrorRule()])
+        elif mode != "empty":
+            collection.extend([JinjaTemplateNoTabsRule()])
+            collection.rules[0].ignore = mode == "ignored"
+        if mode == "unreadable":
+            path = tmp_path / "missing.j2"
+
+        with mock.patch("j2lint.linter.rule.mask_raw_block_contents", side_effect=AssertionError("unexpected masking")):
+            assert collection.run(path) == ([], [])
+
+    def test_run_honors_custom_checkrule_override(self, tmp_path: Path) -> None:
+        """A custom override can still delegate to the public base implementation."""
+        calls: list[tuple[str, str]] = []
+
+        # Inherited checktext intentionally raises NotImplementedError to select the checkline fallback.
+        class CustomRule(JinjaTemplateNoTabsRule):  # pylint: disable=abstract-method
+            """Record public dispatch before performing normal checks."""
+
+            def checkrule(self, filename: str, text: str) -> list[LinterError]:
+                calls.append((filename, text))
+                return super().checkrule(filename, text)
+
+        path = tmp_path / "template.j2"
+        text = "\tvisible"
+        path.write_text(text, encoding="utf-8")
+        rule = CustomRule()
+        collection = RulesCollection()
+        collection.extend([rule])
+        errors, warnings = collection.run(path)
+
+        assert calls == [(str(path), text)]
+        assert [(error.line_number, error.line) for error in errors] == [(1, text)]
+        assert not warnings
+
+    def test_run_honors_instance_checkrule_override(self, tmp_path: Path) -> None:
+        """Instance-level replacements must not be bypassed by shared preparation."""
+        path = tmp_path / "template.j2"
+        path.write_text("\tvisible", encoding="utf-8")
+        rule = JinjaTemplateNoTabsRule()
+        collection = RulesCollection()
+        collection.extend([rule])
+
+        with mock.patch.object(rule, "checkrule", wraps=rule.checkrule) as checkrule:
+            errors, _ = collection.run(path)
+
+        checkrule.assert_called_once_with(str(path), "\tvisible")
+        assert len(errors) == 1
+
+    def test_run_honors_base_checkrule_replacement(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Replacing the base implementation should still intercept public dispatch."""
+        path = tmp_path / "template.j2"
+        path.write_text("\tvisible", encoding="utf-8")
+        calls: list[str] = []
+        original_checkrule = Rule.checkrule
+
+        def checkrule(rule: Rule, filename: str, text: str) -> list[LinterError]:
+            calls.append(filename)
+            return original_checkrule(rule, filename, text)
+
+        monkeypatch.setattr(Rule, "checkrule", checkrule)
+        collection = RulesCollection()
+        collection.extend([JinjaTemplateNoTabsRule()])
+        errors, _ = collection.run(path)
+
+        assert calls == [str(path)]
+        assert len(errors) == 1
+
+    def test_run_does_not_reuse_preparation_after_rule_failure(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A failed invocation must not leave stale prepared data on the collection."""
+        path = tmp_path / "template.j2"
+        path.write_text("\tfirst", encoding="utf-8")
+        rule = JinjaTemplateNoTabsRule()
+        collection = RulesCollection()
+        collection.extend([rule])
+        with monkeypatch.context() as patch:
+            patch.setattr(rule, "checkline", mock.Mock(side_effect=RuntimeError("custom check failed")))
+            with pytest.raises(RuntimeError, match="custom check failed"):
+                collection.run(path)
+
+        path.write_text("plain text", encoding="utf-8")
+        assert collection.run(path) == ([], [])
 
     def test__repr__(self, test_collection: RulesCollection, test_other_rule: Rule) -> None:
         """Test the RuleCollection.extend method."""

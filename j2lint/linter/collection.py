@@ -13,6 +13,7 @@ from rich.console import Group
 from rich.tree import Tree
 
 from j2lint.linter.error import JinjaLinterError
+from j2lint.linter.rule import Rule, _PreparedTemplate
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
@@ -20,9 +21,10 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from .error import LinterError
-    from .rule import Rule
 
 DEFAULT_RULE_DIR = Path(__file__).parent.parent / "rules"
+# Keep the original implementation so overrides and runtime replacements still run.
+_DEFAULT_CHECKRULE = Rule.checkrule
 
 
 class RulesCollection:
@@ -87,6 +89,7 @@ class RulesCollection:
             logger.warning("Could not open %s - %s", file_path, err.strerror)
             return errors, warnings
 
+        prepared = _PreparedTemplate(text)
         for rule in self.rules:
             if rule.ignore:
                 logger.debug(
@@ -103,11 +106,13 @@ class RulesCollection:
             logger.debug("Running linting rule %s on file %s", rule, file_path)
             # TODO: really this should be defined at the collection level not at the rule level with a list of rules
             # that's quite clunky - we live with history still.. :)
-            if rule in rule.warn:
-                warnings.extend(rule.checkrule(str(file_path), text))
-
+            destination = warnings if rule in rule.warn else errors
+            checkrule = rule.checkrule
+            if getattr(checkrule, "__func__", None) is _DEFAULT_CHECKRULE:
+                results = rule._check_prepared(str(file_path), prepared)  # noqa: SLF001 - collection owns the shared preparation
             else:
-                errors.extend(rule.checkrule(str(file_path), text))
+                results = checkrule(str(file_path), text)
+            destination.extend(results)
 
         for error in errors:
             logger.error(error.to_rich())
