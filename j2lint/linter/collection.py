@@ -7,13 +7,14 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import MethodType
 from typing import TYPE_CHECKING, Self
 
 from rich.console import Group
 from rich.tree import Tree
 
 from j2lint.linter.error import JinjaLinterError
-from j2lint.linter.rule import Rule, _PreparedTemplate
+from j2lint.linter.rule import _DEFAULT_CHECKRULE, _PreparedTemplate
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
@@ -21,10 +22,9 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from .error import LinterError
+    from .rule import Rule
 
 DEFAULT_RULE_DIR = Path(__file__).parent.parent / "rules"
-# Keep the original implementation so overrides and runtime replacements still run.
-_DEFAULT_CHECKRULE = Rule.checkrule
 
 
 class RulesCollection:
@@ -108,7 +108,12 @@ class RulesCollection:
             # that's quite clunky - we live with history still.. :)
             destination = warnings if rule in rule.warn else errors
             checkrule = rule.checkrule
-            if getattr(checkrule, "__func__", None) is _DEFAULT_CHECKRULE and getattr(checkrule, "__self__", None) is rule:
+            if (
+                # Proxies can spoof isinstance via __class__.
+                type(checkrule) is MethodType  # pylint: disable=unidiomatic-typecheck
+                and checkrule.__func__ is _DEFAULT_CHECKRULE
+                and checkrule.__self__ is rule
+            ):
                 results = rule._check_prepared(str(file_path), prepared)  # noqa: SLF001 - collection owns the shared preparation
             else:
                 results = checkrule(str(file_path), text)

@@ -5,9 +5,15 @@
 
 from __future__ import annotations
 
+import json
 import logging
+import os
+import subprocess
+import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, assert_type
+from textwrap import dedent
+from types import MethodType
+from typing import TYPE_CHECKING, Any, assert_type
 from unittest import mock
 
 import pytest
@@ -233,6 +239,47 @@ class TestRulesCollection:
         checkrule.assert_called_once_with(str(path), "\tvisible")
         assert len(errors) == 1
 
+    @pytest.mark.parametrize("forward_class", [False, True], ids=["method-attributes", "transparent-class"])
+    def test_run_honors_callable_checkrule_proxy(self, tmp_path: Path, *, forward_class: bool) -> None:
+        """Callable proxies must retain their behavior even when they expose method metadata."""
+        forwarded = {"__func__", "__self__", "__name__"}
+        if forward_class:
+            forwarded.add("__class__")
+
+        class CheckruleProxy:  # pylint: disable=too-few-public-methods
+            """Wrap a bound method while suppressing diagnostics and recording calls."""
+
+            def __init__(self, wrapped: Callable[[str, str], list[LinterError]]) -> None:
+                self.wrapped = wrapped
+                self.calls: list[tuple[str, str]] = []
+
+            def __getattribute__(self, name: str) -> Any:
+                if name in forwarded:
+                    return getattr(object.__getattribute__(self, "wrapped"), name)
+                return object.__getattribute__(self, name)
+
+            def __call__(self, filename: str, text: str) -> list[LinterError]:
+                self.calls.append((filename, text))
+                return []
+
+        path = tmp_path / "template.j2"
+        text = "\tvisible"
+        path.write_text(text, encoding="utf-8")
+        rule = JinjaTemplateNoTabsRule()
+        proxy = CheckruleProxy(rule.checkrule)
+        # A transparent proxy can even make isinstance look like a native method.
+        assert isinstance(proxy, MethodType) is forward_class
+        collection = RulesCollection()
+        collection.extend([rule])
+
+        with mock.patch.object(rule, "checkrule", new=proxy):
+            assert not rule.checkrule(str(path), text)
+            errors, warnings = collection.run(path)
+
+        assert proxy.calls == [(str(path), text), (str(path), text)]
+        assert not errors
+        assert not warnings
+
     @pytest.mark.parametrize(
         ("receiver_type", "delegate_type", "text", "expected_rule_id"),
         [
@@ -278,6 +325,53 @@ class TestRulesCollection:
 
         assert calls == [str(path)]
         assert len(errors) == 1
+
+    def test_run_honors_base_checkrule_replacement_before_collection_import(self, tmp_path: Path) -> None:
+        """Startup replacements must be honored regardless of collection import order."""
+        path = tmp_path / "template.j2"
+        text = "\tvisible"
+        path.write_text(text, encoding="utf-8")
+        script = dedent("""\
+            import json
+            import sys
+            from pathlib import Path
+
+            from j2lint.linter.rule import Rule
+
+            collection_loaded_before_patch = "j2lint.linter.collection" in sys.modules
+            calls = []
+
+            def replacement(self, filename, text):
+                calls.append([filename, text])
+                return []
+
+            Rule.checkrule = replacement
+
+            from j2lint.linter.collection import RulesCollection
+            from j2lint.rules.jinja_template_no_tabs_rule import JinjaTemplateNoTabsRule
+
+            collection = RulesCollection()
+            collection.extend([JinjaTemplateNoTabsRule()])
+            errors, warnings = collection.run(Path(sys.argv[1]))
+            print(json.dumps({
+                "collection_loaded_before_patch": collection_loaded_before_patch,
+                "calls": calls,
+                "errors": [json.loads(error.to_json()) for error in errors],
+                "warnings": [json.loads(warning.to_json()) for warning in warnings],
+            }))
+            """)
+        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[2]))
+        completed = subprocess.run(  # noqa: S603 - controlled interpreter and regression script
+            [sys.executable, "-c", script, str(path)], capture_output=True, text=True, check=True, timeout=30, cwd=tmp_path, env=env
+        )
+
+        assert json.loads(completed.stdout) == {
+            "collection_loaded_before_patch": False,
+            "calls": [[str(path), text]],
+            "errors": [],
+            "warnings": [],
+        }
+        assert not completed.stderr
 
     def test_run_does_not_reuse_preparation_after_rule_failure(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """A failed invocation must not leave stale prepared data on the collection."""

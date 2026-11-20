@@ -197,3 +197,7 @@ class Rule(ABC):
                     error.line = original_line
                 errors.extend(results)
         return errors
+
+
+# Capture the implementation before callers can replace the public method.
+_DEFAULT_CHECKRULE = Rule.checkrule
