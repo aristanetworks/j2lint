@@ -108,6 +108,30 @@ prek run                     # Check staged files
 prek run --all-files         # Check all files matched by the hook configuration
 ```
 
+### Updating GitHub Actions
+
+Workflow action versions use readable tags; `.github/workflows/actions.lock` pins
+their commits, including transitive action dependencies. Renovate updates the version
+tags and lockfile together. External reusable workflows keep inline SHA pins because
+the lockfile does not cover them.
+
+After adding a workflow or changing an action reference, regenerate and verify the lockfile:
+
+```bash
+gh extension install github/gh-actions-lock --pin v0.5.0
+gh actions-lock
+gh actions-lock --verify
+```
+
+Commit the workflow changes and generated lockfile together. CI verifies coverage and
+upstream provenance. Review changed commits and repository identities in lockfile diffs;
+do not edit the generated file by hand. To deliberately advance a moved branch or
+partial version tag after reviewing the upstream changes, run `gh actions-lock --relock`.
+
+The verifier warns that PyPI Publish's generated local Docker action cannot be followed.
+The publisher and its remote action dependencies are locked; the generated local action
+and container image are outside the lockfile's coverage.
+
 ## Running the linter
 
 ```bash

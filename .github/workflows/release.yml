@@ -22,10 +22,10 @@ jobs:
       current_version: ${{ steps.target_version.outputs.CURRENT_VERSION }}
       target_version: ${{ steps.target_version.outputs.TARGET_VERSION }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.12"
       - name: Install bumpver
@@ -56,10 +56,10 @@ jobs:
     needs: [target_version]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.12"
       - name: Install Python requirements
@@ -76,7 +76,7 @@ jobs:
       - name: Build
         run: |-
           python -m build
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: j2lint-dist
           path: dist/
@@ -96,12 +96,12 @@ jobs:
       id-token: write
     steps:
       - name: Download j2lint dist
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        uses: actions/download-artifact@v8.0.2
         with:
           name: j2lint-dist
           path: dist/
       - name: Publish distribution to TestPyPI
-        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        uses: pypa/gh-action-pypi-publish@v1.14.3
         with:
           repository-url: https://test.pypi.org/legacy/
 
@@ -117,13 +117,13 @@ jobs:
         python: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
       - name: Checkout only the tests
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           sparse-checkout: |-
             tests
             pyproject.toml
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ matrix.python }}
       - name: Update expected test version
@@ -162,9 +162,9 @@ jobs:
       id-token: write
     steps:
       - name: Download j2lint dist
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        uses: actions/download-artifact@v8.0.2
         with:
           name: j2lint-dist
           path: dist/
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        uses: pypa/gh-action-pypi-publish@v1.14.3
