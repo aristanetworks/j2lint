@@ -7,12 +7,14 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import MethodType
 from typing import TYPE_CHECKING, Self
 
 from rich.console import Group
 from rich.tree import Tree
 
 from j2lint.linter.error import JinjaLinterError
+from j2lint.linter.rule import _DEFAULT_CHECKRULE, _PreparedTemplate
 from j2lint.logger import logger
 from j2lint.utils import is_rule_disabled, load_plugins
 
@@ -87,6 +89,7 @@ class RulesCollection:
             logger.warning("Could not open %s - %s", file_path, err.strerror)
             return errors, warnings
 
+        prepared = _PreparedTemplate(text)
         for rule in self.rules:
             if rule.ignore:
                 logger.debug(
@@ -103,11 +106,18 @@ class RulesCollection:
             logger.debug("Running linting rule %s on file %s", rule, file_path)
             # TODO: really this should be defined at the collection level not at the rule level with a list of rules
             # that's quite clunky - we live with history still.. :)
-            if rule in rule.warn:
-                warnings.extend(rule.checkrule(str(file_path), text))
-
+            destination = warnings if rule in rule.warn else errors
+            checkrule = rule.checkrule
+            if (
+                # Proxies can spoof isinstance via __class__.
+                type(checkrule) is MethodType  # pylint: disable=unidiomatic-typecheck
+                and checkrule.__func__ is _DEFAULT_CHECKRULE
+                and checkrule.__self__ is rule
+            ):
+                results = rule._check_prepared(str(file_path), prepared)  # noqa: SLF001 - collection owns the shared preparation
             else:
-                errors.extend(rule.checkrule(str(file_path), text))
+                results = checkrule(str(file_path), text)
+            destination.extend(results)
 
         for error in errors:
             logger.error(error.to_rich())

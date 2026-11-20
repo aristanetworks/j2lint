@@ -109,18 +109,18 @@ def test_get_files(file_or_dir_names: list[str], extensions: list[str], expected
         assert [str(filepath) for filepath in get_files(paths, extensions)] == expected_value
 
 
-def test_get_files_dir(template_tmp_dir: str) -> None:
+def test_get_files_dir(template_tmp_dir: list[str]) -> None:
     """Test the utils.get_files function.
 
     # sadly cannot use fixture in parametrize...
     # https://github.com/pytest-dev/pytest/issues/349
     """
-    tmp_dir = Path(__file__).parent / "tmp"  # as passed to pytest in pytest.ini
+    tmp_dir = Path(template_tmp_dir[0])
     expected = sorted(
         [
-            f"{tmp_dir}/rules/rules.j2",
-            f"{tmp_dir}/rules/rules_subdir/rules.j2",
-            f"{tmp_dir}/rules/.rules_hidden_subdir/rules.j2",
+            f"{tmp_dir}/rules.j2",
+            f"{tmp_dir}/rules_subdir/rules.j2",
+            f"{tmp_dir}/.rules_hidden_subdir/rules.j2",
         ]
     )
     with does_not_raise():

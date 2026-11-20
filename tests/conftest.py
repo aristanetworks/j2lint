@@ -211,16 +211,7 @@ def j2lint_usage_string() -> str:
 @pytest.fixture
 def template_tmp_dir(tmp_path_factory: pytest.TempPathFactory) -> list[str]:
     """Create a tmp directory with multiple files and hidden files."""
-    tmp_dir = Path(__file__).parent / "tmp"
-
-    # https://stackoverflow.com/questions/40566968/how-to-dynamically-change-pytests-tmpdir-base-directory
-    # +
-    # https://docs.pytest.org/en/7.1.x/_modules/_pytest/tmpdir.html
-    # Using _given_basetemp to trigger creation
-    # pylint: disable=protected-access
-    tmp_path_factory._given_basetemp = tmp_dir
-
-    rules = tmp_path_factory.mktemp("rules", numbered=False)
+    rules = tmp_path_factory.mktemp("rules")
 
     rules_subdir = rules / "rules_subdir"
     rules_subdir.mkdir()
