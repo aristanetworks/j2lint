@@ -9,6 +9,7 @@ workflows:
         - 'codecov/codecov-action@v7.1.1'
     '.github/workflows/codspeed.yml':
         - 'actions/checkout@v7.0.1'
+        - 'actions/setup-python@v7.1.0'
         - 'astral-sh/setup-uv@v10.3.3'
         - 'codspeedhq/action@v5.6.3'
     '.github/workflows/pull-request-autofix.yml':

@@ -107,9 +107,14 @@ complete built-in rule collection on clean templates, templates with lint errors
 plus statement extraction at increasing sizes. Input creation and correctness assertions are outside
 the measured calls; full-rule benchmarks include file reading but exclude CLI startup and final output.
 
-CI uses CodSpeed's simulation mode on Python 3.12 to compare CPU performance across commits;
-it does not measure memory. The reusable `codspeed.yml` workflow runs after the supported-version
-tests on upstream pushes and pull requests, and can also be started manually. Uploads authenticate
+CI uses CodSpeed's simulation mode with Python 3.12.16 from `actions/setup-python` and locked
+dependencies to compare CPU performance across commits; it does not measure memory. The benchmark
+Python version is pinned separately from `uv.lock`, and uv installs dependencies using that exact
+interpreter. CI checks the selected version and logs the runtime, packages, and CPU details.
+Update the benchmark interpreter deliberately and establish a new baseline when changing it.
+Hosted runner hardware and images can still change; check CodSpeed's environment warnings before
+attributing a performance difference to code. The reusable `codspeed.yml` workflow runs after the
+supported-version tests on upstream pushes and pull requests, and can also be started manually. Uploads authenticate
 using GitHub OIDC, as in ANTA; the repository must be enabled in CodSpeed. Local runs use CodSpeed's
 wall-time measurement by default; CI's simulated measurements require the CodSpeed runner.
 
