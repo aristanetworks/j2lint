@@ -49,25 +49,6 @@ jobs:
           uv run --no-sync ruff format . --check
           uv run --no-sync pylint j2lint
           uv run --no-sync pylint tests
-  type:
-    name: Run pyright
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-      - name: Setup Python
-        uses: actions/setup-python@v7.1.0
-        with:
-          python-version: "3.15"
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v10.3.3
-        with:
-          version: "0.13.9"
-      - name: Install locked dependencies
-        run: uv sync --locked --no-default-groups --group type --group test --group benchmark
-      - name: "Run pyright"
-        run: uv run --no-sync pyright
   tox:
     name: Run pytest for supported Python versions
     runs-on: ubuntu-latest

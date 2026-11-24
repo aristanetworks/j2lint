@@ -127,12 +127,12 @@
       "groupSlug": "pylint"
     },
     {
-      "description": "Group Pyright updates across Python and pre-commit",
+      "description": "Group ty updates across Python and pre-commit",
       "matchManagers": ["pep621", "pre-commit"],
-      "matchPackageNames": ["pyright", "RobertCraigie/pyright-python"],
+      "matchPackageNames": ["ty"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Pyright",
-      "groupSlug": "pyright"
+      "groupName": "ty",
+      "groupSlug": "ty"
     },
     {
       "description": "Group codespell updates across Python and pre-commit",

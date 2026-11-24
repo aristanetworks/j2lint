@@ -306,6 +306,28 @@ j2lint --stdin
 >         args: [--ignore, S3, jinja-statements-single-space, --]
 > ```
 
+## Development type checks
+
+The `ty` hook in `.pre-commit-config.yaml` checks all of `j2lint` and `tests`,
+including benchmarks, against Python 3.11:
+
+```sh
+uv sync --locked --no-default-groups --group hooks
+uv run --no-sync prek run ty --all-files
+```
+
+Run `uv run --no-sync prek install` to enable the hooks on commits.
+
+CI runs this hook through the existing `prek run --all-files` job alongside the
+other hooks. There is no separate typing CI job. The hook installs its own pinned
+typing and test dependencies, so it does not need a project virtual environment.
+
+Alternatively, run `uv run --locked --group ci tox -e type`, or check directly with
+`uv run --locked --group type --group test --group benchmark ty check`.
+
+See the [Pyright to ty migration notes](.github/type-checking-migration.md) for
+the configuration choices and known differences in coverage.
+
 ## Acknowledgments
 
 This project is based on [salt-lint](https://github.com/warpnet/salt-lint) and [jinjalint](https://github.com/motet-a/jinjalint)

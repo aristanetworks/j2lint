@@ -71,14 +71,18 @@ repos:
           - typing_extensions==4.16.0
           - pytest-codspeed==5.0.4
 
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: 1aa6dfeb849ae43fb6f16fc17228bcbd358a19c3  # frozen: v1.1.414
+  - repo: local
     hooks:
-      - id: pyright
-        name: PyRight static type checker
+      - id: ty
+        name: Run ty type checker
+        entry: ty check
         types: [python]
         language: python
+        pass_filenames: false
+        always_run: true
+        require_serial: true
         additional_dependencies:
+          - ty==0.0.105
           - jinja2==3.1.6
           - rich==15.0.0
           - pytest==9.2.0
