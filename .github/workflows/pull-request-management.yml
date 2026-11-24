@@ -20,7 +20,7 @@ jobs:
       - name: Set up uv and Python
         uses: astral-sh/setup-uv@v10.3.3
         with:
-          version: "0.13.7"
+          version: "0.13.9"
           python-version: "3.11"
       - name: Install locked dependencies
         run: uv sync --locked --no-default-groups --group test
@@ -40,7 +40,7 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@v10.3.3
         with:
-          version: "0.13.7"
+          version: "0.13.9"
       - name: Install locked dependencies
         run: uv sync --locked --no-default-groups --group lint --group test --group benchmark
       - name: "Run lint"
@@ -63,7 +63,7 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@v10.3.3
         with:
-          version: "0.13.7"
+          version: "0.13.9"
       - name: Install locked dependencies
         run: uv sync --locked --no-default-groups --group type --group test --group benchmark
       - name: "Run pyright"
