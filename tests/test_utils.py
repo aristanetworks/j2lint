@@ -194,6 +194,38 @@ def test_get_tuple(tuple_list: list[tuple[Any]], lookup_object: Any, expected_va
             [(" if foo\n   and bar ", 1, 2, "{%", "%}"), (" endif ", 3, 3, "{%", "%}")],
             id="indentation mode keeps multiline statement",
         ),
+        pytest.param(
+            "\n\n{% set first =\n    1 %}{% set second = 2 %}\n\n{% set third = 3 %}",
+            False,
+            [
+                (" set first =\n    1 ", 3, 4, "{%", "%}"),
+                (" set second = 2 ", 4, 4, "{%", "%}"),
+                (" set third = 3 ", 6, 6, "{%", "%}"),
+            ],
+            id="adjacent statements after multiline body and blank lines",
+        ),
+        pytest.param(
+            "prefix {% set first =\n    1 %}\n\n{% set second = 2 %}",
+            True,
+            [(" set second = 2 ", 4, 4, "{%", "%}")],
+            id="line numbers advance past skipped multiline inline statement",
+        ),
+        pytest.param(
+            "{% raw %}\n{% if hidden %}\nplain text\n{% endraw %}\n{% set shown =\n    1 %}",
+            True,
+            [
+                (" raw ", 1, 1, "{%", "%}"),
+                (" endraw ", 4, 4, "{%", "%}"),
+                (" set shown =\n    1 ", 5, 6, "{%", "%}"),
+            ],
+            id="line numbers include skipped raw block content",
+        ),
+        pytest.param(
+            "{%\n set first = 1\n%}{% set second = 2 %}",
+            False,
+            [("\n set first = 1\n", 1, 3, "{%", "%}"), (" set second = 2 ", 3, 3, "{%", "%}")],
+            id="body begins and ends with newline",
+        ),
     ],
 )
 def test_get_jinja_statements(text: str, *, indentation: bool, expected: list[tuple[str, int, int, str, str]]) -> None:

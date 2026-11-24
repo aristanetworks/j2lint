@@ -14,18 +14,18 @@ jobs:
     # CodSpeed runner 5.2.1 does not support the Ubuntu 26.04 image selected by ubuntu-latest.
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: Set up uv and Python
-        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        uses: astral-sh/setup-uv@v10.3.3
         with:
           version: "0.13.7"
           python-version: "3.12"
       - name: Install locked dependencies
         run: uv sync --locked --no-default-groups --no-editable --group test --group benchmark
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@373d6868929f444bc08d901fd0eb0ad52a8875ea # v5.2.1
+        uses: CodSpeedHQ/action@v5.6.3
         with:
           mode: simulation
           run: uv run --no-sync python -m pytest --codspeed --no-cov -o addopts= -q tests/benchmark

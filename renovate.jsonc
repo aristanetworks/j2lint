@@ -82,12 +82,18 @@
       "groupSlug": "python-tooling"
     },
     {
-      "description": "GitHub Actions currently use SHA pins with version comments; keep that security posture.",
+      "description": "Update action version tags and actions.lock together. Keep SHA pins for external reusable workflows, which the lockfile does not cover.",
       "matchManagers": ["github-actions"],
       "labels": ["CI"],
       "reviewers": ["gmuloc"],
       "commitMessagePrefix": "ci:",
       "pinDigests": true
+    },
+    {
+      "description": "Action commits are pinned in actions.lock instead of workflow uses references.",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action"],
+      "pinDigests": false
     },
     {
       "description": "Let Renovate handle pre-commit hook revision updates.",

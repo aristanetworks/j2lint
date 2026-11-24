@@ -290,16 +290,18 @@ def get_jinja_statements(text: str, *, indentation: bool = False) -> list[Statem
         List of jinja statements
     """
     statements: list[Statement] = []
-    count = 0
-    newline_pattern = re.compile(r"\n")
+    offset = 0
+    line_number = 1
     lines = text.split("\n")
     raw_block_ranges = get_raw_block_ranges(text)
     for match in JINJA_STATEMENT_PATTERN.finditer(text):
         if _position_in_raw_block(match.start(), raw_block_ranges):
             continue
-        count += 1
-        start_line = len(newline_pattern.findall(text, 0, match.start(2))) + 1
-        end_line = len(newline_pattern.findall(text, 0, match.end(2))) + 1
+        # Count only the gap since the previous statement and the current statement's body.
+        start_line = line_number + text.count("\n", offset, match.start(2))
+        end_line = start_line + text.count("\n", match.start(2), match.end(2))
+        offset = match.end(2)
+        line_number = end_line
         if indentation and lines[start_line - 1].split()[0] not in ["{%", "{%-", "{%+"]:
             continue
 
