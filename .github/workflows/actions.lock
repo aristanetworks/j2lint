@@ -10,6 +10,7 @@ workflows:
     '.github/workflows/codspeed.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.1.0'
+        - 'astral-sh/setup-uv@v10.3.3'
         - 'codspeedhq/action@v5.6.3'
     '.github/workflows/pull-request-autofix.yml':
         - 'actions/checkout@v7.0.1'
@@ -19,6 +20,7 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-python@v7.1.0'
         - 'actions/upload-artifact@v7.0.2'
+        - 'astral-sh/setup-uv@v10.3.3'
     '.github/workflows/pull-request-rn-labeler.yml': []
     '.github/workflows/release.yml':
         - 'actions/checkout@v7.0.1'
@@ -64,6 +66,11 @@ dependencies:
         commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         owner_id: 44036562
         repo_id: 192625955
+    'astral-sh/setup-uv@v10.3.3':
+        ref: 'v10.3.3'
+        commit: 'sha1-68559e99cc807c1eb7e9238fd43a15bba460eec2'
+        owner_id: 115962839
+        repo_id: 846733598
     'autofix-ci/action@v1.3.4':
         ref: 'v1.3.4'
         commit: 'sha1-c5b2d67aa2274e7b5a18224e8171550871fc7e4a'
