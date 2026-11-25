@@ -69,7 +69,8 @@ The `dev` group is included by default. Select fewer groups if you only need a s
 contributor tooling. The `benchmark` group is also needed when linting or type-checking the benchmark tests.
 Standard pip installations remain supported, but do not use the lock file.
 
-CI uses locked dependencies for a Python 3.11 test job, linting, type checking, and benchmarks.
+CI uses locked dependencies for a Python 3.11 test job, linting, and benchmarks.
+Type checking runs in prek's isolated hook environment.
 The Python 3.11–3.15 tox matrix resolves dependencies independently to check compatibility with
 current releases. Running tox locally also resolves dependencies independently of `uv.lock`.
 
@@ -126,7 +127,7 @@ uv run --no-sync ruff check .
 uv run --no-sync ruff format . --check
 uv run --no-sync pylint j2lint
 uv run --no-sync pylint tests
-uv run --no-sync pyright
+uv run --no-sync ty check
 prek run                     # Check staged files
 prek run --all-files         # Check all files matched by the hook configuration
 ```
