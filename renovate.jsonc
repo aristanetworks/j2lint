@@ -73,11 +73,11 @@
       "enabled": false
     },
     {
-      "description": "Dependency groups are repo tooling, so keep their minimum versions moving while preserving the existing range shape.",
+      "description": "Preserve dependency-group minimums and widen supported ranges when needed. Exact pins continue to update.",
       "matchManagers": ["pep621"],
       // [dependency-groups], e.g. lint/test/dev/ci/type.
       "matchDepTypes": ["dependency-groups"],
-      "rangeStrategy": "bump",
+      "rangeStrategy": "widen",
       "groupName": "Python tooling dependencies",
       "groupSlug": "python-tooling"
     },
