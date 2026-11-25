@@ -36,13 +36,15 @@ Two non-default ty settings retain checks that would otherwise be lost:
   initialized on only some control-flow paths.
 
 The hook checks the whole configured scope rather than only changed files, since
-changing a function can break callers elsewhere. It also runs for configuration-only
-and deletion-only commits. Its local Python environment installs ty and the same
-pinned third-party dependencies previously supplied to Pyright. Using a local
-hook avoids the current upstream hook's `uv check` preview command and keeps the
-existing isolated dependency model. tox explicitly selects its own interpreter
-for import resolution with `ty check --python {envpython}`. For local and CI
-commands, see [Development type checks](../README.md#development-type-checks).
+changing a function can break callers elsewhere. The official `astral-sh/ty-pre-commit`
+hook also runs for configuration-only and deletion-only commits. It pins both ty
+and uv and invokes uv's preview `check` command. The hook arguments select the
+locked `type`, `test`, and `benchmark` dependency groups without installing the
+default development groups. Dependencies come from the project's `uv.lock`,
+rather than a duplicated `additional_dependencies` list. `--isolated` prevents
+the hook from changing the contributor's `.venv` or lockfile. tox explicitly
+selects its own interpreter for import resolution with `ty check --python {envpython}`.
+For local and CI commands, see [Development type checks](../README.md#development-type-checks).
 
 The first ty run exposed a dead plugin-loader cleanup block (`file_handle` was
 always `None`) and incompatible test helper signatures. The cleanup block was
@@ -122,4 +124,4 @@ diagnostics is a requirement. A passing ty run alone is not evidence of parity.
 - [Configuration reference](https://docs.astral.sh/ty/reference/configuration/)
 - [Typing support tracker](https://github.com/astral-sh/ty/issues/1889)
 - [Suppression syntax](https://docs.astral.sh/ty/suppression/)
-- [Upstream hook at the evaluated version](https://github.com/astral-sh/ty-pre-commit/blob/v0.0.109/.pre-commit-hooks.yaml)
+- [Upstream hook at the pinned version](https://github.com/astral-sh/ty-pre-commit/blob/v0.0.105/.pre-commit-hooks.yaml)

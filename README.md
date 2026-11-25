@@ -69,8 +69,8 @@ The `dev` group is included by default. Select fewer groups if you only need a s
 contributor tooling. The `benchmark` group is also needed when linting or type-checking the benchmark tests.
 Standard pip installations remain supported, but do not use the lock file.
 
-CI uses locked dependencies for a Python 3.11 test job, linting, and benchmarks.
-Type checking runs in prek's isolated hook environment.
+CI uses locked dependencies for a Python 3.11 test job, linting, type checking, and benchmarks.
+Type checking runs through the official ty hook in prek.
 The Python 3.11–3.15 tox matrix resolves dependencies independently to check compatibility with
 current releases. Running tox locally also resolves dependencies independently of `uv.lock`.
 
@@ -132,8 +132,9 @@ prek run                     # Check staged files
 prek run --all-files         # Check all files matched by the hook configuration
 ```
 
-The commands above assume the development environment has been synced. Pre-commit hooks create
+The commands above assume the development environment has been synced. Most pre-commit hooks create
 their own environments from `.pre-commit-config.yaml`; their dependencies are not controlled by `uv.lock`.
+The ty hook uses the project's locked dependencies in an isolated temporary environment.
 
 ### Updating GitHub Actions
 
@@ -320,8 +321,9 @@ uv run --no-sync prek run ty --all-files
 Run `uv run --no-sync prek install` to enable the hooks on commits.
 
 CI runs this hook through the existing `prek run --all-files` job alongside the
-other hooks. There is no separate typing CI job. The hook installs its own pinned
-typing and test dependencies, so it does not need a project virtual environment.
+other hooks. There is no separate typing CI job. The official ty hook uses
+`uv check` with the locked `type`, `test`, and `benchmark` groups. Its `--isolated`
+option prevents changes to the contributor's `.venv` and `uv.lock`.
 
 Alternatively, run `uv run --locked --group ci tox -e type`, or check directly with
 `uv run --locked --group type --group test --group benchmark ty check`.

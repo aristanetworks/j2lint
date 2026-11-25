@@ -129,7 +129,7 @@
     {
       "description": "Group ty updates across Python and pre-commit",
       "matchManagers": ["pep621", "pre-commit"],
-      "matchPackageNames": ["ty"],
+      "matchPackageNames": ["ty", "astral-sh/ty-pre-commit"],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "ty",
       "groupSlug": "ty"
