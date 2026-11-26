@@ -32,23 +32,22 @@ jobs:
       - name: Install prek
         run: python -m pip install --group hooks
 
-      - name: Run prek fixers
-        id: fixes
+      # Autofixes can shift annotation lines relative to the triggering commit.
+      # A follow-up run with no further edits reports remaining errors on the correct lines.
+      - name: Run prek autofix pass
+        id: prek
         continue-on-error: true
-        run: prek run --group fix --all-files --show-diff-on-failure --color=always
-
-      # This action fails when it submits fixes, deferring checks to the fix commit.
-      - name: Commit back any git diff
-        uses: autofix-ci/action@v1.3.4
-
-      - name: Run prek checks
-        run: prek run --group check --all-files --color=always
         env:
           RUFF_OUTPUT_FORMAT: github
           TY_OUTPUT_FORMAT: github
+        run: prek run --all-files --show-diff-on-failure --color=always
 
-      - name: Fail if a fixer failed
-        if: always() && steps.fixes.outcome == 'failure'
+      - name: Commit back any git diff
+        uses: autofix-ci/action@v1.3.4
+
+      - name: Fail if checks failed
+        if: steps.prek.outcome == 'failure'
         run: |
-          echo "A fixer failed or modified files; see its diagnostics above."
+          echo "prek failed or modified files; see the hook diagnostics above."
+          echo "Submitted fixes must pass a new run."
           exit 1

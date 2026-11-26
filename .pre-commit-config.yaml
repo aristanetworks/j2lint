@@ -1,7 +1,6 @@
 ---
 # Run with prek: https://prek.j178.dev/
 # Keep YAML so Renovate's pre-commit manager can update hooks and dependencies.
-# CI selects fix/check groups; local runs include all non-manual hooks.
 # See https://pre-commit.com/hooks.html for more hooks
 files: ^(j2lint|tests|\.github)/
 
@@ -10,21 +9,16 @@ repos:
     rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: trailing-whitespace
-        groups: [fix]
       - id: end-of-file-fixer
-        groups: [fix]
         # exclude_types: [jinja, text]
       - id: check-added-large-files
-        groups: [check]
       - id: check-merge-conflict
-        groups: [check]
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: ad1b27d73581aa16cca06fc4a0761fc563ffe8e8  # frozen: v1.5.6
     hooks:
       - name: Check and insert license on Python files
         id: insert-license
-        groups: [fix]
         files: .*\.py$
         args:
           - --license-filepath
@@ -36,7 +30,6 @@ repos:
 
       - name: Check and insert license on Jinja2 files
         id: insert-license
-        groups: [fix]
         files: .*\.j2$
         args:
           - --license-filepath
@@ -54,22 +47,13 @@ repos:
       - id: ruff-check
         name: Run Ruff linter
         args: [--fix]
-        groups: [fix]
-      - id: ruff-check
-        alias: ruff-check-ci
-        name: Check Ruff without fixes
-        args: [--no-fix]
-        stages: [manual]
-        groups: [check]
       - id: ruff-format
         name: Run Ruff formatter
-        groups: [fix]
 
   - repo: https://github.com/pycqa/pylint
     rev: edc8e376ba4affd43bc07571bdf3a90efc281ba7  # frozen: v4.1.4
     hooks:
       - id: pylint
-        groups: [check]
         name: Check for Linting error on Python files
         description: This hook runs pylint.
         types: [python]
@@ -91,14 +75,12 @@ repos:
     rev: 53d9c26363b275be71a9342a87d55c0d1825cc06  # frozen: v0.0.107
     hooks:
       - id: ty
-        groups: [check]
         args: [--locked, --isolated, --no-default-groups, --group=type, --group=test, --group=benchmark]
 
   - repo: https://github.com/codespell-project/codespell
     rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
     hooks:
       - id: codespell
-        groups: [check]
         name: Checks for common misspellings in text files.
         entry: codespell
         language: python
@@ -109,15 +91,6 @@ repos:
     hooks:
       - id: zizmor
         name: Check GitHub Actions with zizmor
-        groups: [local]
         files: ^\.github/
         pass_filenames: false
         args: ["--fix", ".github"]
-      - id: zizmor
-        alias: zizmor-ci
-        name: Check GitHub Actions without fixes
-        groups: [check]
-        stages: [manual]
-        files: ^\.github/
-        pass_filenames: false
-        args: [".github"]
