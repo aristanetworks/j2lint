@@ -45,15 +45,6 @@ jobs:
         continue-on-error: true
         run: prek run --all-files --skip ty --show-diff-on-failure --color=always
 
-      # Once approved, replace the install and run steps above with:
-      # - name: Run prek autofix pass
-      #   id: prek
-      #   uses: j178/prek-action@1382ad72dea72f9d53832f2bcb65b3e87a947204 # v3.0.1
-      #   continue-on-error: true
-      #   with:
-      #     prek-version: '0.5.5'
-      #     extra-args: --all-files --skip ty
-
       - name: Fail if prek failed without fixes
         if: steps.prek.outcome == 'failure'
         run: |
