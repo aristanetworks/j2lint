@@ -211,26 +211,14 @@ The equivalent `--output-format json` option is also available. The default is
 
 ### Showing annotations in GitHub Actions
 
-Use `--output-format github` to emit GitHub Actions error and warning annotations
-with the diagnostic's file, line number, rule ID, rule name, and message. Titles
-include both identifiers, for example `j2lint S1 (single-space-decorator)`. After checking out
-your repository and installing j2lint, add a step such as:
+Use `--output-format github` to show lint findings as GitHub Actions annotations:
 
 ```yaml
 - name: Lint Jinja templates
   run: j2lint --output-format github templates/
 ```
 
-Rules selected by `--warn` produce warning annotations. Lint errors still return
-exit code `2`, failing the step; warnings alone return `0`. A clean run produces no
-annotations, including with `--verbose`. Annotation levels follow `--warn`, not the
-rule's LOW/MEDIUM/HIGH severity. GitHub controls annotation display and limits.
-
-Run from the repository root so relative filenames match checked-out files.
-Stdin diagnostics omit file and line properties because their temporary file is
-deleted. Console logs requested with `--stdout` go to stderr in GitHub mode to
-keep stdout dedicated to annotations. Rule listing (`--list`) does not support
-GitHub output.
+For hook-based CI, see [Using j2lint with prek or pre-commit](#using-j2lint-with-prek-or-pre-commit).
 
 ### Ignoring rules
 
@@ -316,6 +304,16 @@ j2lint --stdin
     ```
 
 2. Run `prek run --all-files`, or `pre-commit run --all-files` if you use pre-commit.
+
+To show annotations when running either command in GitHub Actions, add the output
+option to the hook's `args` in `.pre-commit-config.yaml`:
+
+```yaml
+hooks:
+  - id: j2lint
+    args: [--output-format, github]
+    verbose: true  # Show annotations even when the hook passes.
+```
 
 > **Note**
 > When using `-i/--ignore` or `-w/--warn` arguments with either runner, use the
