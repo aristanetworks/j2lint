@@ -47,11 +47,6 @@ repos:
       - id: ruff-check
         name: Run Ruff linter
         args: [--fix]
-      - id: ruff-check
-        alias: ruff-check-ci
-        name: Check Ruff diagnostics without fixes
-        args: [--no-fix]
-        stages: [manual]
       - id: ruff-format
         name: Run Ruff formatter
 
