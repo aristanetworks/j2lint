@@ -44,8 +44,10 @@ jobs:
       - name: Install locked dependencies
         run: uv sync --locked --no-default-groups --group lint --group test --group benchmark
       - name: "Run lint"
+        env:
+          RUFF_OUTPUT_FORMAT: github
         run: |
-          uv run --no-sync ruff check .
+          uv run --no-sync ruff check . --no-fix
           uv run --no-sync ruff format . --check
           uv run --no-sync pylint j2lint
           uv run --no-sync pylint tests
