@@ -62,7 +62,7 @@ lint = [
   "codespell>=2.4.3,<2.5.0",
 ]
 type = [
-  "pyright==1.1.414",
+  "ty==0.0.105",
 ]
 
 [project.urls]
@@ -136,7 +136,7 @@ dependency_groups =
   test
   benchmark
 commands =
-  pyright
+  ty check --python {envpython}
 
 [testenv:clean]
 deps = coverage
@@ -327,10 +327,20 @@ min-similarity-lines=10
 
 
 ################################
-# Pyright
+# ty
 ################################
-[tool.pyright]
-pythonVersion = "3.11"
+[tool.ty.environment]
+python-version = "3.11"
+
+[tool.ty.analysis]
+# Preserve Pyright's inference for unannotated helper functions.
+return-type-inference = "always"
+
+[tool.ty.rules]
+# Pyright basic mode reports variables that may not have been initialized.
+possibly-unresolved-reference = "error"
+
+[tool.ty.src]
 include = [
   "j2lint",
   "tests"

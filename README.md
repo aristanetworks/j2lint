@@ -126,7 +126,7 @@ uv run --no-sync ruff check .
 uv run --no-sync ruff format . --check
 uv run --no-sync pylint j2lint
 uv run --no-sync pylint tests
-uv run --no-sync pyright
+prek run ty --all-files
 prek run                     # Check staged files
 prek run --all-files         # Check all files matched by the hook configuration
 ```
