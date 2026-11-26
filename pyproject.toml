@@ -62,7 +62,7 @@ lint = [
   "codespell>=2.4.3,<2.5.0",
 ]
 type = [
-  "ty==0.0.105",
+  "ty==0.0.107",
 ]
 
 [project.urls]
