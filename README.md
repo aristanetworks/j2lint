@@ -206,6 +206,31 @@ j2lint <path-to-directory-of-templates> --log --debug
 j2lint <path-to-directory-of-templates> --json
 ```
 
+The equivalent `--output-format json` option is also available. The default is
+`--output-format text`. Do not combine `--json` with `--output-format`.
+
+### Showing annotations in GitHub Actions
+
+Use `--output-format github` to emit GitHub Actions error and warning annotations
+with the diagnostic's file, line number, rule ID, and message. After checking out
+your repository and installing j2lint, add a step such as:
+
+```yaml
+- name: Lint Jinja templates
+  run: j2lint --output-format github templates/
+```
+
+Rules selected by `--warn` produce warning annotations. Lint errors still return
+exit code `2`, failing the step; warnings alone return `0`. A clean run produces no
+annotations, including with `--verbose`. Annotation levels follow `--warn`, not the
+rule's LOW/MEDIUM/HIGH severity. GitHub controls annotation display and limits.
+
+Run from the repository root so relative filenames match checked-out files.
+Stdin diagnostics omit file and line properties because their temporary file is
+deleted. Console logs requested with `--stdout` go to stderr in GitHub mode to
+keep stdout dedicated to annotations. Rule listing (`--list`) does not support
+GitHub output.
+
 ### Ignoring rules
 
 1. The `--ignore` option can have one or more rule IDs or short descriptions:

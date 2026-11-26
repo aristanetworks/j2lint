@@ -19,6 +19,7 @@ from j2lint import CONSOLE, DESCRIPTION, NAME, VERSION
 from j2lint.linter.collection import DEFAULT_RULE_DIR, RulesCollection
 from j2lint.linter.runner import Runner
 from j2lint.logger import add_handler, logger
+from j2lint.output import print_github_output
 from j2lint.utils import get_files
 
 if TYPE_CHECKING:
@@ -89,7 +90,9 @@ def create_parser() -> argparse.ArgumentParser:
         type=lambda s: [f".{item}" for item in s.split(",")],
     )
     parser.add_argument("-d", "--debug", default=False, action="store_true", help="enable debug logs")
-    parser.add_argument("-j", "--json", default=False, action="store_true", help="enable JSON output")
+    output_group = parser.add_mutually_exclusive_group()
+    output_group.add_argument("-j", "--json", default=False, action="store_true", help="enable JSON output (alias for --output-format json)")
+    output_group.add_argument("--output-format", choices=("text", "json", "github"), default="text", help="output format (default: text)")
     parser.add_argument(
         "-s",
         "--stdin",
@@ -135,6 +138,7 @@ class J2LintArgsNamespace(argparse.Namespace):
     verbose: ClassVar[bool]
     debug: ClassVar[bool]
     json: ClassVar[bool]
+    output_format: ClassVar[str]
     stdin: ClassVar[bool]
     log: ClassVar[bool]
     version: ClassVar[str]
@@ -329,6 +333,9 @@ def run(args: list[str] | None = None) -> int:
 
     parser = create_parser()
     options: J2LintArgsNamespace = parser.parse_args(args if args is not None else sys.argv[1:], namespace=J2LintArgsNamespace())
+    output_format = "json" if options.json else options.output_format
+    if options.list and output_format == "github":
+        parser.error("--list cannot be used with --output-format github")
 
     # Enable logs
 
@@ -340,7 +347,7 @@ def run(args: list[str] | None = None) -> int:
         if options.log:
             add_handler(logger, log_level, stream_handler=False)
         if options.stdout:
-            add_handler(logger, log_level, stream_handler=True)
+            add_handler(logger, log_level, stream_handler=True, stderr=output_format == "github")
 
     logger.debug("Lint options selected %s", options)
 
@@ -361,7 +368,7 @@ def run(args: list[str] | None = None) -> int:
 
     # List lint rules
     if options.list:
-        if options.json:
+        if output_format == "json":
             print_json_rules(collection)
         else:
             print_string_rules(collection)
@@ -381,7 +388,9 @@ def run(args: list[str] | None = None) -> int:
 
     lint_errors, lint_warnings = get_linting_issues(files, collection, checked_files)
 
-    if options.json:
+    if output_format == "github":
+        total_lint_errors, _ = print_github_output(lint_errors, lint_warnings, stdin_filename=stdin_filename)
+    elif output_format == "json":
         logger.debug("JSON output enabled")
         total_lint_errors, _ = print_json_output(lint_errors, lint_warnings)
     else:
