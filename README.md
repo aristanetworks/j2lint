@@ -88,7 +88,6 @@ prek install
 
 If you previously installed the hook with pre-commit, run `prek install -f` once to replace it.
 The repository uses prek with `.pre-commit-config.yaml` so Renovate can maintain hook revisions and dependencies.
-Basic file checks use prek's built-in hooks, so this repository's hook configuration requires prek.
 
 ### Performance Benchmarks
 
