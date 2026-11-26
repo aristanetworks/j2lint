@@ -33,12 +33,13 @@ jobs:
         run: python -m pip install --group hooks
 
       # Emit annotations before any hook can change source line numbers.
-      - name: Check types
-        id: ty
+      - name: Check Ruff and ty without fixes
+        id: checks
         continue-on-error: true
         env:
+          RUFF_OUTPUT_FORMAT: github
           TY_OUTPUT_FORMAT: github
-        run: prek run ty --all-files --color=always
+        run: prek run ruff-check-ci ty --stage manual --all-files --color=always
 
       - name: Run prek autofix pass
         id: prek
@@ -56,8 +57,8 @@ jobs:
       - name: Commit back any git diff
         uses: autofix-ci/action@v1.3.4
 
-      - name: Fail if type checking failed
-        if: always() && steps.ty.outcome == 'failure'
+      - name: Fail if Ruff or type checking failed
+        if: always() && steps.checks.outcome == 'failure'
         run: |
-          echo "ty failed; see the type-check step for diagnostics."
+          echo "Ruff or ty failed; see the read-only check step for diagnostics."
           exit 1
