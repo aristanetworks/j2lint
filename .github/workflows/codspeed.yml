@@ -58,3 +58,54 @@ jobs:
         with:
           mode: simulation
           run: uv run --no-sync pytest --codspeed --no-cov -o addopts= -q tests/benchmark
+
+  benchmark-memory:
+    name: Benchmark j2lint memory for Python 3.12
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up benchmark Python
+        id: python
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.12.16"
+          architecture: "x64"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.13.9"
+      - name: Install locked dependencies
+        env:
+          UV_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: uv sync --locked --no-default-groups --no-editable --group test --group benchmark
+      - name: Report and check benchmark environment
+        env:
+          EXPECTED_PYTHON_VERSION: ${{ steps.python.outputs.python-version }}
+        run: |
+          uv run --no-sync python - <<'PY'
+          import os
+          import platform
+          import sys
+
+          expected = os.environ["EXPECTED_PYTHON_VERSION"]
+          actual = platform.python_version()
+          if actual != expected:
+              raise SystemExit(f"Benchmark Python mismatch: expected {expected}, got {actual}")
+          print(f"Python: {sys.version}")
+          print(f"Executable: {sys.executable}")
+          print(f"Base environment: {sys.base_prefix}")
+          print(f"Platform: {platform.platform()}")
+          print(f"libc: {platform.libc_ver()}")
+          PY
+          uv pip list --python .venv/bin/python
+          lscpu
+      - name: Run memory benchmarks
+        uses: CodSpeedHQ/action@v5.6.3
+        env:
+          PYTHONHASHSEED: "0"
+        with:
+          mode: memory
+          runner-version: "5.5.0"
+          run: uv run --no-sync pytest --codspeed --no-cov -o addopts= -q tests/benchmark
