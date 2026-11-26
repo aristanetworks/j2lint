@@ -58,12 +58,12 @@ repos:
         description: This hook runs pylint.
         types: [python]
         language: python
+        # Keep files together so duplicate-code checks can compare them.
+        require_serial: true
         args:
           - -rn # Only display messages
           - -sn # Don't display the score
           - --rcfile=pyproject.toml # Link to config file
-          # Suppress duplicate code for modules header
-          - -d duplicate-code
         additional_dependencies:
           - jinja2==3.1.6
           - rich==15.0.0
@@ -72,7 +72,7 @@ repos:
           - pytest-codspeed==5.0.4
 
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: f0887e3a83e09f2f0b6704f87eb871aef8ed11a5  # frozen: v0.0.105
+    rev: 53d9c26363b275be71a9342a87d55c0d1825cc06  # frozen: v0.0.107
     hooks:
       - id: ty
         args: [--locked, --isolated, --no-default-groups, --group=type, --group=test, --group=benchmark]
