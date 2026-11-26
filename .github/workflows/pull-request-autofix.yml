@@ -36,6 +36,7 @@ jobs:
         id: prek
         continue-on-error: true
         env:
+          RUFF_OUTPUT_FORMAT: github
           TY_OUTPUT_FORMAT: github
         run: prek run --all-files --show-diff-on-failure --color=always
 
