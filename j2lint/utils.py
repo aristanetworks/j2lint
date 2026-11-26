@@ -40,7 +40,6 @@ def load_plugins(directory: Path) -> list[Rule]:
         List of rule classes
     """
     result = []
-    file_handle = None
     for plugin_file in directory.glob(pattern="[A-Za-z_]*.py"):
         plugin_name = plugin_file.name.replace(".py", "")
         try:
@@ -55,9 +54,6 @@ def load_plugins(directory: Path) -> list[Rule]:
                     result.append(obj)
         except AttributeError:
             logger.warning("Failed to load plugin %s", plugin_name)
-        finally:
-            if file_handle:
-                file_handle.close()
     return result
 
 

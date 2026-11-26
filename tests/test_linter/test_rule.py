@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Never
 
 import pytest
 
@@ -75,7 +75,7 @@ class TestRule:
         checktext and checkline values help selecting combination of possible rules.
         """
 
-        def raise_notimplementederror(*args: Any, **kwargs: Any) -> None:
+        def raise_notimplementederror(*args: Any, **kwargs: Any) -> Never:
             raise NotImplementedError
 
         def return_empty_list(*args: Any, **kwargs: Any) -> list[Any]:  # noqa: ARG001
@@ -85,21 +85,21 @@ class TestRule:
 
         # Build checktext and checkline
         if checktext is None:
-            test_rule.checktext = raise_notimplementederror  # type: ignore[reportAttributeAccessIssue]
+            test_rule.checktext = raise_notimplementederror
         elif checktext == 0:
             test_rule.checktext = return_empty_list
         else:
             # checktext > 0
-            test_rule.checktext = lambda *_: [make_issue_from_rule(test_rule) for _ in range(checktext)]  # type: ignore[reportAttributeAccessIssue]
+            test_rule.checktext = lambda *_, **_kwargs: [make_issue_from_rule(test_rule) for _ in range(checktext)]
 
         if checkline is None:
-            test_rule.checkline = raise_notimplementederror  # type: ignore[reportAttributeAccessIssue]
+            test_rule.checkline = raise_notimplementederror
 
         elif checkline == 0:
             test_rule.checkline = return_empty_list
         else:
             # checkline > 0
-            test_rule.checkline = lambda *_args, **_kwargs: [make_issue_from_rule(test_rule) for _ in range(checkline)]  # type: ignore[reportAttributeAccessIssue]
+            test_rule.checkline = lambda *_args, **_kwargs: [make_issue_from_rule(test_rule) for _ in range(checkline)]
 
         with Path(filepath).open(encoding="utf-8") as file_d:
             errors = test_rule.checkrule(filepath, file_d.read())
@@ -110,14 +110,14 @@ class TestRule:
     def test_checkrule_ignores_raw_block_content_for_line_rules(self, test_rule: Rule) -> None:
         """Test that line-based rules do not inspect content inside raw blocks."""
 
-        def raise_notimplementederror(*args: Any, **kwargs: Any) -> None:
+        def raise_notimplementederror(*args: Any, **kwargs: Any) -> Never:
             raise NotImplementedError
 
         def checkline(filename: str, line: str, line_no: int) -> list[LinterError]:
             return [LinterError(line_no, line, filename, test_rule)] if "{{" in line else []
 
-        test_rule.checktext = raise_notimplementederror  # type: ignore[reportAttributeAccessIssue]
-        test_rule.checkline = checkline  # type: ignore[reportAttributeAccessIssue]
+        test_rule.checktext = raise_notimplementederror
+        test_rule.checkline = checkline
 
         text = "{% raw %}{{ hidden_value }}{% endraw %}\n{{ visible_value }}"
         errors = test_rule.checkrule("dummy.j2", text)

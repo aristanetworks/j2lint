@@ -32,27 +32,22 @@ jobs:
       - name: Install prek
         run: python -m pip install --group hooks
 
+      # Autofixes can shift annotation lines relative to the triggering commit.
+      # A follow-up run with no further edits reports remaining errors on the correct lines.
       - name: Run prek autofix pass
         id: prek
         continue-on-error: true
+        env:
+          RUFF_OUTPUT_FORMAT: github
+          TY_OUTPUT_FORMAT: github
         run: prek run --all-files --show-diff-on-failure --color=always
-
-      # Once approved, replace the install and run steps above with:
-      # - name: Run prek autofix pass
-      #   id: prek
-      #   uses: j178/prek-action@1382ad72dea72f9d53832f2bcb65b3e87a947204 # v3.0.1
-      #   continue-on-error: true
-      #   with:
-      #     prek-version: '0.5.5'
-      #     extra-args: --all-files
-
-      - name: Fail if prek failed without fixes
-        if: steps.prek.outcome == 'failure'
-        run: |
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "prek failed and did not produce changes for autofix.ci to commit."
-            exit 1
-          fi
 
       - name: Commit back any git diff
         uses: autofix-ci/action@v1.3.4
+
+      - name: Fail if checks failed
+        if: steps.prek.outcome == 'failure'
+        run: |
+          echo "prek failed or modified files; see the hook diagnostics above."
+          echo "Submitted fixes must pass a new run."
+          exit 1
