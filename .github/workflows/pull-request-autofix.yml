@@ -35,6 +35,8 @@ jobs:
       - name: Run prek autofix pass
         id: prek
         continue-on-error: true
+        env:
+          TY_OUTPUT_FORMAT: github
         run: prek run --all-files --show-diff-on-failure --color=always
 
       # Once approved, replace the install and run steps above with:
