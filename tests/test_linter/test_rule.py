@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any, Never
 import pytest
 
 from j2lint.linter.error import LinterError
+from j2lint.rules.jinja_template_no_tabs_rule import JinjaTemplateNoTabsRule
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -122,3 +123,33 @@ class TestRule:
         errors = test_rule.checkrule("dummy.j2", text)
 
         assert [(error.line_number, error.line) for error in errors] == [(2, "{{ visible_value }}")]
+
+    @pytest.mark.parametrize(
+        ("text", "expected"),
+        [
+            ("", []),
+            ("\n", []),
+            ("\tvisible\n", [(1, "\tvisible")]),
+            ("{% raw %}\t{% endraw %}", []),
+            ("{% raw %}\t{% endraw %}\t", [(1, "{% raw %}\t{% endraw %}\t")]),
+            ("{% raw %}\n\tignored\n{% endraw %}\n\tvisible", [(4, "\tvisible")]),
+            ("{% raw %}\t{% endraw %}{% raw %}\t{% endraw %}\n\tvisible", [(2, "\tvisible")]),
+            ("{% raw %}\n\tignored", []),
+            ("{%- raw -%}\t{%- endraw -%}\t", [(1, "{%- raw -%}\t{%- endraw -%}\t")]),
+            ("\tvisible\r\n\talso visible\r\n", [(1, "\tvisible\r"), (2, "\talso visible\r")]),
+            ("# \tcomment\n  # \tcomment\n\tvisible", [(3, "\tvisible")]),
+        ],
+    )
+    def test_checkrule_direct_call_preserves_raw_blocks_and_lines(self, text: str, expected: list[tuple[int, str]]) -> None:
+        """Direct calls still mask raw content and report original source with LF-based lines."""
+        rule = JinjaTemplateNoTabsRule()
+        errors = rule.checkrule("template.j2", text)
+        assert [(error.line_number, error.line) for error in errors] == expected
+        assert all(error.filename == "template.j2" and error.message == rule.description for error in errors)
+
+    def test_checkrule_direct_calls_do_not_reuse_previous_text(self) -> None:
+        """Using the same rule and filename with new text must prepare fresh lines."""
+        rule = JinjaTemplateNoTabsRule()
+        assert not rule.checkrule("template.j2", "{% raw %}\t{% endraw %}")
+        errors = rule.checkrule("template.j2", "\tvisible")
+        assert [(error.line_number, error.line) for error in errors] == [(1, "\tvisible")]
