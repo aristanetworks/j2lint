@@ -26,6 +26,28 @@ jobs:
         run: uv sync --locked --no-default-groups --group test
       - name: Run tests with locked dependencies
         run: uv run --no-sync python -m pytest --no-cov
+  github-annotations:
+    name: Verify GitHub annotations (intentional findings)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.13.9"
+          python-version: "3.11"
+      - name: Install locked dependencies
+        run: uv sync --locked --no-default-groups
+      - name: Emit an intentional error and warning annotation
+        run: |
+          status=0
+          uv run --no-sync j2lint --output-format github --warn V1 -- tests/data/github-annotations.j2 || status=$?
+          if [ "$status" -ne 2 ]; then
+            echo "Expected exit code 2 for the intentional S1 violation, got $status" >&2
+            exit 1
+          fi
   tox:
     name: Run pytest for supported Python versions
     runs-on: ubuntu-latest

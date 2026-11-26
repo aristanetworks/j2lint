@@ -55,6 +55,5 @@ def test_github_stdin_and_file_locations(capsys: pytest.CaptureFixture[str], tes
     }
     assert print_github_output(issues, {}, stdin_filename=stdin_path) == (2, 0)
     assert capsys.readouterr().out == (
-        "::error title=j2lint T0 (test-rule-0)::test rule 0\n"
-        "::error file=real.j2,line=9,title=j2lint T0 (test-rule-0)::test rule 0\n"
+        "::error title=j2lint T0 (test-rule-0)::test rule 0\n::error file=real.j2,line=9,title=j2lint T0 (test-rule-0)::test rule 0\n"
     )

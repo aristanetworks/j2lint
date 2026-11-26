@@ -99,8 +99,7 @@ def test_github_syntax_error(tmp_path: Path) -> None:
     result = invoke("--output-format", "github", str(template))
     assert result.returncode == 2, result.stderr
     assert any(
-        line.startswith(f"::error file={template},line=2,title=j2lint S0 (jinja-syntax-error)::Expected an expression")
-        for line in result.stdout.splitlines()
+        line.startswith(f"::error file={template},line=2,title=j2lint S0 (jinja-syntax-error)::Expected an expression") for line in result.stdout.splitlines()
     )
     assert result.stderr == ""
 
