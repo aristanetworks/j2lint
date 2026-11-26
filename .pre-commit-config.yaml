@@ -58,12 +58,12 @@ repos:
         description: This hook runs pylint.
         types: [python]
         language: python
+        # Keep files together so duplicate-code checks can compare them.
+        require_serial: true
         args:
           - -rn # Only display messages
           - -sn # Don't display the score
           - --rcfile=pyproject.toml # Link to config file
-          # Suppress duplicate code for modules header
-          - -d duplicate-code
         additional_dependencies:
           - jinja2==3.1.6
           - rich==15.0.0
