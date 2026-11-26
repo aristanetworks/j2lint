@@ -127,13 +127,14 @@ uv run --no-sync ruff check .
 uv run --no-sync ruff format . --check
 uv run --no-sync pylint j2lint
 uv run --no-sync pylint tests
-uv run --no-sync ty check
+prek run ty --all-files
 prek run                     # Check staged files
 prek run --all-files         # Check all files matched by the hook configuration
 ```
 
-The commands above assume the development environment has been synced. Most pre-commit hooks create
-their own environments from `.pre-commit-config.yaml`; their dependencies are not controlled by `uv.lock`.
+The `uv run --no-sync` commands above assume the development environment has been synced.
+Most pre-commit hooks create their own environments from `.pre-commit-config.yaml`;
+their dependencies are not controlled by `uv.lock`.
 The ty hook uses the project's locked dependencies in an isolated temporary environment.
 
 ### Updating GitHub Actions
@@ -310,25 +311,21 @@ j2lint --stdin
 
 ## Development type checks
 
-The `ty` hook in `.pre-commit-config.yaml` checks all of `j2lint` and `tests`,
+With prek installed, run the `ty` hook to check all of `j2lint` and `tests`,
 including benchmarks, against Python 3.11:
 
 ```sh
-uv sync --locked --inexact --no-default-groups --group hooks
-uv run --no-sync prek run ty --all-files
+prek run ty --all-files
 ```
 
-`--inexact` preserves packages already installed for other contributor commands.
+The hook prepares its environment automatically using `uv.lock`.
 
-Run `uv run --no-sync prek install` to enable the hooks on commits.
+Run `prek install` to enable the hooks on commits.
 
 CI runs this hook through the existing `prek run --all-files` job alongside the
 other hooks. There is no separate typing CI job. The official ty hook uses
 `uv check` with the locked `type`, `test`, and `benchmark` groups. Its `--isolated`
 option prevents changes to the contributor's `.venv` and `uv.lock`.
-
-Alternatively, run `uv run --locked --group ci tox -e type`, or check directly with
-`uv run --locked --group type --group test --group benchmark ty check`.
 
 See the [Pyright to ty migration notes](.github/type-checking-migration.md) for
 the configuration choices and known differences in coverage.
