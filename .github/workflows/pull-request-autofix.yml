@@ -46,19 +46,12 @@ jobs:
         continue-on-error: true
         run: prek run --all-files --skip ty --show-diff-on-failure --color=always
 
-      - name: Fail if prek failed without fixes
-        if: steps.prek.outcome == 'failure'
-        run: |
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "prek failed and did not produce changes for autofix.ci to commit."
-            exit 1
-          fi
-
       - name: Commit back any git diff
         uses: autofix-ci/action@v1.3.4
 
-      - name: Fail if Ruff or type checking failed
-        if: always() && steps.checks.outcome == 'failure'
+      - name: Fail if checks failed
+        if: always() && (steps.checks.outcome == 'failure' || steps.prek.outcome == 'failure')
         run: |
-          echo "Ruff or ty failed; see the read-only check step for diagnostics."
+          echo "Checks failed (Ruff/ty: ${{ steps.checks.outcome }}, autofix hooks: ${{ steps.prek.outcome }})."
+          echo "See the check steps for diagnostics. Submitted fixes must pass a new run."
           exit 1
