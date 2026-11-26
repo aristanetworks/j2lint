@@ -314,9 +314,11 @@ The `ty` hook in `.pre-commit-config.yaml` checks all of `j2lint` and `tests`,
 including benchmarks, against Python 3.11:
 
 ```sh
-uv sync --locked --no-default-groups --group hooks
+uv sync --locked --inexact --no-default-groups --group hooks
 uv run --no-sync prek run ty --all-files
 ```
+
+`--inexact` preserves packages already installed for other contributor commands.
 
 Run `uv run --no-sync prek install` to enable the hooks on commits.
 
