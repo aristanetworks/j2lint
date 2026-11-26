@@ -206,6 +206,20 @@ j2lint <path-to-directory-of-templates> --log --debug
 j2lint <path-to-directory-of-templates> --json
 ```
 
+The equivalent `--output-format json` option is also available. The default is
+`--output-format text`. Do not combine `--json` with `--output-format`.
+
+### Showing annotations in GitHub Actions
+
+Use `--output-format github` to show lint findings as GitHub Actions annotations:
+
+```yaml
+- name: Lint Jinja templates
+  run: j2lint --output-format github templates/
+```
+
+For hook-based CI, see [Using j2lint with prek or pre-commit](#using-j2lint-with-prek-or-pre-commit).
+
 ### Ignoring rules
 
 1. The `--ignore` option can have one or more rule IDs or short descriptions:
@@ -290,6 +304,16 @@ j2lint --stdin
     ```
 
 2. Run `prek run --all-files`, or `pre-commit run --all-files` if you use pre-commit.
+
+To show annotations when running either command in GitHub Actions, add the output
+option to the hook's `args` in `.pre-commit-config.yaml`:
+
+```yaml
+hooks:
+  - id: j2lint
+    args: [--output-format, github]
+    verbose: true  # Show annotations even when the hook passes.
+```
 
 > **Note**
 > When using `-i/--ignore` or `-w/--warn` arguments with either runner, use the
