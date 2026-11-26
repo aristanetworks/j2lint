@@ -131,7 +131,7 @@ prek run                     # Check staged files
 prek run --all-files         # Check all files matched by the hook configuration
 ```
 
-The commands above assume the development environment has been synced. Pre-commit hooks create
+The commands above assume the development environment has been synced. External hooks create
 their own environments from `.pre-commit-config.yaml`; their dependencies are not controlled by `uv.lock`.
 
 ### Updating GitHub Actions
