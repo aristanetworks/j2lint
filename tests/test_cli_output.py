@@ -61,7 +61,7 @@ def test_github_clean_and_multiple_files(tmp_path: Path) -> None:
     lines = result.stdout.splitlines()
     assert len(lines) == 2
     for name in ("one.j2", "two.j2"):
-        assert any(line.startswith(f"::error file={tmp_path / name},line=2,title=j2lint S1::") for line in lines)
+        assert any(line.startswith(f"::error file={tmp_path / name},line=2,title=j2lint S1 (single-space-decorator)::") for line in lines)
     assert result.stderr == ""
 
 
@@ -73,7 +73,7 @@ def test_github_raw_stdout(tmp_path: Path, logging_options: list[str]) -> None:
     result = invoke("--output-format", "github", *logging_options, str(template), env={**os.environ, "COLUMNS": "20", "FORCE_COLOR": "1"})
     assert result.returncode == 2, result.stderr
     assert result.stdout == (
-        f"::error file={template},line=1,title=j2lint S1::"
+        f"::error file={template},line=1,title=j2lint S1 (single-space-decorator)::"
         "A single space should be added between Jinja2 curly brackets and a variable name: {{ ethernet_interface }}\n"
     )
     if logging_options:
@@ -86,7 +86,7 @@ def test_github_stdin_cleanup(tmp_path: Path) -> None:
     """Stdin annotations have no deleted-file link and leave no temporary files behind."""
     result = invoke("--output-format", "github", "--stdin", stdin="{{value}}\n", env={**os.environ, "TMPDIR": str(tmp_path)})
     assert result.returncode == 2, result.stderr
-    assert result.stdout.startswith("::error title=j2lint S1::")
+    assert result.stdout.startswith("::error title=j2lint S1 (single-space-decorator)::")
     assert len(result.stdout.splitlines()) == 1
     assert result.stderr == ""
     assert not list(tmp_path.iterdir())
@@ -98,7 +98,10 @@ def test_github_syntax_error(tmp_path: Path) -> None:
     template.write_text("plain text\n{% if %}\n", encoding="utf-8")
     result = invoke("--output-format", "github", str(template))
     assert result.returncode == 2, result.stderr
-    assert any(line.startswith(f"::error file={template},line=2,title=j2lint S0::Expected an expression") for line in result.stdout.splitlines())
+    assert any(
+        line.startswith(f"::error file={template},line=2,title=j2lint S0 (jinja-syntax-error)::Expected an expression")
+        for line in result.stdout.splitlines()
+    )
     assert result.stderr == ""
 
 

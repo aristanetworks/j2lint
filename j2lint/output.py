@@ -44,7 +44,7 @@ def print_github_output(
                 properties = []
                 if stdin_filename is None or issue.filename != str(stdin_filename):
                     properties.extend((f"file={_escape_property(issue.filename)}", f"line={issue.line_number}"))
-                properties.append(f"title={_escape_property(f'j2lint {issue.rule.rule_id}')}")
+                properties.append(f"title={_escape_property(f'j2lint {issue.rule.rule_id} ({issue.rule.short_description})')}")
                 sys.stdout.write(f"::{level} {','.join(properties)}::{_escape_data(issue.message)}\n")
                 total += 1
         totals.append(total)

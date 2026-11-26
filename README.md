@@ -212,7 +212,8 @@ The equivalent `--output-format json` option is also available. The default is
 ### Showing annotations in GitHub Actions
 
 Use `--output-format github` to emit GitHub Actions error and warning annotations
-with the diagnostic's file, line number, rule ID, and message. After checking out
+with the diagnostic's file, line number, rule ID, rule name, and message. Titles
+include both identifiers, for example `j2lint S1 (single-space-decorator)`. After checking out
 your repository and installing j2lint, add a step such as:
 
 ```yaml

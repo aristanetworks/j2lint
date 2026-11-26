@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from argparse import Namespace
@@ -461,3 +462,44 @@ def test_run_stdin(capsys: pytest.CaptureFixture[str]) -> None:
         path = Path(matches.groups()[0])
         assert path.exists() is False
         assert run_return_value == 2
+
+
+@pytest.mark.parametrize(("warn_rules", "exit_code", "first_level"), [(["V1"], 2, "error"), (["S1", "V1"], 0, "warning")])
+def test_run_github(tmp_path: Path, capsys: pytest.CaptureFixture[str], warn_rules: list[str], exit_code: int, first_level: str) -> None:
+    """The callable CLI entry point emits real findings and returns the appropriate status."""
+    template = tmp_path / "example.j2"
+    template.write_text("{{UPPER}}\n", encoding="utf-8")
+    assert run(["--output-format", "github", "--warn", *warn_rules, "--", str(template)]) == exit_code
+    captured = capsys.readouterr()
+    assert captured.out == (
+        f"::{first_level} file={template},line=1,title=j2lint S1 (single-space-decorator)::"
+        "A single space should be added between Jinja2 curly brackets and a variable name: {{ ethernet_interface }}\n"
+        f"::warning file={template},line=1,title=j2lint V1 (jinja-variable-lower-case)::All variables should use lower case: '{{{{ variable }}}}': UPPER\n"
+    )
+    assert captured.err == ""
+
+
+def test_run_github_list_rejected(capsys: pytest.CaptureFixture[str]) -> None:
+    """Reject unsupported rule-list annotations before attempting lint execution."""
+    with pytest.raises(SystemExit) as exc_info:
+        run(["--list", "--output-format", "github"])
+    assert exc_info.value.code == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "--list cannot be used with --output-format github" in captured.err
+
+
+@pytest.mark.parametrize("options", [["--json"], ["--output-format", "json"]])
+def test_run_json_rule_list(capsys: pytest.CaptureFixture[str], options: list[str]) -> None:
+    """Both JSON selectors list the active rules through the callable entry point."""
+    assert run(["--list", *options]) == 0
+    captured = capsys.readouterr()
+    rules = json.loads(captured.out)
+    assert [rule["rule_id"] for rule in rules] == ["S0", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "V1", "V2"]
+    assert captured.err == ""
+
+
+def test_print_string_output_omits_clean_files(capsys: pytest.CaptureFixture[str], make_issues: Callable[[int], list[LinterError]]) -> None:
+    """A clean file in a partially failing run has no empty output tree."""
+    assert print_string_output({Path("clean.j2"): [], Path("dummy.j2"): make_issues(1)}, {}, verbose=False) == (1, 0)
+    assert capsys.readouterr().out == ONE_ERROR
