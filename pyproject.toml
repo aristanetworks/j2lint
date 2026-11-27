@@ -58,7 +58,7 @@ benchmark = [
 ]
 lint = [
   "pylint>=4.1.4",
-  "ruff>=0.17.5,<0.17.6",
+  "ruff>=0.17.5,<0.17.7",
   "codespell>=2.4.3,<2.5.0",
 ]
 type = [
