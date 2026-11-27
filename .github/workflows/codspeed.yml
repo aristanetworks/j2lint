@@ -71,6 +71,10 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
+      - name: Install memory profiler debug symbols
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libc6-dbg
       - name: Set up benchmark Python
         id: python
         uses: actions/setup-python@v7.1.0
@@ -110,6 +114,7 @@ jobs:
         uses: CodSpeedHQ/action@v5.6.3
         env:
           PYTHONHASHSEED: "0"
+          CODSPEED_LOG: debug
         with:
           mode: memory
           runner-version: "5.5.0"
