@@ -6,13 +6,15 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   benchmarks:
     name: Benchmark j2lint for Python 3.12
     # CodSpeed runner 5.2.1 does not support the Ubuntu 26.04 image selected by ubuntu-latest.
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -62,6 +64,9 @@ jobs:
   benchmark-memory:
     name: Benchmark j2lint memory for Python 3.12
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7.0.1
         with:
