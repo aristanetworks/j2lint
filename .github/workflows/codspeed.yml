@@ -54,7 +54,7 @@ jobs:
           uv pip list --python .venv/bin/python
           lscpu
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v5.6.3
+        uses: CodSpeedHQ/action@v5.8.0
         with:
           mode: simulation
           run: uv run --no-sync pytest --codspeed --no-cov -o addopts= -q tests/benchmark
